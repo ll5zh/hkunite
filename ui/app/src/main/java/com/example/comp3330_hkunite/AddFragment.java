@@ -1,5 +1,6 @@
 package com.example.comp3330_hkunite;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -10,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Switch;
+
+import java.util.Calendar;
 
 
 public class AddFragment extends Fragment {
@@ -50,8 +53,27 @@ public class AddFragment extends Fragment {
         description = view.findViewById(R.id.editTextDescription);
         switchPrivate = view.findViewById(R.id.switchPrivate);
 
+        //making the datepicker pop up:
+        date.setOnClickListener(v -> {openDatePicker(date);});
+
+        return view;
+    }
 
 
-        return inflater.inflate(R.layout.fragment_add, container, false);
+    //helper methods:
+    public void openDatePicker(EditText date){
+
+        //we start a calendar (set on current day month and year to prefill)
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePicker = new DatePickerDialog(
+               getContext(), //so it opens the picker on the current fragment
+                (view, y, m, d) -> date.setText(d + "/" + (m + 1) + "/" + y),
+                year, month, day
+        );
+        datePicker.show();
     }
 }

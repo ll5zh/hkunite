@@ -34,11 +34,13 @@
 
 
                 <EditText
+                    android:id="@+id/editTextTitle"
                     android:layout_width="match_parent"
                     android:layout_height="57dp"
                     android:text="Title: " />
 
                 <EditText
+                    android:id="@+id/editTextLocation"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:text="Location: "/>
@@ -50,34 +52,42 @@
                     android:orientation="horizontal">
 
                     <EditText
+                        android:id="@+id/editTextDate"
                         android:layout_width="205dp"
                         android:layout_height="match_parent"
-                        android:text="Date: " />
+                        android:hint= "Select Date"
+                        android:clickable= "true"
+                        android:focusable="false" />
 
                     <EditText
+                        android:id="@+id/editTextTime"
                         android:layout_width="205dp"
                         android:layout_height="match_parent"
-                        android:text="Time: " />
+                        android:hint= "Select Time"
+                        android:clickable= "true"
+                        android:focusable="false" />
 
                 </LinearLayout>
 
 
                 <EditText
+                    android:id="@+id/editTextDescription"
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
-                    android:text="Description:: " />
+                    android:text="Description: " />
 
                 <Switch
-                    android:id="@+id/switch1"
+                    android:id="@+id/switchPrivate"
                     android:layout_width="184dp"
                     android:layout_height="78dp"
+                    android:checked= "false"
                     android:text="Public/private" />
 
                 <Button
-                    android:id="@+id/uploadButton"
+                    android:id="@+id/addButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="upload" />
+                    android:text="add" />
             </LinearLayout>
         </ScrollView>
     </LinearLayout>

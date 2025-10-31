@@ -1,6 +1,7 @@
 package com.example.comp3330_hkunite;
 
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -53,8 +54,9 @@ public class AddFragment extends Fragment {
         description = view.findViewById(R.id.editTextDescription);
         switchPrivate = view.findViewById(R.id.switchPrivate);
 
-        //making the datepicker pop up:
+        //making the datepicker and timepicker pop up:
         date.setOnClickListener(v -> {openDatePicker(date);});
+        time.setOnClickListener(v -> {openTimePicker(time);});
 
         return view;
     }
@@ -75,5 +77,18 @@ public class AddFragment extends Fragment {
                 year, month, day
         );
         datePicker.show();
+    }
+
+    public void openTimePicker(EditText time){
+        Calendar calendar = Calendar.getInstance();
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+
+        TimePickerDialog timePicker = new TimePickerDialog(
+                getContext(),
+                (view, h, m) -> time.setText(h+":"+m),
+                hour, minute, true
+        );
+        timePicker.show();
     }
 }

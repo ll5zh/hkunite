@@ -41,7 +41,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7fd0da10-d827-4424-8233-2f351e6fcbc8" name="Changes" comment="defining UI components in .java logic">
+    <list default="true" id="7fd0da10-d827-4424-8233-2f351e6fcbc8" name="Changes" comment="datePicker implementation">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/AddFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/AddFragment.java" afterDir="false" />
     </list>
@@ -247,7 +247,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761897077995</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="datePicker implementation">
+      <option name="closed" value="true" />
+      <created>1761899565185</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1761899565185</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -265,7 +273,8 @@
     <MESSAGE value="navigation bar and fragments" />
     <MESSAGE value="UI for add/upload fragment" />
     <MESSAGE value="defining UI components in .java logic" />
-    <option name="LAST_COMMIT_MESSAGE" value="defining UI components in .java logic" />
+    <MESSAGE value="datePicker implementation" />
+    <option name="LAST_COMMIT_MESSAGE" value="datePicker implementation" />
   </component>
   <component name="play_dynamic_filters_status">
     <option name="appIdToCheckInfo">

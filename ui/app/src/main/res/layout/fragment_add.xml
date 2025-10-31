@@ -37,13 +37,13 @@
                     android:id="@+id/editTextTitle"
                     android:layout_width="match_parent"
                     android:layout_height="57dp"
-                    android:text="Title: " />
+                    android:hint="Title: " />
 
                 <EditText
                     android:id="@+id/editTextLocation"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="Location: "/>
+                    android:hint="Location: "/>
 
 
                 <LinearLayout
@@ -74,7 +74,7 @@
                     android:id="@+id/editTextDescription"
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
-                    android:text="Description: " />
+                    android:hint="Description: " />
 
                 <Switch
                     android:id="@+id/switchPrivate"

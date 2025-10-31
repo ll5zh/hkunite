@@ -19,14 +19,14 @@ import java.util.Calendar;
 public class AddFragment extends Fragment {
 
     //initializing the variables:
-    private Button addButton;
-    private Button uploadImageButton;
-    private EditText title;
-    private EditText location;
-    private EditText date;
-    private EditText time;
-    private EditText description;
-    private Switch switchPrivate;
+    private Button addButtonField;
+    private Button uploadImageButtonField;
+    private EditText titleField;
+    private EditText locationField;
+    private EditText dateField;
+    private EditText timeField;
+    private EditText descriptionField;
+    private Switch switchPrivateField;
 
 
 
@@ -45,18 +45,48 @@ public class AddFragment extends Fragment {
 
 
         //connecting all the buttons to their UI button, use: findViewById(R.id.btn_add)
-        addButton = view.findViewById(R.id.addButton);
-        uploadImageButton = view.findViewById(R.id.add_image);
-        title = view.findViewById(R.id.editTextTitle);
-        location = view.findViewById(R.id.editTextLocation);
-        date= view.findViewById(R.id.editTextDate);
-        time = view.findViewById(R.id.editTextTime);
-        description = view.findViewById(R.id.editTextDescription);
-        switchPrivate = view.findViewById(R.id.switchPrivate);
+        addButtonField = view.findViewById(R.id.addButton);
+        uploadImageButtonField = view.findViewById(R.id.add_image);
+        titleField = view.findViewById(R.id.editTextTitle);
+        locationField = view.findViewById(R.id.editTextLocation);
+        dateField= view.findViewById(R.id.editTextDate);
+        timeField = view.findViewById(R.id.editTextTime);
+        descriptionField = view.findViewById(R.id.editTextDescription);
+        switchPrivateField = view.findViewById(R.id.switchPrivate);
 
         //making the datepicker and timepicker pop up:
-        date.setOnClickListener(v -> {openDatePicker(date);});
-        time.setOnClickListener(v -> {openTimePicker(time);});
+        dateField.setOnClickListener(v -> {openDatePicker(dateField);});
+        timeField.setOnClickListener(v -> {openTimePicker(timeField);});
+
+        //saving all the input information from the textfields:
+        view.setOnClickListener(v -> {
+            if (v.getId()==R.id.editTextTitle){
+                String title = titleField.getText().toString();}
+            if (v.getId()==R.id.editTextLocation){
+                String location = locationField.getText().toString();}
+            if (v.getId()==R.id.editTextDescription){
+                String description = descriptionField.getText().toString();}
+            if (v.getId()==R.id.switchPrivate){
+                Boolean isPrivate = switchPrivateField.isChecked();} //the defauolt is false -> public}
+
+
+            //for the buttons
+            if (v.getId()==R.id.add_image){
+                //this needs to be removed and logic implemented
+                String title = titleField.getText().toString();}
+
+
+            //this button is special because then we send it to the database!!
+            if (v.getId()==R.id.addButton){
+                //remove the stuff below this is just filler
+                String test = titleField.getText().toString();}
+        });
+
+
+
+
+
+
 
         return view;
     }

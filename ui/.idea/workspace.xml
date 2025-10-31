@@ -41,9 +41,10 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7fd0da10-d827-4424-8233-2f351e6fcbc8" name="Changes" comment="datePicker implementation">
+    <list default="true" id="7fd0da10-d827-4424-8233-2f351e6fcbc8" name="Changes" comment="timePicker implementation">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/AddFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/AddFragment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/fragment_add.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/fragment_add.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -255,7 +256,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761899565185</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="timePicker implementation">
+      <option name="closed" value="true" />
+      <created>1761900184935</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1761900184935</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -274,7 +283,8 @@
     <MESSAGE value="UI for add/upload fragment" />
     <MESSAGE value="defining UI components in .java logic" />
     <MESSAGE value="datePicker implementation" />
-    <option name="LAST_COMMIT_MESSAGE" value="datePicker implementation" />
+    <MESSAGE value="timePicker implementation" />
+    <option name="LAST_COMMIT_MESSAGE" value="timePicker implementation" />
   </component>
   <component name="play_dynamic_filters_status">
     <option name="appIdToCheckInfo">

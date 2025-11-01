@@ -2,16 +2,25 @@ package com.example.comp3330_hkunite;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import java.util.Calendar;
 
@@ -27,7 +36,9 @@ public class AddFragment extends Fragment {
     private EditText timeField;
     private EditText descriptionField;
     private Switch switchPrivateField;
+    private ImageView CoverPicture;
 
+    private ActivityResultLauncher<Intent> pickImageLauncher;
 
 
 
@@ -53,11 +64,13 @@ public class AddFragment extends Fragment {
         timeField = view.findViewById(R.id.editTextTime);
         descriptionField = view.findViewById(R.id.editTextDescription);
         switchPrivateField = view.findViewById(R.id.switchPrivate);
+        CoverPicture = view.findViewById(R.id.picture);
+        registerPictureUpload();
 
         //making the datepicker and timepicker pop up:
         dateField.setOnClickListener(v -> {openDatePicker(dateField);});
         timeField.setOnClickListener(v -> {openTimePicker(timeField);});
-
+        uploadImageButtonField.setOnClickListener(v -> {uploadImage(CoverPicture);});
         //saving all the input information from the textfields:
         view.setOnClickListener(v -> {
             if (v.getId()==R.id.editTextTitle){
@@ -68,6 +81,7 @@ public class AddFragment extends Fragment {
                 String description = descriptionField.getText().toString();}
             if (v.getId()==R.id.switchPrivate){
                 Boolean isPrivate = switchPrivateField.isChecked();} //the defauolt is false -> public}
+
 
 
             //for the buttons
@@ -120,5 +134,27 @@ public class AddFragment extends Fragment {
                 hour, minute, true
         );
         timePicker.show();
+    }
+
+    private void uploadImage(ImageView CoverPicture){
+        Intent intent = new Intent(MediaStore.ACTION_PICK_IMAGES);
+        pickImageLauncher.launch(intent);
+    }
+    private void registerPictureUpload(){
+        pickImageLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        try {
+                            Uri imageUri = result.getData().getData();
+                            CoverPicture.setImageURI(imageUri);
+                        } catch (Exception e) {
+                            Toast.makeText(getContext(), "No Image Selected", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                }
+        );
     }
 }

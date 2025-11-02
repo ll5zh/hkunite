@@ -37,9 +37,10 @@ public class AddFragment extends Fragment {
     private EditText descriptionField;
     private Switch switchPrivateField;
     private ImageView CoverPicture;
+    private Button LocButtonField;
 
     private ActivityResultLauncher<Intent> pickImageLauncher;
-
+    private ActivityResultLauncher<String> locationLauncher;
 
 
     @Override
@@ -65,6 +66,7 @@ public class AddFragment extends Fragment {
         descriptionField = view.findViewById(R.id.editTextDescription);
         switchPrivateField = view.findViewById(R.id.switchPrivate);
         CoverPicture = view.findViewById(R.id.picture);
+        LocButtonField = view.findViewById(R.id.LocationButton);
         registerPictureUpload();
 
         //making the datepicker and timepicker pop up:
@@ -104,6 +106,8 @@ public class AddFragment extends Fragment {
 
         return view;
     }
+
+
 
 
     //helper methods:
@@ -156,5 +160,10 @@ public class AddFragment extends Fragment {
 
                 }
         );
+    }
+
+    //for the location:
+    private void registerLocation(){
+
     }
 }

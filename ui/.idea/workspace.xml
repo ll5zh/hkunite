@@ -41,7 +41,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7fd0da10-d827-4424-8233-2f351e6fcbc8" name="Changes" comment="uploading pictures from the gallery implemented" />
+    <list default="true" id="7fd0da10-d827-4424-8233-2f351e6fcbc8" name="Changes" comment="implemented location logic" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -294,7 +294,15 @@
       <option name="project" value="LOCAL" />
       <updated>1762070482717</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="implemented location logic">
+      <option name="closed" value="true" />
+      <created>1762087477651</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1762087477651</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -316,7 +324,8 @@
     <MESSAGE value="timePicker implementation" />
     <MESSAGE value="connect all textfields to variables" />
     <MESSAGE value="location button, gradle and manifest additions" />
-    <option name="LAST_COMMIT_MESSAGE" value="location button, gradle and manifest additions" />
+    <MESSAGE value="implemented location logic" />
+    <option name="LAST_COMMIT_MESSAGE" value="implemented location logic" />
   </component>
   <component name="play_dynamic_filters_status">
     <option name="appIdToCheckInfo">

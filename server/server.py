@@ -53,20 +53,58 @@ def user_add_image():
 # Gets all events (explore page - public)
 @app.route("/events", methods=["GET"])
 def get_events():
-    con = db.get_connection()
-    events = con.execute("SELECT *FROM EVENT WHERE PUBLIC = ?", (1,)).fetchall()
-    con.close()
-    return jsonify([dict(e) for e in events])
+    # Filter by category if provided
+    cid = request.args.get("cid")
+    if cid:
+        events = db.get_events_by_category(cid)
+    else:
+        events = db.get_all_events()
+    return jsonify({"success": True, "data": events}), 200
 
-# Gets events by category
+# Gets events associated with user (participant or organizer)
+@app.route("/my-events", methods=["GET"])
+def get_my_events():
+    # TESTING on server side
+    uid = request.args.get("uid")
 
-# Gets events associated with user
+    organized = db.get_events_organized_by_user(uid)
+    participated = db.get_events_participated_by_user(uid)
+    
+    # Merge results
+    my_events = {event["eid"]: event for event in organized}
+    for event in participated:
+        my_events[event["eid"]] = event  # adds new or overwrites same event
+    
+    return jsonify({"success": True, "data": list(my_events.values())}), 200
+
+    # UNCOMMENT when hooking up with mobile app (which should pass uid in json body)
+    # event = request.json # Pass uid
+    # return jsonify({"success": True, "data": db.get_events_for_user(event["uid"])}), 200
 
 # Gets events organized by user
 
 # Gets event
+@app.route("/events/<int:eid>", methods=["GET"])
+def get_event(eid):
+    return jsonify({"success": True, "data": db.get_event_by_id(eid)}), 200
 
 # Adds event
+@app.route("/add-event", methods=["POST"])
+def add_event():
+    event = request.json
+    try:
+        eid = db.add_event(
+            title=event["title"],
+            description=event.get("description"),
+            oid=event["oid"],
+            cid=event.get("cid"),
+            public=event.get("public", True),
+            date=event["date"],
+            participants=event.get("participants")
+        )
+        return jsonify({"success": True, "eid": eid})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 400
 
 
 if __name__ == "__main__":

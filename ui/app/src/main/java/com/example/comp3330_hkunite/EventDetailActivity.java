@@ -2,6 +2,7 @@ package com.example.comp3330_hkunite;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -20,7 +21,8 @@ import org.json.JSONObject;
 
 public class EventDetailActivity extends AppCompatActivity {
     private ImageView eventImage;
-    private TextView eventTitle, eventDate, eventDescription;
+    private TextView eventOwner, eventTitle, eventDate, eventDescription;
+    private Button joinButton;
     private int uid = 2; // Replace with actual user ID logic
     private static final String TAG = "EventDetailActivity";
 
@@ -30,18 +32,26 @@ public class EventDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_event_detail);
 
         eventImage = findViewById(R.id.eventImage);
+        eventOwner = findViewById(R.id.eventOwner);
         eventTitle = findViewById(R.id.eventTitle);
         eventDate = findViewById(R.id.eventDate);
         eventDescription = findViewById(R.id.eventDescription);
+        joinButton = findViewById(R.id.buttonJoinEvent);
+
         ImageButton backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> finish());
 
         int eid = getIntent().getIntExtra("EID", -1);
-        Button joinButton = findViewById(R.id.buttonJoinEvent);
-        checkIfJoined(uid, eid, joinButton);
-        if (eid != -1) {
-            loadEventFromServer(eid);
+        Log.d(TAG, "Received EID: " + eid);
+
+        if (eid == -1) {
+            Toast.makeText(this, "Invalid event ID", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
         }
+
+        loadEventFromServer(eid);
+        checkIfJoined(uid, eid, joinButton);
 
         joinButton.setOnClickListener(v -> {
             sendJoinEventToServer(uid, eid);
@@ -63,13 +73,17 @@ public class EventDetailActivity extends AppCompatActivity {
                         String description = response.getString("DESCRIPTION");
                         String image = response.optString("IMAGE", null);
                         String date = response.getString("DATE");
+                        String ownerUsername = response.optString("OWNER_USERNAME", "Unknown");
 
+                        eventOwner.setText("Organized by: " + ownerUsername);
                         eventTitle.setText(title);
                         eventDate.setText(date);
                         eventDescription.setText(description);
                         if (image != null && !image.isEmpty()) {
                             Glide.with(this).load(image).into(eventImage);
                         }
+
+
                     } catch (JSONException e) {
                         Log.e(TAG, "JSON parsing error in loadEventFromServer", e);
                         Toast.makeText(this, "Error parsing event data", Toast.LENGTH_SHORT).show();
@@ -77,7 +91,15 @@ public class EventDetailActivity extends AppCompatActivity {
                 },
                 error -> {
                     Log.e(TAG, "Volley error in loadEventFromServer: " + error.toString(), error);
-                    Toast.makeText(this, "Failed to load event: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                    if (error.networkResponse != null) {
+                        int statusCode = error.networkResponse.statusCode;
+                        String responseBody = new String(error.networkResponse.data);
+                        Log.e(TAG, "Status code: " + statusCode);
+                        Log.e(TAG, "Response body: " + responseBody);
+                        Toast.makeText(this, "Server error: " + statusCode, Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(this, "Network error: " + error.toString(), Toast.LENGTH_LONG).show();
+                    }
                 }
         );
 

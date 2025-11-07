@@ -53,10 +53,24 @@ def user_add_image():
 # Gets all events (explore page - public)
 @app.route("/events", methods=["GET"])
 def get_events():
+    uid = request.args.get("uid", type=int)
+
     con = db.get_connection()
-    events = con.execute("SELECT * FROM EVENT WHERE PUBLIC = ?", (1,)).fetchall()
+    cur = con.cursor()
+    rows = cur.execute("""
+        SELECT E.EID, E.TITLE, E.DESCRIPTION, E.IMAGE, E.DATE, E.CID,
+               C.NAME AS CATEGORY_NAME,
+               U.NAME AS OWNER_USERNAME
+        FROM EVENT E
+        LEFT JOIN CATEGORY C ON E.CID = C.CID
+        JOIN USER U ON E.OID = U.UID
+        WHERE E.PUBLIC = 1 AND E.OID != ?
+        ORDER BY C.CID, E.DATE
+    """, (uid,)).fetchall()
     con.close()
-    return jsonify([dict(e) for e in events])
+    return jsonify([dict(row) for row in rows])
+
+
 
 # Gets events by category
 
@@ -67,10 +81,24 @@ def get_events():
 # Gets event
 @app.route("/event/<int:eid>", methods=["GET"])
 def get_event(eid):
-    event = db.get_event(eid)
-    if event:
-        return jsonify(event)
-    return jsonify({"error": "Event not found"}), 404
+    con = db.get_connection()
+    cur = con.cursor()
+    row = cur.execute("""
+        SELECT E.EID, E.TITLE, E.DESCRIPTION, E.IMAGE, E.DATE, E.OID, U.NAME AS OWNER_USERNAME
+        FROM EVENT E
+        JOIN USER U ON E.OID = U.UID
+        WHERE E.EID = ?
+    """, (eid,)).fetchone()
+    con.close()
+
+    if row:
+        return jsonify(dict(row))
+    else:
+        return jsonify({"error": "Event not found"}), 404
+
+
+
+
 
 # Adds event
 
@@ -93,10 +121,11 @@ def join_event():
 # Has joined
 @app.route("/has-joined", methods=["GET"])
 def has_joined():
-    uid = request.args.get("uid")
-    eid = request.args.get("eid")
-    if not uid or not eid:
-        return jsonify({"success": False, "error": "Missing uid or eid"}), 400
+    try:
+        uid = int(request.args.get("uid"))
+        eid = int(request.args.get("eid"))
+    except (TypeError, ValueError):
+        return jsonify({"success": False, "error": "Invalid uid or eid"}), 400
 
     con = db.get_connection()
     cur = con.cursor()
@@ -105,6 +134,7 @@ def has_joined():
     con.close()
 
     return jsonify({"success": True, "joined": joined})
+
 
 
 

@@ -2,6 +2,7 @@ package com.example.comp3330_hkunite;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,11 +55,14 @@ public class ExploreAdapter extends RecyclerView.Adapter<ExploreAdapter.ExploreV
         Event event = filteredEvents.get(position);
         Glide.with(context).load(event.getImageUrl()).into(holder.imageExplore);
 
+        Log.d("ExploreAdapter", "Binding event: " + event.getTitle());
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, EventDetailActivity.class);
             intent.putExtra("EID", event.getEid());
             context.startActivity(intent);
+            Log.d("ExploreAdapter", "Clicked event EID: " + event.getEid());
         });
+
     }
 
     @Override

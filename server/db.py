@@ -96,6 +96,14 @@ def init_db():
         ("Kotlin Meetup", "Learn Kotlin basics", 1, "https://hips.hearstapps.com/hmg-prod/images/dog-puppy-on-garden-royalty-free-image-1586966191.jpg", "2025-11-10 18:00:00", 1, True),
         ("Python Workshop", "Hands-on Python", 2, "https://img.freepik.com/free-photo/pug-dog-isolated-white-background_2829-11416.jpg", "2025-11-15 14:00:00", 2, True),
         ("Music Concert", "Live local bands", 3, "https://www.cdc.gov/healthy-pets/media/images/2024/04/GettyImages-598175960-cute-dog-headshot.jpg", "2025-12-01 20:00:00", 3, False),
+        ("Art Jam", "Paint with friends", 4, "https://images.unsplash.com/photo-1513364776144-60967b0f800f", "2025-11-20 16:00:00", 4, True),
+        ("Startup Pitch Night", "Watch student startups pitch ideas", 5, "https://images.unsplash.com/photo-1551836022-d5d88e9218df", "2025-11-22 19:00:00", 4, True),
+        ("Board Game Social", "Play Codenames and Dixit", 1, "https://images.unsplash.com/photo-1607746882042-944635dfe10e", "2025-11-25 18:30:00", 3, True),
+        ("Photography Walk", "Explore campus with cameras", 2, "https://www.computerhope.com/jargon/p/program.png", "2025-11-28 15:00:00", 3, True),
+        ("Career Talk: UX Design", "Learn from industry designers", 3, "https://static01.nyt.com/images/2024/11/06/multimedia/03BEATA-gftv/03BEATA-gftv-articleLarge.jpg", "2025-12-03 17:00:00", 1, True),
+        ("Coding Challenge", "Solve problems in teams", 3, "https://studio.code.org/shared/images/courses/logo_tall_dance-2022.png", "2025-12-05 13:00:00", 1, True),
+        ("Movie Night", "Watch a surprise film", 4, "https://cdn.britannica.com/70/234870-050-D4D024BB/Orange-colored-cat-yawns-displaying-teeth.jpg", "2025-12-07 20:00:00", 2, True),
+        ("Christmas Fair", "Food, crafts, and music", 2, "https://www.eatingwell.com/thmb/m5xUzIOmhWSoXZnY-oZcO9SdArQ=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/article_291139_the-top-10-healthiest-foods-for-kids_-02-4b745e57928c4786a61b47d8ba920058.jpg", "2025-12-15 12:00:00", 4, True)
     ]
     for title, desc, cid, image, date, oid, public in default_events:
         cur.execute("""
@@ -103,22 +111,25 @@ def init_db():
             VALUES (?, ?, ?, ?, ?, ?, ?)
         """, (title, desc, cid, image, date, oid, int(public)))
     
-    users = {
-        "u3649750@connect.hku.hk": "12345",
-        "user2@hku.hk": "abcde",
-        "user3@hku.hk": "xyz123"
-    }
-    for email, password in users.items(): # password currently not hashed
+    users = [
+    ("u3649750@connect.hku.hk", "12345", "Alice"),
+    ("user2@hku.hk", "abcde", "Bob"),
+    ("user3@hku.hk", "xyz123", "Charlie"),
+    ("user233@hku.hk", "xyz123", "Delta")
+    ]
+
+    for email, password, name in users:  # password currently not hashed
         cur.execute(
-            "INSERT OR IGNORE INTO USER (EMAIL, PASSWORD) VALUES (?, ?)",
-            (email, password)
+            "INSERT OR IGNORE INTO USER (EMAIL, PASSWORD, NAME) VALUES (?, ?, ?)",
+            (email, password, name)
         )
+
 
     cur.execute ('''
         INSERT INTO EVENT_PARTICIPANT (EID, UID) VALUES
-        (1, 1),
+        (4, 1),
         (2, 1),
-        (2, 2);
+        (5, 2);
                  ''')
     
     cur.execute ('''

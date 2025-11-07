@@ -68,6 +68,28 @@ def get_events():
 
 # Adds event
 
+# Join event
+@app.route("/join-event", methods=["POST"])
+def join_event():
+    data = request.json or {}
+    uid = data.get("uid")
+    eid = data.get("eid")
+    if uid is None or eid is None:
+        return jsonify({"success": False, "error": "Missing uid or eid"}), 400
+    try:
+        con = db.get_connection()
+        # Prevent duplicate if your DB enforces PK; optionally check first
+        con.execute(
+            "INSERT INTO EVENT_PARTICIPANT (EID, UID) VALUES (?, ?)",
+            (eid, uid)
+        )
+        con.commit()
+        con.close()
+        return jsonify({"success": True}), 201
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
 
 if __name__ == "__main__":
     # Initialize db on startup

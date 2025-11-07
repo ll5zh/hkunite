@@ -57,7 +57,7 @@ public class ExploreFragment extends Fragment {
 
     private void loadEventsFromServer() {
         Log.d(TAG, "loadEventsFromServer() called");
-        String uid = "1";
+        String uid = "1"; //Update logic
 
         String url = "http://10.70.8.141:5001/events?uid=" + uid;
 

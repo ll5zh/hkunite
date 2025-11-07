@@ -23,7 +23,11 @@ public class EventDetailActivity extends AppCompatActivity {
     private ImageView eventImage;
     private TextView eventOwner, eventTitle, eventDate, eventDescription;
     private Button joinButton;
-    private int uid = 2; // Replace with actual user ID logic
+    private int uid = 1; // Replace with actual user ID logic
+    private int ownerId = -1;
+    private boolean hasJoined = false;
+    private boolean eventLoaded = false;
+    private boolean joinStatusChecked = false;
     private static final String TAG = "EventDetailActivity";
 
     @Override
@@ -51,7 +55,7 @@ public class EventDetailActivity extends AppCompatActivity {
         }
 
         loadEventFromServer(eid);
-        checkIfJoined(uid, eid, joinButton);
+        checkIfJoined(uid, eid);
 
         joinButton.setOnClickListener(v -> {
             sendJoinEventToServer(uid, eid);
@@ -74,6 +78,8 @@ public class EventDetailActivity extends AppCompatActivity {
                         String image = response.optString("IMAGE", null);
                         String date = response.getString("DATE");
                         String ownerUsername = response.optString("OWNER_USERNAME", "Unknown");
+                        ownerId = response.optInt("OID", -1);
+                        Log.d(TAG, "Owner ID: " + ownerId + ", Current UID: " + uid);
 
                         eventOwner.setText("Organized by: " + ownerUsername);
                         eventTitle.setText(title);
@@ -83,6 +89,8 @@ public class EventDetailActivity extends AppCompatActivity {
                             Glide.with(this).load(image).into(eventImage);
                         }
 
+                        eventLoaded = true;
+                        updateJoinButton();
 
                     } catch (JSONException e) {
                         Log.e(TAG, "JSON parsing error in loadEventFromServer", e);
@@ -106,6 +114,44 @@ public class EventDetailActivity extends AppCompatActivity {
         Volley.newRequestQueue(this).add(request);
     }
 
+    private void checkIfJoined(int uid, int eid) {
+        String url = "http://10.70.8.141:5001/has-joined?uid=" + uid + "&eid=" + eid;
+
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.GET,
+                url,
+                null,
+                response -> {
+                    try {
+                        hasJoined = response.getBoolean("joined");
+                        joinStatusChecked = true;
+                        updateJoinButton();
+                    } catch (JSONException e) {
+                        Log.e(TAG, "JSON parsing error in checkIfJoined", e);
+                        Toast.makeText(this, "Error parsing join status", Toast.LENGTH_SHORT).show();
+                    }
+                },
+                error -> {
+                    Log.e(TAG, "Volley error in checkIfJoined: " + error.toString(), error);
+                    Toast.makeText(this, "Error checking join status: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                }
+        );
+
+        Volley.newRequestQueue(this).add(request);
+    }
+
+    private void updateJoinButton() {
+        if (!eventLoaded || !joinStatusChecked) return;
+
+        if (hasJoined) {
+            joinButton.setEnabled(false);
+            joinButton.setText("Joined");
+        } else {
+            joinButton.setEnabled(true);
+            joinButton.setText("Join");
+        }
+    }
+
     private void sendJoinEventToServer(int uid, int eid) {
         String url = "http://10.70.8.141:5001/join-event";
 
@@ -123,38 +169,10 @@ public class EventDetailActivity extends AppCompatActivity {
                 Request.Method.POST,
                 url,
                 jsonBody,
-                response -> Toast.makeText(this, "Joined on server!", Toast.LENGTH_SHORT).show(),
+                null,
                 error -> {
                     Log.e(TAG, "Volley error in sendJoinEventToServer: " + error.toString(), error);
                     Toast.makeText(this, "Server error: " + error.getMessage(), Toast.LENGTH_LONG).show();
-                }
-        );
-
-        Volley.newRequestQueue(this).add(request);
-    }
-
-    private void checkIfJoined(int uid, int eid, Button joinButton) {
-        String url = "http://10.70.8.141:5001/has-joined?uid=" + uid + "&eid=" + eid;
-
-        JsonObjectRequest request = new JsonObjectRequest(
-                Request.Method.GET,
-                url,
-                null,
-                response -> {
-                    try {
-                        boolean joined = response.getBoolean("joined");
-                        if (joined) {
-                            joinButton.setEnabled(false);
-                            joinButton.setText("Joined");
-                        }
-                    } catch (JSONException e) {
-                        Log.e(TAG, "JSON parsing error in checkIfJoined", e);
-                        Toast.makeText(this, "Error parsing join status", Toast.LENGTH_SHORT).show();
-                    }
-                },
-                error -> {
-                    Log.e(TAG, "Volley error in checkIfJoined: " + error.toString(), error);
-                    Toast.makeText(this, "Error checking join status: " + error.getMessage(), Toast.LENGTH_LONG).show();
                 }
         );
 

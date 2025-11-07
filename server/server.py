@@ -84,7 +84,8 @@ def get_event(eid):
     con = db.get_connection()
     cur = con.cursor()
     row = cur.execute("""
-        SELECT E.EID, E.TITLE, E.DESCRIPTION, E.IMAGE, E.DATE, E.OID, U.NAME AS OWNER_USERNAME
+        SELECT E.EID, E.TITLE, E.DESCRIPTION, E.IMAGE, E.DATE,
+               E.OID, U.NAME AS OWNER_USERNAME
         FROM EVENT E
         JOIN USER U ON E.OID = U.UID
         WHERE E.EID = ?
@@ -95,6 +96,7 @@ def get_event(eid):
         return jsonify(dict(row))
     else:
         return jsonify({"error": "Event not found"}), 404
+
 
 
 

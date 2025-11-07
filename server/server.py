@@ -54,7 +54,7 @@ def user_add_image():
 @app.route("/events", methods=["GET"])
 def get_events():
     con = db.get_connection()
-    events = con.execute("SELECT *FROM EVENT WHERE PUBLIC = ?", (1,)).fetchall()
+    events = con.execute("SELECT * FROM EVENT WHERE PUBLIC = ?", (1,)).fetchall()
     con.close()
     return jsonify([dict(e) for e in events])
 
@@ -65,6 +65,12 @@ def get_events():
 # Gets events organized by user
 
 # Gets event
+@app.route("/event/<int:eid>", methods=["GET"])
+def get_event(eid):
+    event = db.get_event(eid)
+    if event:
+        return jsonify(event)
+    return jsonify({"error": "Event not found"}), 404
 
 # Adds event
 
@@ -74,26 +80,42 @@ def join_event():
     data = request.json or {}
     uid = data.get("uid")
     eid = data.get("eid")
+
     if uid is None or eid is None:
         return jsonify({"success": False, "error": "Missing uid or eid"}), 400
+
     try:
-        con = db.get_connection()
-        # Prevent duplicate if your DB enforces PK; optionally check first
-        con.execute(
-            "INSERT INTO EVENT_PARTICIPANT (EID, UID) VALUES (?, ?)",
-            (eid, uid)
-        )
-        con.commit()
-        con.close()
+        db.add_event_participants(eid, uid)
         return jsonify({"success": True}), 201
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
+    
+# Has joined
+@app.route("/has-joined", methods=["GET"])
+def has_joined():
+    uid = request.args.get("uid")
+    eid = request.args.get("eid")
+    if not uid or not eid:
+        return jsonify({"success": False, "error": "Missing uid or eid"}), 400
+
+    con = db.get_connection()
+    cur = con.cursor()
+    cur.execute("SELECT 1 FROM EVENT_PARTICIPANT WHERE UID = ? AND EID = ?", (uid, eid))
+    joined = cur.fetchone() is not None
+    con.close()
+
+    return jsonify({"success": True, "joined": joined})
+
+
 
 
 
 if __name__ == "__main__":
     # Initialize db on startup
+    print("DB path:", os.path.abspath(db.DB_NAME))
+
     if not os.path.exists(db.DB_NAME):
+        
         db.init_db()
 
     # adds host="0.0.0.0" to make the server publicly available

@@ -74,4 +74,12 @@ public class ExploreAdapter extends RecyclerView.Adapter<ExploreAdapter.ExploreV
             imageExplore = itemView.findViewById(R.id.imageExplore);
         }
     }
+    public void updateEvents(List<Event> newEvents) {
+        fullEvents.clear();
+        fullEvents.addAll(newEvents);
+        filteredEvents.clear();
+        filteredEvents.addAll(newEvents);
+        notifyDataSetChanged();
+    }
+
 }

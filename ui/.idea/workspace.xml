@@ -5,6 +5,11 @@
       <config />
     </shared>
     <layouts>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_event_detail.xml">
+        <config>
+          <theme>@style/Theme.Comp3330hkunite</theme>
+        </config>
+      </layout>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml">
         <config>
           <theme>@style/Theme.Comp3330hkunite</theme>
@@ -30,6 +35,16 @@
           <theme>@style/Theme.Comp3330hkunite</theme>
         </config>
       </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/item_category_section.xml">
+        <config>
+          <theme>@style/Theme.Comp3330hkunite</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/item_explore.xml">
+        <config>
+          <theme>@style/Theme.Comp3330hkunite</theme>
+        </config>
+      </layout>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/menu/navigation_menu.xml">
         <config>
           <theme>@style/Theme.Comp3330hkunite</theme>
@@ -41,7 +56,12 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7fd0da10-d827-4424-8233-2f351e6fcbc8" name="Changes" comment="uploading pictures from the gallery implemented" />
+    <list default="true" id="7fd0da10-d827-4424-8233-2f351e6fcbc8" name="Changes" comment="uploading pictures from the gallery implemented">
+      <change beforePath="$PROJECT_DIR$/../server/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/../server/server.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/EventDetailActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/EventDetailActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/ExploreFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/ExploreFragment.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -50,7 +70,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=C:\Users\elena\.android\avd\Medium_Phone_2.avd)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=C:\Users\Xun\.android\avd\Medium_Phone.avd)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -77,6 +97,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="resourceFile" />
+        <option value="layoutResourceFile" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -97,7 +119,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/ll5zh/hkunite.git&quot;,
-    &quot;accountId&quot;: &quot;24dc54f5-da23-42b4-a503-344d38c3204b&quot;
+    &quot;accountId&quot;: &quot;0b74f796-5801-4c38-8a68-81229f17804e&quot;
   }
 }</component>
   <component name="ProblemsViewState">
@@ -126,12 +148,17 @@
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "Zhuo-Xun",
     "last_opened_file_path": "C:/Users/elena/OneDrive/Desktop/DTU/semester5_HKU/hkunite/ui",
-    "settings.editor.selected.configurable": "AndroidSdkUpdater",
+    "settings.editor.selected.configurable": "device.screenrecording",
     "show.migrate.to.gradle.popup": "false"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="android.template.-715512984">
+      <recent name="com.example.comp3330_hkunite" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false">
       <module name="comp3330-hkunite.app" />
@@ -323,12 +350,12 @@
       <map>
         <entry key="com.example.comp3330_hkunite">
           <value>
-            <CheckInfo lastCheckTimestamp="1762068581279" />
+            <CheckInfo lastCheckTimestamp="1762523778538" />
           </value>
         </entry>
         <entry key="com.example.comp3330_hkunite.test">
           <value>
-            <CheckInfo lastCheckTimestamp="1762068581279" />
+            <CheckInfo lastCheckTimestamp="1762523778514" />
           </value>
         </entry>
       </map>

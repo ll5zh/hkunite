@@ -53,18 +53,15 @@ def user_add_image():
 # Gets all events (explore page - public)
 @app.route("/events", methods=["GET"])
 def get_events():
-    # Filter by category if provided
-    cid = request.args.get("cid")
-    if cid:
-        events = db.get_events_by_category(cid)
-    else:
-        events = db.get_all_events()
-    return jsonify({"success": True, "data": events}), 200
+    con = db.get_connection()
+    events = con.execute("SELECT *FROM EVENT WHERE PUBLIC = ?", (1,)).fetchall()
+    con.close()
+    return jsonify([dict(e) for e in events])
 
 # Gets events associated with user (participant or organizer)
 @app.route("/my-events", methods=["GET"])
 def get_my_events():
-    # TESTING on server side
+    # TESTING on server side - GET /my-events?uid=<uid> (if we prefer to pass uid to url)
     uid = request.args.get("uid")
 
     organized = db.get_events_organized_by_user(uid)
@@ -77,9 +74,13 @@ def get_my_events():
     
     return jsonify({"success": True, "data": list(my_events.values())}), 200
 
-    # UNCOMMENT when hooking up with mobile app (which should pass uid in json body)
+    # UNCOMMENT when hooking up with mobile app (if we prefer to pass uid in json body)
     # event = request.json # Pass uid
     # return jsonify({"success": True, "data": db.get_events_for_user(event["uid"])}), 200
+
+# Gets events by category
+
+# Gets events associated with user
 
 # Gets events organized by user
 
@@ -109,7 +110,10 @@ def add_event():
 
 if __name__ == "__main__":
     # Initialize db on startup
+    print("DB path:", os.path.abspath(db.DB_NAME))
+
     if not os.path.exists(db.DB_NAME):
+        
         db.init_db()
 
     # adds host="0.0.0.0" to make the server publicly available

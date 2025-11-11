@@ -232,13 +232,13 @@ def add_event(title, description, oid, cid, date, public=True, participants=[]):
     with get_connection() as con:
         cur = con.cursor()
         cur.execute("""
-            INSERT INTO EVENT (name, description, oid, cid, public, date)
+            INSERT INTO EVENT (title, description, oid, cid, public, date)
             VALUES (?, ?, ?, ?, ?, ?)
         """, (title, description, oid, cid, int(public), date))
         eid = cur.lastrowid
 
-        # If event is private, need to add participants to event
-        if not public:
+        # If event is private, need to add participants to event (or if participants are specified)
+        if not public or participants:
             # Get participant uids from emails
             formatted_participants = ",".join("?" for _ in participants)
             query = f"SELECT uid FROM USER WHERE email IN ({formatted_participants})"

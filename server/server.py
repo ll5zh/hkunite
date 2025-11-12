@@ -53,24 +53,30 @@ def user_add_image():
 # Gets all events (explore page - public)
 @app.route("/events", methods=["GET"])
 def get_events():
-    uid = request.args.get("uid", type=int)
-
     con = db.get_connection()
-    cur = con.cursor()
-    rows = cur.execute("""
-        SELECT E.EID, E.TITLE, E.DESCRIPTION, E.IMAGE, E.DATE, E.CID,
-               C.NAME AS CATEGORY_NAME,
-               U.NAME AS OWNER_USERNAME
-        FROM EVENT E
-        LEFT JOIN CATEGORY C ON E.CID = C.CID
-        JOIN USER U ON E.OID = U.UID
-        WHERE E.PUBLIC = 1 AND E.OID != ?
-        ORDER BY C.CID, E.DATE
-    """, (uid,)).fetchall()
+    events = con.execute("SELECT *FROM EVENT WHERE PUBLIC = ?", (1,)).fetchall()
     con.close()
-    return jsonify([dict(row) for row in rows])
+    return jsonify([dict(e) for e in events])
 
+# Gets events associated with user (participant or organizer)
+@app.route("/my-events", methods=["GET"])
+def get_my_events():
+    # TESTING on server side - GET /my-events?uid=<uid> (if we prefer to pass uid to url)
+    uid = request.args.get("uid")
 
+    organized = db.get_events_organized_by_user(uid)
+    participated = db.get_events_participated_by_user(uid)
+    
+    # Merge results
+    my_events = {event["eid"]: event for event in organized}
+    for event in participated:
+        my_events[event["eid"]] = event  # adds new or overwrites same event
+    
+    return jsonify({"success": True, "data": list(my_events.values())}), 200
+
+    # UNCOMMENT when hooking up with mobile app (if we prefer to pass uid in json body)
+    # event = request.json # Pass uid
+    # return jsonify({"success": True, "data": db.get_events_for_user(event["uid"])}), 200
 
 # Gets events by category
 
@@ -79,67 +85,27 @@ def get_events():
 # Gets events organized by user
 
 # Gets event
-@app.route("/event/<int:eid>", methods=["GET"])
+@app.route("/events/<int:eid>", methods=["GET"])
 def get_event(eid):
-    con = db.get_connection()
-    cur = con.cursor()
-    row = cur.execute("""
-        SELECT E.EID, E.TITLE, E.DESCRIPTION, E.IMAGE, E.DATE,
-               E.OID, U.NAME AS OWNER_USERNAME
-        FROM EVENT E
-        JOIN USER U ON E.OID = U.UID
-        WHERE E.EID = ?
-    """, (eid,)).fetchone()
-    con.close()
-
-    if row:
-        return jsonify(dict(row))
-    else:
-        return jsonify({"error": "Event not found"}), 404
-
-
-
-
-
+    return jsonify({"success": True, "data": db.get_event_by_id(eid)}), 200
 
 # Adds event
-
-# Join event
-@app.route("/join-event", methods=["POST"])
-def join_event():
-    data = request.json or {}
-    uid = data.get("uid")
-    eid = data.get("eid")
-
-    if uid is None or eid is None:
-        return jsonify({"success": False, "error": "Missing uid or eid"}), 400
-
+@app.route("/add-event", methods=["POST"])
+def add_event():
+    event = request.json
     try:
-        db.add_event_participants(eid, uid)
-        return jsonify({"success": True}), 201
+        eid = db.add_event(
+            title=event["title"],
+            description=event.get("description"),
+            oid=event["oid"],
+            cid=event.get("cid"),
+            public=event.get("public", True),
+            date=event["date"],
+            participants=event.get("participants")
+        )
+        return jsonify({"success": True, "eid": eid})
     except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
-    
-# Has joined
-@app.route("/has-joined", methods=["GET"])
-def has_joined():
-    try:
-        uid = int(request.args.get("uid"))
-        eid = int(request.args.get("eid"))
-    except (TypeError, ValueError):
-        return jsonify({"success": False, "error": "Invalid uid or eid"}), 400
-
-    con = db.get_connection()
-    cur = con.cursor()
-    cur.execute("SELECT 1 FROM EVENT_PARTICIPANT WHERE UID = ? AND EID = ?", (uid, eid))
-    joined = cur.fetchone() is not None
-    con.close()
-
-    return jsonify({"success": True, "joined": joined})
-
-
-
-
+        return jsonify({"success": False, "error": str(e)}), 400
 
 
 if __name__ == "__main__":

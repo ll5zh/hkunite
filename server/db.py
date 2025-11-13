@@ -268,9 +268,18 @@ def get_event_by_id(eid):
         row = cur.execute("SELECT * FROM EVENT WHERE eid = ?", (eid,)).fetchone()
         return dict(row) if row else None
 
-# Gets event participants
+# Gets event participants - used on event page when user is organizer
 def get_event_participants(eid):
-    # 
+    with get_connection() as con:
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        rows = cur.execute("""
+            SELECT U.uid, U.email, U.name, U.image
+            FROM USER U JOIN EVENT_PARTICIPANT EP ON U.uid = EP.uid
+            WHERE E.eid = ?
+        """, (eid,)).fetchall()
+        return [dict(r) for r in rows]
+
 
 # Adds event
 def add_event(title, description, oid, cid, date, public=True, participants=[]):
@@ -303,11 +312,11 @@ def add_event(title, description, oid, cid, date, public=True, participants=[]):
 def join_event(eid, uid):
     with get_connection() as con:
         cur = con.cursor()
-        cur.execute("INSERT INTO EVENT_PARTICIPANT (eid, uid) VALUES (?, ?)", (eid, uid))
-        return (eid, uid)
-    
-# Adds event participant(s)
-def add_event_participants(eid, uid):   
+        cur.execute("INSERT OR IGNORE INTO EVENT_PARTICIPANT (eid, uid) VALUES (?, ?)", (eid, uid))
+        con.commit()
+
+# Adds event participant (obsolete - server calls join_event)
+def add_event_participant(eid, uid):   
     with get_connection() as con:
         cur = con.cursor()
         cur.execute("""
@@ -324,16 +333,34 @@ def add_event_participants(eid, uid):
 
 # Adds invite for event to user
 def add_invite(eid, uid):
-    #
+    with get_connection() as con:
+        cur = con.cursor()
+        cur.execute("INSERT INTO INVITATION (EID, UID) VALUES (?, ?)", (eid, uid))
+        con.commit()
 
-# Gets user invites
+# Gets user's invites - should return event name/eid/image (do a join)
 def get_my_invites(uid):
-    #
+    with get_connection() as con:
+        cur = con.cursor()
+        con.row_factory = sqlite3.Row
+        rows = cur.execute("""
+            SELECT E.eid, E.title, E.image
+            FROM EVENT E JOIN INVITATION I ON E.eid = I.eid
+            WHERE I.uid = ?
+        """, (uid,))
+        return [dict(r) for r in rows]
 
-# Gets all invites for event
+# Gets all pending invites for event - should return emails
 def get_event_invites(eid):
-    #
+    with get_connection() as con:
+        cur = con.cursor()
+        con.row_factory = sqlite3.Row
+        rows = cur.execute("SELECT uid FROM INVITATION WHERE eid = ?", (eid,)).fetchall()
+        return [dict(r) for r in rows]
 
 # Declines invite for event from user
 def decline_invite(eid, uid):
-    #
+    with get_connection() as con:
+        cur = con.cursor()
+        cur.execute("DELETE FROM INVITATION WHERE eid = ? AND uid = ?", (eid, uid))
+        con.commit()

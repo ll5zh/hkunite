@@ -119,7 +119,10 @@ def get_event(eid):
     return jsonify({"success": True, "data": db.get_event_by_id(eid)}), 200
 
 # Gets event participants
-# @app.route("/")
+@app.route("/event-participants/<int:eid>", methods=["GET"])
+def get_event_participants(eid):
+    participants = db.get_event_participants(eid)
+    return return jsonify({"success": True, "data": list(participants.values())}), 200
 
 # Adds event
 @app.route("/add-event", methods=["POST"])
@@ -146,7 +149,7 @@ def join_event():
     eid = request.args.get("eid")
 
     try:
-        eid, uid = db.join_event(eid, uid)
+        db.join_event(eid, uid)
         return jsonify({"success": True, "eid": eid, "uid": uid})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
@@ -159,22 +162,39 @@ def join_event():
 # Adds invite for event to user
 @app.route("/add-invite", methods=["POST"]) # POST /add-invite?eid=<eid>?uid=<uid>
 def add_invite():
-    # 
+    uid = request.args.get("uid")
+    eid = request.args.get("eid")
+
+    try:
+        db.add_invite(eid, uid)
+        return jsonify({"success": True, "eid": eid, "uid": uid})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 400
+
 
 # Gets user invites
 @app.route("/my-invites/<int:uid>", methods=["GET"])
 def get_my_invites(uid):
-    #
+    my_invites = db.get_my_invites(uid)
+    return jsonify({"success": True, "data": list(my_invites.values())})
 
 # Gets all invites for event
 @app.route("/event-invites/<int:eid>", methods=["GET"])
 def get_invites_for_event(eid):
-    #
+    event_invites = db.get_event_invites(eid)
+    return jsonify({"success": True, "data": list(event_invites.values())}), 200
 
 # Declines invite for event from user
 @app.route("/decline-invite", methods=["POST"]) # POST /decline-invite?eid=<eid>?uid=<uid>
 def decline_invite():
-    # 
+    uid = request.args.get("uid")
+    eid = request.args.get("eid")
+
+    try:
+        db.decline_invite(eid, uid)
+        return jsonify({"success": True, "eid": eid, "uid": uid})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 400
 
 if __name__ == "__main__":
     # Initialize db on startup

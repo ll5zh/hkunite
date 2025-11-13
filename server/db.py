@@ -87,6 +87,18 @@ def init_db():
         );
     """)
 
+    # Invitations table
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS INVITATION (
+            uid INTEGER NOT NULL,
+            eid INTEGER NOT NULL,
+            joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (uid, eid),
+            FOREIGN KEY (uid) REFERENCES USER(uid),
+            FOREIGN KEY (eid) REFERENECES EVENT(eid)
+        );
+    """)
+
     # Add some initial values
     categories = ["Academic", "Social", "International", "Sports", "Arts"]
     for cat in categories:
@@ -115,7 +127,7 @@ def init_db():
     ("u3649750@connect.hku.hk", "12345", "Alice"),
     ("user2@hku.hk", "abcde", "Bob"),
     ("user3@hku.hk", "xyz123", "Charlie"),
-    ("user233@hku.hk", "xyz123", "Delta")
+    ("user233@hku.hk", "xyz123", "Delta"),
     ]
 
     for email, password, name in users:  # password currently not hashed
@@ -183,6 +195,13 @@ def get_user_info(uid):
         ).fetchone()
         return dict(user) if user else None
 
+# Gets all user emails
+def get_all_users():
+    with get_connection() as con:
+        cur = con.cursor()
+        rows = cur.execute("SELECT uid, email FROM USER").fetchall()
+        return [dict(r) for r in rows]
+
 # ------------------------------
 # Event functions
 # ------------------------------
@@ -249,6 +268,10 @@ def get_event_by_id(eid):
         row = cur.execute("SELECT * FROM EVENT WHERE eid = ?", (eid,)).fetchone()
         return dict(row) if row else None
 
+# Gets event participants
+def get_event_participants(eid):
+    # 
+
 # Adds event
 def add_event(title, description, oid, cid, date, public=True, participants=[]):
     with get_connection() as con:
@@ -275,6 +298,13 @@ def add_event(title, description, oid, cid, date, public=True, participants=[]):
 
         con.commit()
         return eid
+
+# Joins event
+def join_event(eid, uid):
+    with get_connection() as con:
+        cur = con.cursor()
+        cur.execute("INSERT INTO EVENT_PARTICIPANT (eid, uid) VALUES (?, ?)", (eid, uid))
+        return (eid, uid)
     
 # Adds event participant(s)
 def add_event_participants(eid, uid):   
@@ -291,3 +321,19 @@ def add_event_participants(eid, uid):
         )
         con.commit()
         return True
+
+# Adds invite for event to user
+def add_invite(eid, uid):
+    #
+
+# Gets user invites
+def get_my_invites(uid):
+    #
+
+# Gets all invites for event
+def get_event_invites(eid):
+    #
+
+# Declines invite for event from user
+def decline_invite(eid, uid):
+    #

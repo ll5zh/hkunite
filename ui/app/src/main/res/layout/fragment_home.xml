@@ -12,7 +12,7 @@
 
         <!-- Three lines of text at the top -->
         <TextView
-            android:id="@+id/titleText"
+            android:id="@+id/welcomeText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Welcome User!"
@@ -22,7 +22,7 @@
             android:layout_marginBottom="8dp" />
 
         <TextView
-            android:id="@+id/subtitleText"
+            android:id="@+id/upcomingText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="You have _ upcoming events and"
@@ -31,7 +31,7 @@
             android:layout_marginBottom="4dp" />
 
         <TextView
-            android:id="@+id/descriptionText"
+            android:id="@+id/invitationsText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="_ invitations"
@@ -40,10 +40,10 @@
             android:layout_marginBottom="32dp" />
 
         <!-- Button Section (Horizontal Layout) -->
+<!--        android:text="Featured Actions"-->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Featured Actions"
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_marginBottom="16dp" />
@@ -57,11 +57,11 @@
             android:weightSum="3">
 
             <Button
-                android:id="@+id/button1"
+                android:id="@+id/buttonUpcoming"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Explore"
+                android:text="Upcoming"
                 android:textAllCaps="false"
                 android:backgroundTint="#2196F3"
                 android:textColor="@android:color/white"
@@ -70,11 +70,11 @@
                 android:padding="12dp" />
 
             <Button
-                android:id="@+id/button2"
+                android:id="@+id/buttonHosting"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Get Started"
+                android:text="Hosting"
                 android:textAllCaps="false"
                 android:backgroundTint="#4CAF50"
                 android:textColor="@android:color/white"
@@ -83,11 +83,11 @@
                 android:padding="12dp" />
 
             <Button
-                android:id="@+id/button3"
+                android:id="@+id/buttonInvitations"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Learn More"
+                android:text="Invitations"
                 android:textAllCaps="false"
                 android:backgroundTint="#FF9800"
                 android:textColor="@android:color/white"
@@ -100,7 +100,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Image Gallery"
+            android:text="Upcoming Events"
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_marginBottom="16dp" />

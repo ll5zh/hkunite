@@ -108,7 +108,7 @@ public class AddFragment extends Fragment {
                         if (fineLocationGranted != null && (fineLocationGranted|| coarseLocationGranted)){
                             handleLocationRetrieval();
                         } else{
-                            Toast.makeText(getContext(), "location persmission denied", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "location permission denied", Toast.LENGTH_SHORT).show();
                         }
                     }
             );

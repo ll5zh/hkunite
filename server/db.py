@@ -21,63 +21,63 @@ def init_db():
     # User table
     cur.execute("""
         CREATE TABLE IF NOT EXISTS USER (
-            UID INTEGER PRIMARY KEY AUTOINCREMENT,
-            EMAIL TEXT NOT NULL UNIQUE,
-            PASSWORD TEXT NOT NULL,
-            NAME TEXT,
-            IMAGE TEXT,
-            CREATED_AT TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            uid INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT NOT NULL UNIQUE,
+            password TEXT NOT NULL,
+            name TEXT,
+            image TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     """)
 
     # Event table
     cur.execute("""
         CREATE TABLE IF NOT EXISTS EVENT (
-            EID INTEGER PRIMARY KEY AUTOINCREMENT,
-            TITLE TEXT NOT NULL,
-            DESCRIPTION TEXT,
-            CID INTEGER,
-            IMAGE TEXT,
-            DATE TIMESTAMP NOT NULL,
-            OID INTEGER NOT NULL,
-            PUBLIC BOOLEAN NOT NULL,
-            FOREIGN KEY (OID) REFERENCES USER(UID),
-            FOREIGN KEY (CID) REFERENCES CATEGORY(CID)
+            eid INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            description TEXT,
+            cid INTEGER,
+            image TEXT,
+            date TIMESTAMP NOT NULL,
+            oid INTEGER NOT NULL,
+            public BOOLEAN NOT NULL,
+            FOREIGN KEY (oid) REFERENCES USER(uid),
+            FOREIGN KEY (cid) REFERENCES CATEGORY(cid)
         );
     """)
 
     # Event Category table
     cur.execute("""
         CREATE TABLE IF NOT EXISTS CATEGORY (
-            CID INTEGER PRIMARY KEY AUTOINCREMENT,
-            NAME TEXT NOT NULL
+            cid INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL
         )
     """)
 
     # Event Participant table
     cur.execute("""
         CREATE TABLE IF NOT EXISTS EVENT_PARTICIPANT (
-            EID INTEGER NOT NULL,
-            UID INTEGER NOT NULL,
-            JOINED_AT TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY (EID, UID),
-            FOREIGN KEY (EID) REFERENCES EVENT(EID),
-            FOREIGN KEY (UID) REFERENCES USER(UID)
+            eid INTEGER NOT NULL,
+            uid INTEGER NOT NULL,
+            joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (eid, uid),
+            FOREIGN KEY (eid) REFERENCES EVENT(eid),
+            FOREIGN KEY (uid) REFERENCES USER(uid)
         );
     """)
 
     # Badge table
     cur.execute("""
         CREATE TABLE IF NOT EXISTS BADGE (
-            BID INTEGER PRIMARY KEY AUTOINCREMENT,
-            NAME TEXT NOT NULL UNIQUE,
-            IMAGE TEXT
+            bid INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL UNIQUE,
+            image TEXT
         );
     """)
 
     # Badge owner table
     cur.execute("""
-        CREATE TABLE IF NOT EXISTS EVENT_PARTICIPANT (
+        CREATE TABLE IF NOT EXISTS BADGE_OWNER (
             BID INTEGER NOT NULL,
             UID INTEGER NOT NULL,
             JOINED_AT TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -87,30 +87,75 @@ def init_db():
         );
     """)
 
+    # Invitations table
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS INVITATION (
+            uid INTEGER NOT NULL,
+            eid INTEGER NOT NULL,
+            joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (uid, eid),
+            FOREIGN KEY (uid) REFERENCES USER(uid),
+            FOREIGN KEY (eid) REFERENECES EVENT(eid)
+        );
+    """)
+
     # Add some initial values
     categories = ["Academic", "Social", "International", "Sports", "Arts"]
     for cat in categories:
-        cur.execute("INSERT OR IGNORE INTO CATEGORY (NAME) VALUES (?)", (cat,))
+        cur.execute("INSERT OR IGNORE INTO CATEGORY (name) VALUES (?)", (cat,))
     
     default_events = [
-        ("Kotlin Meetup", "Learn Kotlin basics", 1, None, "2025-11-10 18:00:00", 1, True),
-        ("Python Workshop", "Hands-on Python", 2, None, "2025-11-15 14:00:00", 2, True),
-        ("Music Concert", "Live local bands", 3, None, "2025-12-01 20:00:00", 3, False),
+        ("Kotlin Meetup", "Learn Kotlin basics", 1, "https://hips.hearstapps.com/hmg-prod/images/dog-puppy-on-garden-royalty-free-image-1586966191.jpg", "2025-11-10 18:00:00", 1, True),
+        ("Python Workshop", "Hands-on Python", 2, "https://img.freepik.com/free-photo/pug-dog-isolated-white-background_2829-11416.jpg", "2025-11-15 14:00:00", 2, True),
+        ("Music Concert", "Live local bands", 3, "https://www.cdc.gov/healthy-pets/media/images/2024/04/GettyImages-598175960-cute-dog-headshot.jpg", "2025-12-01 20:00:00", 3, False),
+        ("Art Jam", "Paint with friends", 4, "https://images.unsplash.com/photo-1513364776144-60967b0f800f", "2025-11-20 16:00:00", 4, True),
+        ("Startup Pitch Night", "Watch student startups pitch ideas", 5, "https://images.unsplash.com/photo-1551836022-d5d88e9218df", "2025-11-22 19:00:00", 4, True),
+        ("Board Game Social", "Play Codenames and Dixit", 1, "https://images.unsplash.com/photo-1607746882042-944635dfe10e", "2025-11-25 18:30:00", 3, True),
+        ("Photography Walk", "Explore campus with cameras", 2, "https://www.computerhope.com/jargon/p/program.png", "2025-11-28 15:00:00", 3, True),
+        ("Career Talk: UX Design", "Learn from industry designers", 3, "https://static01.nyt.com/images/2024/11/06/multimedia/03BEATA-gftv/03BEATA-gftv-articleLarge.jpg", "2025-12-03 17:00:00", 1, True),
+        ("Coding Challenge", "Solve problems in teams", 3, "https://studio.code.org/shared/images/courses/logo_tall_dance-2022.png", "2025-12-05 13:00:00", 1, True),
+        ("Movie Night", "Watch a surprise film", 4, "https://cdn.britannica.com/70/234870-050-D4D024BB/Orange-colored-cat-yawns-displaying-teeth.jpg", "2025-12-07 20:00:00", 2, True),
+        ("Christmas Fair", "Food, crafts, and music", 2, "https://www.eatingwell.com/thmb/m5xUzIOmhWSoXZnY-oZcO9SdArQ=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/article_291139_the-top-10-healthiest-foods-for-kids_-02-4b745e57928c4786a61b47d8ba920058.jpg", "2025-12-15 12:00:00", 4, True)
     ]
     for title, desc, cid, image, date, oid, public in default_events:
         cur.execute("""
-            INSERT OR IGNORE INTO EVENT (TITLE, DESCRIPTION, CID, IMAGE, DATE, OID, PUBLIC)
+            INSERT OR IGNORE INTO EVENT (title, description, cid, image, date, oid, public)
             VALUES (?, ?, ?, ?, ?, ?, ?)
         """, (title, desc, cid, image, date, oid, int(public)))
     
-    users = {
-        "u3649750@connect.hku.hk": "12345"
-    }
-    for email, password in users.items(): # password currently not hashed
+    users = [
+    ("u3649750@connect.hku.hk", "12345", "Alice"),
+    ("user2@hku.hk", "abcde", "Bob"),
+    ("user3@hku.hk", "xyz123", "Charlie"),
+    ("user233@hku.hk", "xyz123", "Delta"),
+    ]
+
+    for email, password, name in users:  # password currently not hashed
         cur.execute(
-            "INSERT OR IGNORE INTO USER (EMAIL, PASSWORD) VALUES (?, ?)",
-            (email, password)
+            "INSERT OR IGNORE INTO USER (EMAIL, PASSWORD, NAME) VALUES (?, ?, ?)",
+            (email, password, name)
         )
+
+
+    cur.execute ('''
+        INSERT INTO EVENT_PARTICIPANT (EID, UID) VALUES
+        (4, 1),
+        (2, 1),
+        (5, 2);
+                 ''')
+    
+    cur.execute ('''
+        INSERT INTO BADGE (NAME, IMAGE) VALUES
+        ('Early Bird', NULL),
+        ('Python Pro', NULL);
+                 ''')
+    
+    cur.execute ('''
+        INSERT INTO BADGE_OWNER (BID, UID) VALUES
+        (1, 1),
+        (2, 1),
+        (2, 2);
+                 ''')
 
     con.commit()
     con.close()
@@ -124,7 +169,7 @@ def add_user(email, password, name = None, image = None):
     with get_connection() as con:
         cur = con.cursor()
         cur.execute("""
-            INSERT INTO USER (EMAIL, PASSWORD, NAME, IMAGE)
+            INSERT INTO USER (email, password, name, image)
             VALUES (?, ?, ?, ?)
         """, (email, password, name, image))
         con.commit()
@@ -135,7 +180,7 @@ def verify_user(email, password):
     with get_connection() as con:
         cur = con.cursor()
         user = cur.execute(
-            "SELECT * FROM USER WHERE EMAIL = ? AND PASSWORD = ?",
+            "SELECT * FROM USER WHERE email = ? AND password = ?",
             (email, password)
         ).fetchone()
         return dict(user) if user else None
@@ -145,10 +190,17 @@ def get_user_info(uid):
     with get_connection() as con:
         cur = con.cursor()
         user = cur.execute(
-            "SELECT UID, EMAIL, NAME, IMAGE FROM USER WHERE UID = ?",
+            "SELECT uid, email, name, image FROM USER WHERE uid = ?",
             (user_id,)
         ).fetchone()
         return dict(user) if user else None
+
+# Gets all user emails
+def get_all_users():
+    with get_connection() as con:
+        cur = con.cursor()
+        rows = cur.execute("SELECT uid, email FROM USER").fetchall()
+        return [dict(r) for r in rows]
 
 # ------------------------------
 # Event functions
@@ -157,37 +209,41 @@ def get_user_info(uid):
 # Gets all events
 def get_all_events():
     with get_connection() as con:
+        con.row_factory = sqlite3.Row
         cur = con.cursor()
-        rows = cur.execute("SELECT * FROM EVENT WHERE PUBLIC = 1").fetchall()
+        rows = cur.execute("SELECT * FROM EVENT WHERE public = 1").fetchall()
         return [dict(r) for r in rows]
 
 # Gets events by category
 def get_events_by_category(cid):
     with get_connection() as con:
+        con.row_factory = sqlite3.Row
         cur = con.cursor()
         rows = cur.execute(
-            "SELECT * FROM EVENT WHERE CID = ? AND PUBLIC = ?",
-            (cid, 1)
+            "SELECT * FROM EVENT WHERE cid = ? AND public = 1",
+            (cid,)
         ).fetchall()
         return [dict(r) for r in rows]
 
 # Gets events associated with user (organizer or participant)
 def get_events_for_user(uid):
     with get_connection() as con:
+        con.row_factory = sqlite3.Row
         cur = con.cursor()
         rows = cur.execute("""
-            SELECT E.*
-            FROM EVENT E LEFT JOIN EVENT_PARTICIPANT EP ON E.EID = EP.EID
-            WHERE EP.UID = ? OR E.OID = ?
+            SELECT *
+            FROM EVENT E LEFT JOIN EVENT_PARTICIPANT EP ON E.eid = EP.eid
+            WHERE EP.uid = ? OR E.oid = ?
         """, (uid, uid)).fetchall()
         return [dict(r) for r in rows]
 
 # Gets events organized by user
 def get_events_organized_by_user(uid):
     with get_connection() as con:
+        con.row_factory = sqlite3.Row
         cur = con.cursor()
         rows = cur.execute(
-            "SELECT * FROM EVENT WHERE OID = ?",
+            "SELECT * FROM EVENT WHERE oid = ?",
             (uid,)
         ).fetchall()
         return [dict(r) for r in rows]
@@ -195,53 +251,116 @@ def get_events_organized_by_user(uid):
 # Gets events where user is participant
 def get_events_participated_by_user(uid):
     with get_connection() as con:
-            cur = con.cursor()
-            rows = cur.execute("""
-                SELECT E.*
-                FROM EVENT E LEFT JOIN EVENT_PARTICIPANT EP ON E.EID = EP.EID
-                WHERE EP.UID = ?
-            """, (uid,)).fetchall()
-            return [dict(r) for r in rows]
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        rows = cur.execute("""
+            SELECT E.*
+            FROM EVENT E JOIN EVENT_PARTICIPANT EP ON E.eid = EP.eid
+            WHERE EP.uid = ?
+        """, (uid,)).fetchall()
+        return [dict(r) for r in rows]
 
 # Gets event
-def get_event(eid):
+def get_event_by_id(eid):
     with get_connection() as con:
+        con.row_factory = sqlite3.Row
         cur = con.cursor()
-        row = cur.execute("SELECT * FROM EVENT WHERE EID = ?", (eid,)).fetchone()
+        row = cur.execute("SELECT * FROM EVENT WHERE eid = ?", (eid,)).fetchone()
         return dict(row) if row else None
 
+# Gets event participants - used on event page when user is organizer
+def get_event_participants(eid):
+    with get_connection() as con:
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        rows = cur.execute("""
+            SELECT U.uid, U.email, U.name, U.image
+            FROM USER U JOIN EVENT_PARTICIPANT EP ON U.uid = EP.uid
+            WHERE E.eid = ?
+        """, (eid,)).fetchall()
+        return [dict(r) for r in rows]
+
+
 # Adds event
-def add_event(title, oid, cid, public=True, participants=[]):
+def add_event(title, description, oid, cid, date, public=True, participants=[]):
     with get_connection() as con:
         cur = con.cursor()
         cur.execute("""
-            INSERT INTO EVENT (NAME, OID, CID, PUBLIC)
-            VALUES (?, ?, ?, ?)
-        """, (title, oid, cid, int(public)))
+            INSERT INTO EVENT (title, description, oid, cid, public, date)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (title, description, oid, cid, int(public), date))
         eid = cur.lastrowid
 
-        # If event is private, need to add participants to event
-        if not public:
+        # If event is private, need to add participants to event (or if participants are specified)
+        if not public or participants:
             # Get participant uids from emails
             formatted_participants = ",".join("?" for _ in participants)
-            query = f"SELECT UID FROM USER WHERE EMAIL IN ({formatted_participants})"
+            query = f"SELECT uid FROM USER WHERE email IN ({formatted_participants})"
             cur.execute(query, participants)
             uids = [row[0] for row in cur.fetchall()]
 
             # Add participants by uid
             cur.executemany(
-                "INSERT OR IGNORE INTO EVENT_PARTICIPANT (EID, UID) VALUES (?, ?)",
+                "INSERT OR IGNORE INTO EVENT_PARTICIPANT (eid, uid) VALUES (?, ?)",
                 [(eid, uid) for uid in uids]
             )
 
         con.commit()
         return eid
-    
-# Adds event participant(s)
-def add_event_participants(eid, uid):   
+
+# Joins event
+def join_event(eid, uid):
     with get_connection() as con:
+        cur = con.cursor()
+        cur.execute("INSERT OR IGNORE INTO EVENT_PARTICIPANT (eid, uid) VALUES (?, ?)", (eid, uid))
+        con.commit()
+
+# Adds event participant (obsolete - server calls join_event)
+def add_event_participant(eid, uid):   
+    with get_connection() as con:
+        cur = con.cursor()
+        cur.execute("""
+            SELECT 1 FROM EVENT_PARTICIPANT WHERE EID = ? AND UID = ?
+        """, (eid, uid))
+        if cur.fetchone():
+            return False  # already joined
         cur.execute(
-            "INSERT OR IGNORE INTO EVENT_PARTICIPANT (EID, UID) VALUES (?, ?)",
+            "INSERT INTO EVENT_PARTICIPANT (EID, UID) VALUES (?, ?)",
             (eid, uid)
         )
-        return (eid, uid)
+        con.commit()
+        return True
+
+# Adds invite for event to user
+def add_invite(eid, uid):
+    with get_connection() as con:
+        cur = con.cursor()
+        cur.execute("INSERT INTO INVITATION (EID, UID) VALUES (?, ?)", (eid, uid))
+        con.commit()
+
+# Gets user's invites - should return event name/eid/image (do a join)
+def get_my_invites(uid):
+    with get_connection() as con:
+        cur = con.cursor()
+        con.row_factory = sqlite3.Row
+        rows = cur.execute("""
+            SELECT E.eid, E.title, E.image
+            FROM EVENT E JOIN INVITATION I ON E.eid = I.eid
+            WHERE I.uid = ?
+        """, (uid,))
+        return [dict(r) for r in rows]
+
+# Gets all pending invites for event - should return emails
+def get_event_invites(eid):
+    with get_connection() as con:
+        cur = con.cursor()
+        con.row_factory = sqlite3.Row
+        rows = cur.execute("SELECT uid FROM INVITATION WHERE eid = ?", (eid,)).fetchall()
+        return [dict(r) for r in rows]
+
+# Declines invite for event from user
+def decline_invite(eid, uid):
+    with get_connection() as con:
+        cur = con.cursor()
+        cur.execute("DELETE FROM INVITATION WHERE eid = ? AND uid = ?", (eid, uid))
+        con.commit()

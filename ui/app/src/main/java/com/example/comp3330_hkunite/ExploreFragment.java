@@ -1,64 +1,133 @@
 package com.example.comp3330_hkunite;
 
 import android.os.Bundle;
-
+import android.util.Log;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.Toast;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ExploreFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 public class ExploreFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public ExploreFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ExploreFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ExploreFragment newInstance(String param1, String param2) {
-        ExploreFragment fragment = new ExploreFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+    private RecyclerView recyclerView;
+    private CategoryAdapter categoryAdapter;
+    private Map<String, List<Event>> categorizedEvents = new LinkedHashMap<>();
+    private static final String TAG = "ExploreFragment";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_explore, container, false);
+        View view = inflater.inflate(R.layout.fragment_explore, container, false);
+        recyclerView = view.findViewById(R.id.recyclerViewExplore);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        loadEventsFromServer(); // Don't create adapter yet
+
+        EditText editTextSearch = view.findViewById(R.id.editTextSearch);
+        editTextSearch.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterEvents(s.toString());
+            }
+            @Override public void afterTextChanged(Editable s) {}
+        });
+
+        return view;
     }
+
+
+    private void loadEventsFromServer() {
+        Log.d(TAG, "loadEventsFromServer() called");
+        String uid = "1"; //Update logic
+
+        String url = "http://10.70.8.141:5001/events?uid=" + uid;
+
+
+        JsonArrayRequest request = new JsonArrayRequest(
+                url,
+                response -> {
+                    categorizedEvents.clear();
+
+                    for (int i = 0; i < response.length(); i++) {
+                        try {
+                            JSONObject obj = response.getJSONObject(i);
+                            int eid = obj.getInt("EID");
+                            String title = obj.getString("TITLE");
+                            String ownerUsername = obj.optString("OWNER_USERNAME", "Unknown");
+                            String description = obj.getString("DESCRIPTION");
+                            String image = obj.optString("IMAGE", null);
+                            String date = obj.getString("DATE");
+                            int cid = obj.optInt("CID", -1);
+                            String categoryName = obj.optString("CATEGORY_NAME", "Uncategorized");
+
+                            Event event = new Event(eid, title, description, image, date, cid, categoryName, ownerUsername);
+
+                            if (!categorizedEvents.containsKey(categoryName)) {
+                                categorizedEvents.put(categoryName, new ArrayList<>());
+                            }
+                            categorizedEvents.get(categoryName).add(event);
+                            //Toast.makeText(getContext(), "Categories loaded: " + categorizedEvents.size(), Toast.LENGTH_SHORT).show();
+
+
+
+                        } catch (JSONException e) {
+                            Log.e(TAG, "JSON parsing error at index " + i, e);
+                            Toast.makeText(getContext(), "Error parsing event data", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    categoryAdapter = new CategoryAdapter(getContext(), categorizedEvents);
+                    recyclerView.setAdapter(categoryAdapter);
+
+                },
+                error -> {
+                    Log.e(TAG, "Volley error in loadEventsFromServer: " + error.toString(), error);
+                    Toast.makeText(getContext(), "Failed to load events: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                }
+        );
+
+        Volley.newRequestQueue(getContext()).add(request);
+    }
+
+    private void filterEvents(String keyword) {
+        Map<String, List<Event>> filteredMap = new LinkedHashMap<>();
+        String lowerKeyword = keyword.toLowerCase();
+
+        for (Map.Entry<String, List<Event>> entry : categorizedEvents.entrySet()) {
+            List<Event> filteredList = new ArrayList<>();
+            for (Event event : entry.getValue()) {
+                if (event.getTitle().toLowerCase().contains(lowerKeyword) ||
+                        event.getDescription().toLowerCase().contains(lowerKeyword) ||
+                        event.getOwnerUsername().toLowerCase().contains(lowerKeyword)) {
+                    filteredList.add(event);
+                }
+            }
+            if (!filteredList.isEmpty()) {
+                filteredMap.put(entry.getKey(), filteredList);
+            }
+        }
+
+        categoryAdapter = new CategoryAdapter(getContext(), filteredMap);
+        recyclerView.setAdapter(categoryAdapter);
+    }
+
 }

@@ -95,7 +95,7 @@ def init_db():
             joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (uid, eid),
             FOREIGN KEY (uid) REFERENCES USER(uid),
-            FOREIGN KEY (eid) REFERENECES EVENT(eid)
+            FOREIGN KEY (eid) REFERENCES EVENT(eid)
         );
     """)
 
@@ -124,38 +124,58 @@ def init_db():
         """, (title, desc, cid, image, date, oid, int(public)))
     
     users = [
-    ("u3649750@connect.hku.hk", "12345", "Alice"),
-    ("user2@hku.hk", "abcde", "Bob"),
-    ("user3@hku.hk", "xyz123", "Charlie"),
-    ("user233@hku.hk", "xyz123", "Delta"),
+    ("u3649750@connect.hku.hk", "12345", "Alice", "https://cdn-icons-png.flaticon.com/128/17246/17246479.png"),
+    ("user2@hku.hk", "abcde", "Bob", "https://cdn-icons-png.flaticon.com/128/219/219970.png"),
+    ("user3@hku.hk", "xyz123", "Charlie", "https://cdn-icons-png.flaticon.com/128/18354/18354003.png"),
+    ("user4@hku.hk", "xyz123", "Emily", "https://cdn-icons-png.flaticon.com/128/18354/18354017.png"),
     ]
 
-    for email, password, name in users:  # password currently not hashed
+    for email, password, name, image in users:
         cur.execute(
-            "INSERT OR IGNORE INTO USER (EMAIL, PASSWORD, NAME) VALUES (?, ?, ?)",
-            (email, password, name)
+            "INSERT OR IGNORE INTO USER (EMAIL, PASSWORD, NAME, IMAGE) VALUES (?, ?, ?, ?)",
+            (email, password, name, image)
         )
 
 
     cur.execute ('''
         INSERT INTO EVENT_PARTICIPANT (EID, UID) VALUES
-        (4, 1),
-        (2, 1),
-        (5, 2);
-                 ''')
+        -- Alice (10 events, includes Python)
+        (1, 1), (2, 1), (3, 1), (4, 1), (5, 1),
+        (6, 1), (7, 1), (8, 1), (9, 1), (10, 1),
+        
+        -- Bob (5 events, includes Python)
+        (2, 2), (4, 2), (6, 2), (8, 2), (10, 2),
+
+        -- Charlie (2 events, no Python)
+        (3, 3), (5, 3),
+
+        -- Emily (1 event)
+        (11, 4);
+    ''')
     
     cur.execute ('''
         INSERT INTO BADGE (NAME, IMAGE) VALUES
-        ('Early Bird', NULL),
-        ('Python Pro', NULL);
-                 ''')
+            ('Early Bird', 'https://i.postimg.cc/g2hjqJpb/early-bird-badge.png'),
+            ('Python Pro', 'https://i.postimg.cc/CxRkySV2/python-pro-badge.png'),
+            ('Gold User', 'https://i.postimg.cc/SR5Qc0tr/gold-badge.png'),
+            ('Silver User', 'https://i.postimg.cc/Gmv3T5PP/silver-badge.png'),
+            ('Bronze User', 'https://i.postimg.cc/hvHgfLf5/bronze-badge.png')
+        ''')
     
     cur.execute ('''
         INSERT INTO BADGE_OWNER (BID, UID) VALUES
-        (1, 1),
-        (2, 1),
-        (2, 2);
-                 ''')
+        -- Alice: gold, silver, bronze, python, earlybird
+        (3, 1), (4, 1), (5, 1), (2, 1), (1, 1),
+
+        -- Bob: silver, bronze, python, earlybird
+        (4, 2), (5, 2), (2, 2), (1, 2),
+
+        -- Charlie: bronze, earlybird (no python)
+        (5, 3), (1, 3),
+
+        -- Emily: bronze only (not earlybird, newbie)
+        (5, 4)
+    ''')
 
     con.commit()
     con.close()
@@ -191,9 +211,28 @@ def get_user_info(uid):
         cur = con.cursor()
         user = cur.execute(
             "SELECT uid, email, name, image FROM USER WHERE uid = ?",
-            (user_id,)
+            (uid,)
         ).fetchone()
-        return dict(user) if user else None
+        
+        if not user:
+            return None
+        
+        user_data = dict(user)
+          
+        org_count = cur.execute(
+            "SELECT COUNT(*) FROM EVENT WHERE oid = ?",
+            (uid,)
+        ).fetchone()[0]
+        
+        join_count = cur.execute(
+            "SELECT COUNT(*) FROM EVENT_PARTICIPANT WHERE uid = ?",
+            (uid,)
+        ).fetchone()[0]
+        
+        user_data["organized_count"] = org_count
+        user_data["joined_count"] = join_count
+        
+        return user_data
 
 # Gets all user emails
 def get_all_users():
@@ -364,3 +403,73 @@ def decline_invite(eid, uid):
         cur = con.cursor()
         cur.execute("DELETE FROM INVITATION WHERE eid = ? AND uid = ?", (eid, uid))
         con.commit()
+
+# Badge logic
+def get_my_badges(uid):
+    with get_connection() as con:
+        cur = con.cursor()
+
+        #gather user stats
+        #count how many events they joined
+        join_count = cur.execute(
+            "SELECT COUNT(*) FROM EVENT_PARTICIPANT WHERE uid = ?",
+            (uid,)
+        ).fetchone()[0]
+
+        #get titles of all events they joined
+        titles_rows = cur.execute("""
+            SELECT E.title
+            FROM EVENT E JOIN EVENT_PARTICIPANT EP ON E.eid = EP.eid
+            WHERE EP.uid = ?
+        """, (uid,)).fetchall()
+        joined_titles = [row[0] for row in titles_rows]
+
+
+        #define rules:
+        #list of badges this user should have based on their stats
+        earned_badge_names = []
+
+        #rule: bronze (1 event), silver (5 events), gold (10 events)
+        if join_count >= 1:
+            earned_badge_names.append('Bronze User')
+        if join_count >= 5:
+            earned_badge_names.append('Silver User')
+        if join_count >= 10:
+            earned_badge_names.append('Gold User')
+
+        #rule: python pro - joined an event with "Python" in the title
+        for title in joined_titles:
+            if "Python" in title:
+                earned_badge_names.append('Python Pro')
+                break
+        
+        #rule: first 3 users to sign up (uid <= 3)
+        if uid <= 3:
+             earned_badge_names.append('Early Bird')
+
+        #award missing badges
+        for badge_name in earned_badge_names:
+            #get the badge id:
+            badge = cur.execute("SELECT bid FROM BADGE WHERE name = ?", (badge_name,)).fetchone()
+            if badge:
+                bid = badge[0]
+                #insert into badge owner if not there already
+                cur.execute("""
+                    INSERT OR IGNORE INTO BADGE_OWNER (bid, uid)
+                    VALUES (?, ?)
+                """, (bid, uid))
+        
+        con.commit() #save any new badges added
+
+
+        #return all badges
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        rows = cur.execute("""
+            SELECT B.bid, B.name, B.image
+            FROM BADGE B JOIN BADGE_OWNER BO ON B.bid = BO.BID
+            WHERE BO.UID = ?
+            ORDER BY B.bid ASC
+        """, (uid,)).fetchall()
+        
+        return [dict(r) for r in rows]

@@ -5,8 +5,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide; // Import Glide
+
 import java.util.List;
 
 public class BadgeAdapter extends RecyclerView.Adapter<BadgeAdapter.BadgeViewHolder> {
@@ -28,7 +32,13 @@ public class BadgeAdapter extends RecyclerView.Adapter<BadgeAdapter.BadgeViewHol
     public void onBindViewHolder(@NonNull BadgeViewHolder holder, int position) {
         Badge badge = badgeList.get(position);
         holder.badgeName.setText(badge.getName());
-        // TODO: You would load the badge.getImage() here using a library like Glide or Picasso
+        //using glide to load image
+        Glide.with(holder.itemView.getContext())
+                .load(badge.getImageUrl())
+                .placeholder(R.drawable.ic_launcher_foreground) //show while loading
+                .error(R.drawable.ic_launcher_background)       //show if link broken
+                .into(holder.badgeImage);
+        // -----------------------------------------
     }
 
     @Override
@@ -36,7 +46,6 @@ public class BadgeAdapter extends RecyclerView.Adapter<BadgeAdapter.BadgeViewHol
         return badgeList.size();
     }
 
-    //view of a single badge
     public static class BadgeViewHolder extends RecyclerView.ViewHolder {
         ImageView badgeImage;
         TextView badgeName;

@@ -54,7 +54,8 @@ def get_user_info(uid):
 # Gets user badges
 @app.route("/badges/<int:uid>")
 def get_badges(uid):
-    # 
+    badges = db.get_my_badges(uid) #calls smart badge function
+    return jsonify({"success": True, "data": badges}), 200
 
 # Gets all users
 @app.route("/users", methods=["GET"])
@@ -104,7 +105,7 @@ def get_my_events():
 def get_my_organized_events():
     uid = request.args.get("uid")
     organized = db.get_events_organized_by_user(uid)
-    return jsonify({"success": True, "data": list(organized.values())}), 200
+    return jsonify({"success": True, "data": organized}), 200
 
 # Gets events where user is participant
 @app.route("/my-participated-events", methods=["GET"]) # GET /my-participated-events?uid=<uid>
@@ -122,7 +123,7 @@ def get_event(eid):
 @app.route("/event-participants/<int:eid>", methods=["GET"])
 def get_event_participants(eid):
     participants = db.get_event_participants(eid)
-    return return jsonify({"success": True, "data": list(participants.values())}), 200
+    return jsonify({"success": True, "data": list(participants.values())}), 200
 
 # Adds event
 @app.route("/add-event", methods=["POST"])

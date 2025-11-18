@@ -2,16 +2,18 @@ package com.example.comp3330_hkunite;
 
 public class Badge {
     private String name;
-    private String image; //i will use the image later
+    private String imageUrl; //this holds image url
 
-    public Badge(String name, String image) {
+    public Badge(String name, String imageUrl) {
         this.name = name;
-        this.image = image;
+        this.imageUrl = imageUrl;
     }
+
     public String getName() {
         return name;
     }
-    public String getImage() {
-        return image;
+
+    public String getImageUrl() {
+        return imageUrl;
     }
 }

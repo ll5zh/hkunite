@@ -87,6 +87,18 @@ def init_db():
         );
     """)
 
+    # Invitations table
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS INVITATION (
+            uid INTEGER NOT NULL,
+            eid INTEGER NOT NULL,
+            joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (uid, eid),
+            FOREIGN KEY (uid) REFERENCES USER(uid),
+            FOREIGN KEY (eid) REFERENECES EVENT(eid)
+        );
+    """)
+
     # Add some initial values
     categories = ["Academic", "Social", "International", "Sports", "Arts"]
     for cat in categories:
@@ -115,7 +127,7 @@ def init_db():
     ("u3649750@connect.hku.hk", "12345", "Alice"),
     ("user2@hku.hk", "abcde", "Bob"),
     ("user3@hku.hk", "xyz123", "Charlie"),
-    ("user233@hku.hk", "xyz123", "Delta")
+    ("user233@hku.hk", "xyz123", "Delta"),
     ]
 
     for email, password, name in users:  # password currently not hashed
@@ -183,6 +195,13 @@ def get_user_info(uid):
         ).fetchone()
         return dict(user) if user else None
 
+# Gets all user emails
+def get_all_users():
+    with get_connection() as con:
+        cur = con.cursor()
+        rows = cur.execute("SELECT uid, email FROM USER").fetchall()
+        return [dict(r) for r in rows]
+
 # ------------------------------
 # Event functions
 # ------------------------------
@@ -249,6 +268,19 @@ def get_event_by_id(eid):
         row = cur.execute("SELECT * FROM EVENT WHERE eid = ?", (eid,)).fetchone()
         return dict(row) if row else None
 
+# Gets event participants - used on event page when user is organizer
+def get_event_participants(eid):
+    with get_connection() as con:
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        rows = cur.execute("""
+            SELECT U.uid, U.email, U.name, U.image
+            FROM USER U JOIN EVENT_PARTICIPANT EP ON U.uid = EP.uid
+            WHERE E.eid = ?
+        """, (eid,)).fetchall()
+        return [dict(r) for r in rows]
+
+
 # Adds event
 def add_event(title, description, oid, cid, date, public=True, participants=[]):
     with get_connection() as con:
@@ -275,9 +307,16 @@ def add_event(title, description, oid, cid, date, public=True, participants=[]):
 
         con.commit()
         return eid
-    
-# Adds event participant(s)
-def add_event_participants(eid, uid):   
+
+# Joins event
+def join_event(eid, uid):
+    with get_connection() as con:
+        cur = con.cursor()
+        cur.execute("INSERT OR IGNORE INTO EVENT_PARTICIPANT (eid, uid) VALUES (?, ?)", (eid, uid))
+        con.commit()
+
+# Adds event participant (obsolete - server calls join_event)
+def add_event_participant(eid, uid):   
     with get_connection() as con:
         cur = con.cursor()
         cur.execute("""
@@ -291,3 +330,37 @@ def add_event_participants(eid, uid):
         )
         con.commit()
         return True
+
+# Adds invite for event to user
+def add_invite(eid, uid):
+    with get_connection() as con:
+        cur = con.cursor()
+        cur.execute("INSERT INTO INVITATION (EID, UID) VALUES (?, ?)", (eid, uid))
+        con.commit()
+
+# Gets user's invites - should return event name/eid/image (do a join)
+def get_my_invites(uid):
+    with get_connection() as con:
+        cur = con.cursor()
+        con.row_factory = sqlite3.Row
+        rows = cur.execute("""
+            SELECT E.eid, E.title, E.image
+            FROM EVENT E JOIN INVITATION I ON E.eid = I.eid
+            WHERE I.uid = ?
+        """, (uid,))
+        return [dict(r) for r in rows]
+
+# Gets all pending invites for event - should return emails
+def get_event_invites(eid):
+    with get_connection() as con:
+        cur = con.cursor()
+        con.row_factory = sqlite3.Row
+        rows = cur.execute("SELECT uid FROM INVITATION WHERE eid = ?", (eid,)).fetchall()
+        return [dict(r) for r in rows]
+
+# Declines invite for event from user
+def decline_invite(eid, uid):
+    with get_connection() as con:
+        cur = con.cursor()
+        cur.execute("DELETE FROM INVITATION WHERE eid = ? AND uid = ?", (eid, uid))
+        con.commit()

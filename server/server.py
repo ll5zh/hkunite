@@ -46,6 +46,25 @@ def user_add_image():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
 
+# Gets user information (profile page)
+@app.route("/users/<int:uid>")
+def get_user_info(uid):
+    return jsonify({"success": True, "data": db.get_user_info(uid)}), 200
+
+# Gets user badges
+@app.route("/badges/<int:uid>")
+def get_badges(uid):
+    # 
+
+# Gets all users
+@app.route("/users", methods=["GET"])
+def get_all_users():
+    try:
+        users = db.get_all_users()
+        return jsonify({"success": True, "users": users})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 400
+
 # ------------------------------
 # Event endpoints
 # ------------------------------
@@ -80,14 +99,30 @@ def get_my_events():
 
 # Gets events by category
 
-# Gets events associated with user
-
 # Gets events organized by user
+@app.route("/my-organized-events", methods=["GET"])  # GET /my-organized-events?uid=<uid>
+def get_my_organized_events():
+    uid = request.args.get("uid")
+    organized = db.get_events_organized_by_user(uid)
+    return jsonify({"success": True, "data": list(organized.values())}), 200
+
+# Gets events where user is participant
+@app.route("/my-participated-events", methods=["GET"]) # GET /my-participated-events?uid=<uid>
+def get_my_participated_events():
+    uid = request.args.get("uid")
+    participated = db.get_events_participated_by_user(uid)
+    return jsonify({"success": True, "data": list(participated.values())}), 200
 
 # Gets event
 @app.route("/events/<int:eid>", methods=["GET"])
 def get_event(eid):
     return jsonify({"success": True, "data": db.get_event_by_id(eid)}), 200
+
+# Gets event participants
+@app.route("/event-participants/<int:eid>", methods=["GET"])
+def get_event_participants(eid):
+    participants = db.get_event_participants(eid)
+    return return jsonify({"success": True, "data": list(participants.values())}), 200
 
 # Adds event
 @app.route("/add-event", methods=["POST"])
@@ -107,6 +142,59 @@ def add_event():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
 
+# Joins event
+@app.route("/join-event", methods=["POST"]) # POST /join-event?eid=<eid>?uid=<uid>
+def join_event():
+    uid = request.args.get("uid")
+    eid = request.args.get("eid")
+
+    try:
+        db.join_event(eid, uid)
+        return jsonify({"success": True, "eid": eid, "uid": uid})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 400
+
+
+# ------------------------------
+# Invitation endpoints
+# ------------------------------
+
+# Adds invite for event to user
+@app.route("/add-invite", methods=["POST"]) # POST /add-invite?eid=<eid>?uid=<uid>
+def add_invite():
+    uid = request.args.get("uid")
+    eid = request.args.get("eid")
+
+    try:
+        db.add_invite(eid, uid)
+        return jsonify({"success": True, "eid": eid, "uid": uid})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 400
+
+
+# Gets user invites
+@app.route("/my-invites/<int:uid>", methods=["GET"])
+def get_my_invites(uid):
+    my_invites = db.get_my_invites(uid)
+    return jsonify({"success": True, "data": list(my_invites.values())})
+
+# Gets all invites for event
+@app.route("/event-invites/<int:eid>", methods=["GET"])
+def get_invites_for_event(eid):
+    event_invites = db.get_event_invites(eid)
+    return jsonify({"success": True, "data": list(event_invites.values())}), 200
+
+# Declines invite for event from user
+@app.route("/decline-invite", methods=["POST"]) # POST /decline-invite?eid=<eid>?uid=<uid>
+def decline_invite():
+    uid = request.args.get("uid")
+    eid = request.args.get("eid")
+
+    try:
+        db.decline_invite(eid, uid)
+        return jsonify({"success": True, "eid": eid, "uid": uid})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 400
 
 if __name__ == "__main__":
     # Initialize db on startup

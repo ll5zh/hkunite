@@ -149,7 +149,7 @@
                 android:id="@+id/profile_events_header"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="My Events"
+                android:text="My Organized Events"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:layout_marginTop="24dp"
@@ -162,11 +162,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/profile_events_header"
-                tools:listitem="@layout/item_event" />
+                tools:listitem="@layout/item_explore" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -36,8 +37,10 @@ public class ProfileFragment extends Fragment {
 
     //server and user information:
     private static final String TAG = "ProfileFragment";
-    private static final String BASE_URL = "http://10.70.8.141:5001";
-    private int currentUserID; //getting this from SharedPreferences
+
+    //make sure matches current IP!!!
+    private static final String BASE_URL = "http://10.70.208.59:5001";
+    private int currentUserID;
 
     //ui stuff:
     private ImageView profileImage;
@@ -51,7 +54,7 @@ public class ProfileFragment extends Fragment {
     private List<Badge> badgeList = new ArrayList<>();
 
     private RecyclerView eventsRecyclerView;
-    private EventAdapter eventAdapter;
+    private ExploreAdapter eventAdapter;
     private List<Event> eventList = new ArrayList<>();
 
     //volley logic
@@ -65,13 +68,13 @@ public class ProfileFragment extends Fragment {
         currentUserID = prefs.getInt("USER_ID", -1);
 
         if (currentUserID == -1) {
-            //no one logged in go back to login page
             Log.e(TAG, "User ID not found in SharedPreferences. Logging out.");
             goToLogin();
             return null;
         }
 
         View root = inflater.inflate(R.layout.fragment_profile, container, false);
+
         //initializing ui items:
         profileImage = root.findViewById(R.id.profile_image);
         profileName = root.findViewById(R.id.profile_name);
@@ -87,11 +90,10 @@ public class ProfileFragment extends Fragment {
 
         //logout button:
         logoutButton.setOnClickListener(v -> {
-            //clear user
             SharedPreferences.Editor editor = requireContext().getSharedPreferences(LoginActivity.PREF_NAME, Context.MODE_PRIVATE).edit();
             editor.clear();
             editor.apply();
-            goToLogin(); //go back
+            goToLogin();
         });
 
         setupRecyclerViews();
@@ -107,77 +109,94 @@ public class ProfileFragment extends Fragment {
         badgesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         badgesRecyclerView.setAdapter(badgeAdapter);
 
-        //events list:
-        eventAdapter = new EventAdapter(eventList);
-        eventsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        //events list (using ExploreAdapter and Grid):
+        eventAdapter = new ExploreAdapter(getContext(), eventList);
+        eventsRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
         eventsRecyclerView.setAdapter(eventAdapter);
         eventsRecyclerView.setNestedScrollingEnabled(false);
     }
 
-    //This is our main data-loading function.
-    //It calls the MOCK functions for missing endpoints
-    //and the REAL function for the my events endpoint --> because we have this in the database until now
     private void loadProfileData() {
-        //MOCK DATA
-        //Endpoints are MISSING for user info and badges.
-        loadMockBasicInfo(currentUserID);
-        loadMockBadges(currentUserID);
+        fetchUserInfo(currentUserID);
 
-        //REAL DATA
-        //Endpoint EXISTS for events.
+        fetchUserBadges(currentUserID);
+
         fetchUserEvents(currentUserID);
     }
 
-    //MOCK FUNC 1
-    private void loadMockBasicInfo(int uid) {
-        // TODO: Replace this when server endpoint GET /user/<uid> is ready
+    private void fetchUserInfo(int uid) {
+        String url = BASE_URL + "/users/" + uid;
 
-        String name = "Test User";
-        String email = "test@user.com";
-        String orgCount = "0";
-        String joinCount = "0";
-        String imageUrl = null;
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                response -> {
+                    try {
+                        if (response.getBoolean("success")) {
+                            JSONObject user = response.getJSONObject("data");
 
-        //for now user 1 is Alice, i can also add more users...
-        if (uid == 1) {
-            name = "Alice";
-            email = "u3649750@connect.hku.hk";
-            orgCount = "3";
-            joinCount = "2";
-        } else if (uid == 2) {
-            name = "Bob";
-            email = "user2@hku.hk";
-        }
+                            String name = user.getString("name");
+                            String email = user.getString("email");
+                            String imageUrl = user.optString("image", null);
 
-        profileName.setText(name);
-        profileEmail.setText(email);
-        eventsOrganizedCount.setText(orgCount);
-        eventsJoinedCount.setText(joinCount);
+                            //counts calculated by server.py in db
+                            int orgCount = user.optInt("organized_count", 0);
+                            int joinCount = user.optInt("joined_count", 0);
 
-        Glide.with(this)
-                .load(imageUrl) //load the null URL
-                .placeholder(R.drawable.default_profile) //it will show this placeholder
-                .circleCrop()
-                .into(profileImage);
+                            //updating ui
+                            profileName.setText(name);
+                            profileEmail.setText(email);
+                            eventsOrganizedCount.setText(String.valueOf(orgCount));
+                            eventsJoinedCount.setText(String.valueOf(joinCount));
+
+                            //load the image
+                            Glide.with(this)
+                                    .load(imageUrl)
+                                    .placeholder(R.drawable.default_profile)
+                                    .circleCrop()
+                                    .into(profileImage);
+                        }
+                    } catch (JSONException e) {
+                        Log.e(TAG, "JSON parsing error for user info", e);
+                    }
+                },
+                error -> {
+                    Log.e(TAG, "Volley error fetching user info: " + error.toString());
+                    Toast.makeText(getContext(), "Error loading profile info", Toast.LENGTH_SHORT).show();
+                }
+        );
+        queue.add(request);
     }
 
-    //MOCK FUNC 2
-    private void loadMockBadges(int uid) {
-        // TODO: Replace this when server endpoint GET /user/<uid>/badges is ready
-        badgeList.clear();
+    private void fetchUserBadges(int uid) {
+        String url = BASE_URL + "/badges/" + uid;
 
-        //only Alice has badges for now
-        if (uid == 1) {
-            badgeList.add(new Badge("Early Bird", null));
-            badgeList.add(new Badge("Python Pro", null));
-        }
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                response -> {
+                    try {
+                        if (response.getBoolean("success")) {
+                            JSONArray badgeArray = response.getJSONArray("data");
 
-        badgeAdapter.notifyDataSetChanged();
+                            badgeList.clear();
+                            for (int i = 0; i < badgeArray.length(); i++) {
+                                JSONObject badgeObj = badgeArray.getJSONObject(i);
+                                String name = badgeObj.getString("name");
+                                String imageUrl = badgeObj.optString("image", null);
+
+                                badgeList.add(new Badge(name, imageUrl));
+                            }
+                            badgeAdapter.notifyDataSetChanged();
+                        }
+                    } catch (JSONException e) {
+                        Log.e(TAG, "JSON parsing error for badges", e);
+                    }
+                },
+                error -> {
+                    Log.e(TAG, "Volley error fetching badges: " + error.toString());
+                }
+        );
+        queue.add(request);
     }
-
-    //real func for events:
     private void fetchUserEvents(int uid) {
-        String url = BASE_URL + "/my-events?uid=" + uid; //this is the real url
+        String url = BASE_URL + "/my-organized-events?uid=" + uid;
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                 response -> {
@@ -196,14 +215,14 @@ public class ProfileFragment extends Fragment {
                                         eventObject.optString("image", null),
                                         eventObject.getString("date"),
                                         eventObject.getInt("cid"),
-                                        "", // categoryName (missing from server response, but OK)
-                                        ""  // ownerUsername (missing from server response, but OK)
+                                        "",
+                                        ""
                                 );
                                 eventList.add(event);
                             }
-                            eventList.sort(Comparator.comparing(Event::getDate)); //sorted events by date
+                            eventList.sort(Comparator.comparing(Event::getDate));
 
-                            eventAdapter.notifyDataSetChanged();
+                            eventAdapter.updateEvents(eventList);
                         }
                     } catch (JSONException e) {
                         Log.e(TAG, "JSON parsing error for events", e);
@@ -216,9 +235,9 @@ public class ProfileFragment extends Fragment {
         );
         queue.add(request);
     }
-    //go back to login helper func
+
     private void goToLogin() {
-        if (getActivity() == null) return; // Safety check
+        if (getActivity() == null) return;
 
         Intent intent = new Intent(getActivity(), LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

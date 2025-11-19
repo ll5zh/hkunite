@@ -29,7 +29,8 @@ public class LoginActivity extends AppCompatActivity {
     //server and login
     private static final String TAG = "LoginActivity";
     //server address from EventDetailActivity:
-    private static final String BASE_URL = "http://10.70.208.59:5001";
+//    private static final String BASE_URL = "http://10.70.208.59:5001";
+    private static final String BASE_URL = "http://10.70.170.80:5001";
 
     //ui stuff:
     private TextInputEditText emailEditText;

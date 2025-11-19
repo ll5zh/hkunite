@@ -74,9 +74,33 @@ def get_all_users():
 @app.route("/events", methods=["GET"])
 def get_events():
     con = db.get_connection()
-    events = con.execute("SELECT *FROM EVENT WHERE PUBLIC = ?", (1,)).fetchall()
+    cur = con.cursor()
+    # join EVENT with CATEGORY and USER to get category name and organizer name
+    rows = cur.execute("""
+        SELECT E.*, 
+               C.name AS category_name,
+               U.name AS owner_name
+        FROM EVENT E
+        LEFT JOIN CATEGORY C ON E.cid = C.cid
+        LEFT JOIN USER U ON E.oid = U.uid
+        WHERE E.public = 1
+    """).fetchall()
     con.close()
-    return jsonify([dict(e) for e in events])
+    return jsonify([dict(r) for r in rows])
+
+
+# Check if user has already joined the event
+@app.route("/has-joined", methods=["GET"])
+def has_joined():
+    uid = request.args.get("uid", type=int)
+    eid = request.args.get("eid", type=int)
+    row = db.get_connection().execute(
+        "SELECT 1 FROM EVENT_PARTICIPANT WHERE uid = ? AND eid = ?",
+        (uid, eid)
+    ).fetchone()
+    return jsonify({"success": True, "joined": row is not None})
+
+
 
 # Gets events associated with user (participant or organizer)
 @app.route("/my-events", methods=["GET"])
@@ -117,7 +141,20 @@ def get_my_participated_events():
 # Gets event
 @app.route("/events/<int:eid>", methods=["GET"])
 def get_event(eid):
-    return jsonify({"success": True, "data": db.get_event_by_id(eid)}), 200
+    con = db.get_connection()
+    cur = con.cursor()
+    row = cur.execute("""
+        SELECT E.*, U.name AS owner_name, U.email AS owner_email
+        FROM EVENT E
+        LEFT JOIN USER U ON E.oid = U.uid
+        WHERE E.eid = ?
+    """, (eid,)).fetchone()
+    con.close()
+    if row:
+        return jsonify({"success": True, "data": dict(row)}), 200
+    return jsonify({"success": False, "error": "Event not found"}), 404
+
+
 
 # Gets event participants
 @app.route("/event-participants/<int:eid>", methods=["GET"])
@@ -196,6 +233,27 @@ def decline_invite():
         return jsonify({"success": True, "eid": eid, "uid": uid})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
+
+# Check if user has invite
+@app.route("/has-invite", methods=["GET"])
+def has_invite():
+    uid = request.args.get("uid", type=int)
+    eid = request.args.get("eid", type=int)
+
+    if uid is None or eid is None:
+        return jsonify({"success": False, "error": "Missing uid or eid"}), 400
+
+    con = db.get_connection()
+    cur = con.cursor()
+    row = cur.execute(
+        "SELECT 1 FROM INVITATION WHERE uid = ? AND eid = ?",
+        (uid, eid)
+    ).fetchone()
+    con.close()
+
+    invited = row is not None
+    return jsonify({"success": True, "invited": invited}), 200
+
 
 if __name__ == "__main__":
     # Initialize db on startup

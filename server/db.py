@@ -177,6 +177,12 @@ def init_db():
         (5, 4)
     ''')
 
+    cur.execute("""
+        INSERT INTO INVITATION (uid, eid) VALUES
+            (2, 7),
+            (2, 5)
+    """)
+
     con.commit()
     con.close()
 

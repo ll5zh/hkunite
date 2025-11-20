@@ -61,10 +61,16 @@ def get_badges(uid):
 @app.route("/users", methods=["GET"])
 def get_all_users():
     try:
-        users = db.get_all_users()
+        eid = request.args.get("eid", type=int)
+        if eid:
+            users = db.get_users_not_invited_or_participating(eid)
+        else:
+            users = db.get_all_users()
         return jsonify({"success": True, "users": users})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
+
+
 
 # ------------------------------
 # Event endpoints

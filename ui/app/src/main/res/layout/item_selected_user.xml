@@ -1,0 +1,42 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="8dp"
+    android:layout_marginEnd="12dp"
+    android:gravity="center_horizontal">
+
+    <!-- Icon with overlay close button -->
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/selectedUserImage"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/default_profile"
+            android:background="@drawable/circle_background"/>
+
+        <ImageButton
+            android:id="@+id/removeSelectedUser"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="top|end"
+            android:src="@drawable/ic_close"
+            android:background="@android:color/transparent"
+            android:contentDescription="Remove"/>
+    </FrameLayout>
+
+    <!-- Username below the icon -->
+    <TextView
+        android:id="@+id/selectedUserName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Username"
+        android:textSize="14sp"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:layout_marginTop="4dp"/>
+</LinearLayout>

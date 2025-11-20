@@ -2,21 +2,26 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:padding="12dp"
+    android:background="@color/search_bg">
 
+    <!-- Category Label -->
     <TextView
         android:id="@+id/textCategoryLabel"
-        android:layout_width="wrap_content"
+        style="@style/TextAppearance.Explore.Heading"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:paddingBottom="4dp"
-        android:text="Category" />
+        android:text="Category"
+        android:paddingBottom="8dp"
+        android:gravity="start"/>
 
+    <!-- Horizontal list of events -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewCategoryEvents"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:scrollbars="horizontal" />
-
+        android:scrollbars="none"
+        android:clipToPadding="false"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"/>
 </LinearLayout>

@@ -128,6 +128,21 @@ def init_db():
     ("user2@hku.hk", "abcde", "Bob", "https://cdn-icons-png.flaticon.com/128/219/219970.png"),
     ("user3@hku.hk", "xyz123", "Charlie", "https://cdn-icons-png.flaticon.com/128/18354/18354003.png"),
     ("user4@hku.hk", "xyz123", "Emily", "https://cdn-icons-png.flaticon.com/128/18354/18354017.png"),
+    ("user5@hku.hk", "pass123", "David", "https://cdn-icons-png.flaticon.com/128/4140/4140048.png"),
+    ("user6@hku.hk", "hello321", "Fiona", "https://cdn-icons-png.flaticon.com/128/4140/4140047.png"),
+    ("user7@hku.hk", "qwerty", "George", "https://cdn-icons-png.flaticon.com/128/4140/4140051.png"),
+    ("user8@hku.hk", "letmein", "Hannah", "https://cdn-icons-png.flaticon.com/128/4140/4140050.png"),
+    ("user9@hku.hk", "secure!", "Ian", "https://cdn-icons-png.flaticon.com/128/4140/4140045.png"),
+    ("user10@hku.hk", "mypwd", "Jenny", "https://cdn-icons-png.flaticon.com/128/4140/4140046.png"),
+    ("user11@hku.hk", "test789", "Kevin", "https://cdn-icons-png.flaticon.com/128/4140/4140042.png"),
+    ("user12@hku.hk", "alpha22", "Laura", "https://cdn-icons-png.flaticon.com/128/4140/4140044.png"),
+    ("user13@hku.hk", "beta33", "Michael", "https://cdn-icons-png.flaticon.com/128/4140/4140043.png"),
+    ("user14@hku.hk", "gamma44", "Nina", "https://cdn-icons-png.flaticon.com/128/4140/4140041.png"),
+    ("user15@hku.hk", "delta55", "Oscar", "https://cdn-icons-png.flaticon.com/128/4140/4140049.png"),
+    ("user16@hku.hk", "epsilon66", "Paula", "https://cdn-icons-png.flaticon.com/128/4140/4140052.png"),
+    ("user17@hku.hk", "zeta77", "Quentin", "https://cdn-icons-png.flaticon.com/128/4140/4140053.png"),
+    ("user18@hku.hk", "theta88", "Rachel", "https://cdn-icons-png.flaticon.com/128/4140/4140054.png"),
+    ("user19@hku.hk", "iota99", "Sam", "https://cdn-icons-png.flaticon.com/128/4140/4140055.png"),
     ]
 
     for email, password, name, image in users:
@@ -179,8 +194,7 @@ def init_db():
 
     cur.execute("""
         INSERT INTO INVITATION (uid, eid) VALUES
-            (2, 7),
-            (2, 5)
+            (2, 7)
     """)
 
     con.commit()
@@ -244,8 +258,9 @@ def get_user_info(uid):
 def get_all_users():
     with get_connection() as con:
         cur = con.cursor()
-        rows = cur.execute("SELECT uid, email FROM USER").fetchall()
+        rows = cur.execute("SELECT uid, email, name, image FROM USER").fetchall()
         return [dict(r) for r in rows]
+
 
 # ------------------------------
 # Event functions
@@ -382,6 +397,24 @@ def add_invite(eid, uid):
         cur = con.cursor()
         cur.execute("INSERT INTO INVITATION (EID, UID) VALUES (?, ?)", (eid, uid))
         con.commit()
+
+# Gets users that are not invited or participating in that event
+def get_users_not_invited_or_participating(eid):
+    with get_connection() as con:
+        cur = con.cursor()
+        rows = cur.execute("""
+            SELECT uid, email, name, image
+            FROM USER
+            WHERE uid NOT IN (
+                SELECT uid FROM INVITATION WHERE eid = ?
+            )
+            AND uid NOT IN (
+                SELECT uid FROM EVENT_PARTICIPANT WHERE eid = ?
+            )
+        """, (eid, eid)).fetchall()
+        return [dict(r) for r in rows]
+
+
 
 # Gets user's invites - should return event name/eid/image (do a join)
 def get_my_invites(uid):

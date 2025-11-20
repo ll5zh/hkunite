@@ -32,11 +32,11 @@
     <!-- Username below the icon -->
     <TextView
         android:id="@+id/selectedUserName"
+        style="@style/Widget.MyApp.TextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Username"
         android:textSize="14sp"
-        android:textColor="@android:color/black"
         android:gravity="center"
         android:layout_marginTop="4dp"/>
 </LinearLayout>

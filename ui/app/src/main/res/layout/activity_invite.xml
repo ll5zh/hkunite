@@ -1,6 +1,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!-- Main vertical content -->
     <LinearLayout
@@ -13,29 +14,38 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="12dp"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:background="@drawable/search_background"
+            android:elevation="2dp"
+            android:padding="8dp"
+            android:layout_margin="12dp">   <!-- margin added -->
 
+            <!-- Back button inside the search bar -->
             <ImageButton
                 android:id="@+id/backButton"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:src="@drawable/ic_arrow_back"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Back" />
+                android:contentDescription="Back"
+                app:tint="@color/brand_text"/>
 
+            <!-- Search input -->
             <EditText
                 android:id="@+id/editTextSearchUsers"
                 android:layout_width="0dp"
-                android:layout_height="56dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:hint="Search users..."
                 android:inputType="text"
-                android:padding="16dp"
-                android:textSize="18sp"
-                android:background="@android:drawable/edit_text"
-                android:layout_marginStart="12dp"/>
+                android:background="@android:color/transparent"
+                android:paddingStart="12dp"
+                android:textSize="20sp"
+                android:textColor="@color/brand_text"
+                android:textColorHint="#80114337"/>
         </LinearLayout>
+
+
 
         <!-- Selected users bar -->
         <HorizontalScrollView

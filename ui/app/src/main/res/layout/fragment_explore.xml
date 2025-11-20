@@ -11,10 +11,11 @@
         android:id="@+id/editTextSearch"
         style="@style/Widget.Explore.SearchBox"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:hint="Search events..."
         android:inputType="text"
         android:elevation="2dp"
+        android:textSize="20sp"
         android:drawableStart="@drawable/ic_search"
         android:drawablePadding="5dp"/>
 

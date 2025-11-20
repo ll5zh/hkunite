@@ -73,9 +73,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7fd0da10-d827-4424-8233-2f351e6fcbc8" name="Changes" comment="implemented &quot;login&quot; and &quot;my profile&quot; logic except the changes about the database and changing mock data later accordingly part">
-      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/Configuration.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/AddFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/AddFragment.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/LoginActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/LoginActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/ProfileFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/ProfileFragment.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/reports/problems/problems-report.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/reports/problems/problems-report.html" afterDir="false" />
@@ -134,12 +135,12 @@
     &quot;assignee&quot;: &quot;elena817&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/ll5zh/hkunite.git",
-    "accountId": "24dc54f5-da23-42b4-a503-344d38c3204b"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/ll5zh/hkunite.git&quot;,
+    &quot;accountId&quot;: &quot;24dc54f5-da23-42b4-a503-344d38c3204b&quot;
   }
-}]]></component>
+}</component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
@@ -163,10 +164,11 @@
     &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
     &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
     &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Elena2&quot;,
     &quot;last_opened_file_path&quot;: &quot;/Users/petekkaragedik/Desktop/hkunite/ui&quot;,
     &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.17&quot;,
@@ -394,12 +396,12 @@
       <map>
         <entry key="com.example.comp3330_hkunite">
           <value>
-            <CheckInfo lastCheckTimestamp="1763439028073" />
+            <CheckInfo lastCheckTimestamp="1763606932697" />
           </value>
         </entry>
         <entry key="com.example.comp3330_hkunite.test">
           <value>
-            <CheckInfo lastCheckTimestamp="1763439028076" />
+            <CheckInfo lastCheckTimestamp="1763606932697" />
           </value>
         </entry>
       </map>

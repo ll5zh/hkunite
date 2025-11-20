@@ -9,6 +9,14 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import org.json.JSONException;
+import org.json.JSONObject;
+import android.util.Log;
+import android.widget.Toast;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -16,7 +24,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-
+import android.content.Context;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,10 +61,19 @@ public class AddFragment extends Fragment {
     private ActivityResultLauncher<String[]> locationPermissionRequest;
     private FusedLocationProviderClient fusedLocationClient;
 
+    //to upload it to the database and for connection with server
+    private RequestQueue queue;
+    private final String BASE_URL = Configuration.BASE_URL;
+    private static final String TAG = "AddFragmentUpload";
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (getContext() != null) {
+            queue = Volley.newRequestQueue(getContext());
+        }
 
         // here i should now create the database i think
     }
@@ -95,6 +112,10 @@ public class AddFragment extends Fragment {
         switchPrivateField.setOnClickListener(v -> {
             Boolean isPrivate = switchPrivateField.isChecked();});
 
+        addButtonField.setOnClickListener(v ->{
+            uploadEventToDatabase();
+        });
+
 
         //for the location:
         if (context != null) {
@@ -113,15 +134,6 @@ public class AddFragment extends Fragment {
                     }
             );
         }
-
-
-
-
-
-
-        //trying again only for the buttons that we actually need
-        LocButtonField.setOnClickListener(v -> {checkLocationPermissionGetLoc();});
-        switchPrivateField.setOnClickListener(v -> {Boolean isPrivate = switchPrivateField.isChecked();});
 
         return view;
     }
@@ -224,6 +236,74 @@ public class AddFragment extends Fragment {
                     // Handle failure
                     Toast.makeText(getContext(), "Error getting location: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
+    }
+
+    //to upload our data to the database
+    private void uploadEventToDatabase(){
+        if (queue == null) {
+            Toast.makeText(getContext(), "Network queue not ready.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
+        // This is where we package the data into the server's required format to then send it off to the server
+        JSONObject eventData = new JSONObject();
+        try{
+            String title = titleField.getText().toString();
+            String description = descriptionField.getText().toString();
+            String date = dateField.getText().toString();
+            String time = timeField.getText().toString();
+
+            //CHANGE THIS AFTERWARDS:
+            String organizerId = "1"; // THIS IS JUST FOR NOW; THIS IS JUST BECAUSE I DONT HAVE THAT IMPLEMENTED YET
+
+            String fullDateTime = date + " " + time; //summarizing date and time into one string
+
+            boolean isPublic = !switchPrivateField.isChecked();
+
+            //now we put the the variables/strings into the Json object using .put
+            eventData.put("title", title);
+            eventData.put("description", description);
+            eventData.put("oid", organizerId);
+            eventData.put("date", fullDateTime);
+            eventData.put("public", isPublic);
+
+        }catch (JSONException e) {
+            Log.e(TAG, "Error preparing JSON data: " + e.getMessage());
+            Toast.makeText(getContext(), "Error preparing data for server.", Toast.LENGTH_SHORT).show();
+            return;}
+
+
+        //now we set up the POST request so we request that it gets posted to the server
+        String url = BASE_URL + "/add-event";
+
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.POST,  // Use POST to upload/create data
+                url,
+                eventData,
+                response -> {
+                    try{
+                        if (response.getBoolean("success")) {
+                            String eventId = response.getString("eid");
+                            Toast.makeText(getContext(), "Event Created! ID: " + eventId, Toast.LENGTH_LONG).show();
+                            // You might want to navigate to another screen here
+                        } else {
+                            String errorMsg = response.optString("error", "Unknown server error.");
+                            Toast.makeText(getContext(), "Server Failed: " + errorMsg, Toast.LENGTH_LONG).show();
+                        }
+                    } catch (JSONException e) {
+                        Log.e(TAG, "Error parsing success response: " + e.getMessage());
+                    }
+
+                },
+                error -> {
+                    Log.e(TAG, "Volley Network Error: " + error.toString());
+                    Toast.makeText(getContext(), "Network Error: Cannot connect to server.", Toast.LENGTH_LONG).show();
+                });
+
+                queue.add(request);
+
+
     }
 
 }

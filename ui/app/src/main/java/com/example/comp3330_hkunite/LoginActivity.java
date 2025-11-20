@@ -1,4 +1,5 @@
 package com.example.comp3330_hkunite;
+import com.example.comp3330_hkunite.Configuration;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -29,7 +30,7 @@ public class LoginActivity extends AppCompatActivity {
     //server and login
     private static final String TAG = "LoginActivity";
     //server address from EventDetailActivity:
-    private static final String BASE_URL = "http://10.68.77.118:5001";
+    private static final String BASE_URL = Configuration.BASE_URL;
 
     //ui stuff:
     private TextInputEditText emailEditText;

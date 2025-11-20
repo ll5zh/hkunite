@@ -59,7 +59,7 @@ public class ExploreFragment extends Fragment {
         Log.d(TAG, "loadEventsFromServer() called");
         String uid = "1"; //Update logic
 
-        String url = "http://10.70.8.141:5001/events?uid=" + uid;
+        String url = "http://10.70.201.199:5001/events?uid=" + uid;
 
 
         JsonArrayRequest request = new JsonArrayRequest(

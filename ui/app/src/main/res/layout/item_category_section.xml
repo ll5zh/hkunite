@@ -1,27 +1,62 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="12dp"
-    android:background="@color/search_bg">
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="0dp"
+    android:backgroundTint="#B3D9D9D9">
 
-    <!-- Category Label -->
-    <TextView
-        android:id="@+id/textCategoryLabel"
-        style="@style/TextAppearance.Explore.Heading"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Category"
-        android:paddingBottom="8dp"
-        android:gravity="start"/>
+        android:orientation="vertical"
+        android:padding="12dp">
 
-    <!-- Horizontal list of events -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewCategoryEvents"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:scrollbars="none"
-        android:clipToPadding="false"
-        android:paddingStart="4dp"
-        android:paddingEnd="4dp"/>
-</LinearLayout>
+        <!-- Heading row with accent bar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <!-- Accent bar -->
+            <View
+                android:layout_width="4dp"
+                android:layout_height="match_parent"
+                android:background="#114337"
+                android:layout_marginEnd="8dp"/>
+
+            <!-- Category label -->
+            <TextView
+                android:id="@+id/textCategoryLabel"
+                style="@style/TextAppearance.Explore.Heading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Category"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#114337"/>
+        </LinearLayout>
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#114337"
+            android:alpha="0.2"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="12dp"/>
+
+        <!-- Horizontal list of events -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewCategoryEvents"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scrollbars="none"
+            android:clipToPadding="false"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"/>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

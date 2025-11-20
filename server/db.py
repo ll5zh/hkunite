@@ -110,7 +110,7 @@ def init_db():
         ("Music Concert", "Live local bands", 3, "https://www.cdc.gov/healthy-pets/media/images/2024/04/GettyImages-598175960-cute-dog-headshot.jpg", "2025-12-01 20:00:00", 3, False),
         ("Art Jam", "Paint with friends", 4, "https://images.unsplash.com/photo-1513364776144-60967b0f800f", "2025-11-20 16:00:00", 4, True),
         ("Startup Pitch Night", "Watch student startups pitch ideas", 5, "https://images.unsplash.com/photo-1551836022-d5d88e9218df", "2025-11-22 19:00:00", 4, True),
-        ("Board Game Social", "Play Codenames and Dixit", 1, "https://images.unsplash.com/photo-1607746882042-944635dfe10e", "2025-11-25 18:30:00", 3, True),
+        ("Board Game Social", "Play Codenames and Dixit. Make new friends! Rules are meant to be broken, don't fuss too much about the game rules.", 1, "https://images.unsplash.com/photo-1607746882042-944635dfe10e", "2025-11-25 18:30:00", 3, True),
         ("Photography Walk", "Explore campus with cameras", 2, "https://www.computerhope.com/jargon/p/program.png", "2025-11-28 15:00:00", 3, True),
         ("Career Talk: UX Design", "Learn from industry designers", 3, "https://static01.nyt.com/images/2024/11/06/multimedia/03BEATA-gftv/03BEATA-gftv-articleLarge.jpg", "2025-12-03 17:00:00", 1, True),
         ("Coding Challenge", "Solve problems in teams", 3, "https://studio.code.org/shared/images/courses/logo_tall_dance-2022.png", "2025-12-05 13:00:00", 1, True),

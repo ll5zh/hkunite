@@ -116,7 +116,7 @@ public class AddFragment extends Fragment {
             uploadEventToDatabase();
         });
 
-
+        //just to check if this is working
         //for the location:
         if (context != null) {
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(context);

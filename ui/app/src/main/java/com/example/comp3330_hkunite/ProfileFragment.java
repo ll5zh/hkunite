@@ -39,7 +39,8 @@ public class ProfileFragment extends Fragment {
     private static final String TAG = "ProfileFragment";
 
     //make sure matches current IP!!!
-    private static final String BASE_URL = "http://10.70.208.59:5001";
+    //"http://10.70.208.59:5001";
+    private static final String BASE_URL = Configuration.BASE_URL;
     private int currentUserID;
 
     //ui stuff:

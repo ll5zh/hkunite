@@ -1,9 +1,9 @@
 package com.example.comp3330_hkunite;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,7 +18,6 @@ import android.widget.Toast;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,6 +32,8 @@ public class ExploreFragment extends Fragment {
     private Map<String, List<Event>> categorizedEvents = new LinkedHashMap<>();
     private static final String TAG = "ExploreFragment";
 
+    private int uid = -1; // current user ID
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -40,7 +41,12 @@ public class ExploreFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerViewExplore);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        loadEventsFromServer(); // Don't create adapter yet
+        // ✅ Load UID from SharedPreferences
+        SharedPreferences prefs = requireContext().getSharedPreferences(LoginActivity.PREF_NAME, getContext().MODE_PRIVATE);
+        uid = prefs.getInt("USER_ID", -1);
+        Log.d(TAG, "Loaded UID in ExploreFragment: " + uid);
+
+        loadEventsFromServer();
 
         EditText editTextSearch = view.findViewById(R.id.editTextSearch);
         editTextSearch.addTextChangedListener(new TextWatcher() {
@@ -54,13 +60,10 @@ public class ExploreFragment extends Fragment {
         return view;
     }
 
-
     private void loadEventsFromServer() {
         Log.d(TAG, "loadEventsFromServer() called");
-        String uid = "1"; //Update logic
 
-        String url = "http://10.70.201.199:5001/events?uid=" + uid;
-
+        String url = "http://10.70.170.80:5001/events";
 
         JsonArrayRequest request = new JsonArrayRequest(
                 url,
@@ -70,24 +73,29 @@ public class ExploreFragment extends Fragment {
                     for (int i = 0; i < response.length(); i++) {
                         try {
                             JSONObject obj = response.getJSONObject(i);
-                            int eid = obj.getInt("EID");
-                            String title = obj.getString("TITLE");
-                            String ownerUsername = obj.optString("OWNER_USERNAME", "Unknown");
-                            String description = obj.getString("DESCRIPTION");
-                            String image = obj.optString("IMAGE", null);
-                            String date = obj.getString("DATE");
-                            int cid = obj.optInt("CID", -1);
-                            String categoryName = obj.optString("CATEGORY_NAME", "Uncategorized");
+
+                            int eid = obj.getInt("eid");
+                            String title = obj.getString("title");
+                            String description = obj.optString("description", "");
+                            String image = obj.optString("image", null);
+                            String date = obj.getString("date");
+                            int cid = obj.optInt("cid", -1);
+                            int ownerId = obj.optInt("oid", -1);
+
+                            String categoryName = obj.optString("category_name", "Uncategorized");
+                            String ownerUsername = obj.optString("owner_name", "Unknown");
 
                             Event event = new Event(eid, title, description, image, date, cid, categoryName, ownerUsername);
+
+                            if (ownerId == uid) {
+                                Log.d(TAG, "Skipping event " + eid + " owned by current user " + uid);
+                                continue;
+                            }
 
                             if (!categorizedEvents.containsKey(categoryName)) {
                                 categorizedEvents.put(categoryName, new ArrayList<>());
                             }
                             categorizedEvents.get(categoryName).add(event);
-                            //Toast.makeText(getContext(), "Categories loaded: " + categorizedEvents.size(), Toast.LENGTH_SHORT).show();
-
-
 
                         } catch (JSONException e) {
                             Log.e(TAG, "JSON parsing error at index " + i, e);
@@ -129,5 +137,4 @@ public class ExploreFragment extends Fragment {
         categoryAdapter = new CategoryAdapter(getContext(), filteredMap);
         recyclerView.setAdapter(categoryAdapter);
     }
-
 }

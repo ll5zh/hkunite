@@ -1,5 +1,6 @@
 package com.example.comp3330_hkunite;
 
+import android.content.Intent;
 import static android.content.ContentValues.TAG;
 
 import android.app.Activity;
@@ -8,6 +9,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.util.Log;
 import android.view.LayoutInflater;

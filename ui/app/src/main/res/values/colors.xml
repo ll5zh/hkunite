@@ -2,4 +2,14 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="selectedBackground">#B0E8FF</color>
+    <color name="app_background">#F5F5F5</color>
+    <color name="primary">#6200EE</color>
+    <color name="primary_dark">#3700B3</color>
+    <color name="secondary">#03DAC6</color>
+    <color name="app_text">#212121</color>
+
+    <color name="brand_text">#114337</color>
+    <color name="search_bg">#f9f9f9</color>
+    <color name="divider">#DDDDDD</color>
 </resources>

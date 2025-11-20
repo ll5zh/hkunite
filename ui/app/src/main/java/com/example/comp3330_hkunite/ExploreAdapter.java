@@ -4,13 +4,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
+
 import com.bumptech.glide.Glide;
 
-
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -53,16 +57,40 @@ public class ExploreAdapter extends RecyclerView.Adapter<ExploreAdapter.ExploreV
     @Override
     public void onBindViewHolder(@NonNull ExploreViewHolder holder, int position) {
         Event event = filteredEvents.get(position);
+
+        holder.textEventTitle.setText(event.getTitle());
+        holder.textEventDescription.setText(event.getDescription());
         Glide.with(context).load(event.getImageUrl()).into(holder.imageExplore);
 
         Log.d("ExploreAdapter", "Binding event: " + event.getTitle());
+
+        // Touch listener for press animation
+        holder.itemView.setOnTouchListener((v, motionEvent) -> {
+            switch (motionEvent.getActionMasked()) {
+                case MotionEvent.ACTION_DOWN:
+                    v.animate().scaleX(0.95f).scaleY(0.95f).setDuration(100).start();
+                    ViewCompat.setElevation(v, 8f);
+                    break;
+                case MotionEvent.ACTION_UP:
+                    v.animate().scaleX(1f).scaleY(1f).setDuration(100).start();
+                    ViewCompat.setElevation(v, 2f);
+                    // Required for accessibility + proper click handling
+                    v.performClick();
+                    break;
+                case MotionEvent.ACTION_CANCEL:
+                    v.animate().scaleX(1f).scaleY(1f).setDuration(100).start();
+                    ViewCompat.setElevation(v, 2f);
+                    break;
+            }
+            return true; // consume touch, but performClick() ensures click still fires
+        });
+
+        // Click listener for navigation
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, EventDetailActivity.class);
             intent.putExtra("EID", event.getEid());
             context.startActivity(intent);
-            Log.d("ExploreAdapter", "Clicked event EID: " + event.getEid());
         });
-
     }
 
     @Override
@@ -72,12 +100,17 @@ public class ExploreAdapter extends RecyclerView.Adapter<ExploreAdapter.ExploreV
 
     static class ExploreViewHolder extends RecyclerView.ViewHolder {
         ImageView imageExplore;
+        TextView textEventTitle;
+        TextView textEventDescription;
 
         public ExploreViewHolder(@NonNull View itemView) {
             super(itemView);
             imageExplore = itemView.findViewById(R.id.imageExplore);
+            textEventTitle = itemView.findViewById(R.id.textEventTitle);
+            textEventDescription = itemView.findViewById(R.id.textEventDescription);
         }
     }
+
     public void updateEvents(List<Event> newEvents) {
         fullEvents.clear();
         fullEvents.addAll(newEvents);
@@ -85,5 +118,4 @@ public class ExploreAdapter extends RecyclerView.Adapter<ExploreAdapter.ExploreV
         filteredEvents.addAll(newEvents);
         notifyDataSetChanged();
     }
-
 }

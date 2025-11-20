@@ -1,0 +1,28 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/userRow"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="20dp"
+    android:gravity="center_vertical"
+    android:background="@drawable/user_item_background">
+
+    <ImageView
+        android:id="@+id/userImage"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/default_profile"
+        android:background="@drawable/circle_background"
+        android:layout_marginEnd="20dp" />
+
+    <TextView
+        android:id="@+id/userName"
+        style="@style/Widget.MyApp.TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Username"
+        android:textSize="20sp"
+        android:textStyle="bold"/>
+</LinearLayout>
+

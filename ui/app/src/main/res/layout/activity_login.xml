@@ -33,6 +33,7 @@
             android:id="@+id/login_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text = "user2@hku.hk"
             android:inputType="textEmailAddress" /> </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -49,6 +50,7 @@
             android:id="@+id/login_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text = "abcde"
             android:inputType="textPassword" />
 
     </com.google.android.material.textfield.TextInputLayout>

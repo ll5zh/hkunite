@@ -110,7 +110,7 @@ def init_db():
         ("Music Concert", "Live local bands", 3, "https://www.cdc.gov/healthy-pets/media/images/2024/04/GettyImages-598175960-cute-dog-headshot.jpg", "2025-12-01 20:00:00", 3, False),
         ("Art Jam", "Paint with friends", 4, "https://images.unsplash.com/photo-1513364776144-60967b0f800f", "2025-11-20 16:00:00", 4, True),
         ("Startup Pitch Night", "Watch student startups pitch ideas", 5, "https://images.unsplash.com/photo-1551836022-d5d88e9218df", "2025-11-22 19:00:00", 4, True),
-        ("Board Game Social", "Play Codenames and Dixit", 1, "https://images.unsplash.com/photo-1607746882042-944635dfe10e", "2025-11-25 18:30:00", 3, True),
+        ("Board Game Social", "Play Codenames and Dixit. Make new friends! Rules are meant to be broken, don't fuss too much about the game rules.", 1, "https://images.unsplash.com/photo-1607746882042-944635dfe10e", "2025-11-25 18:30:00", 3, True),
         ("Photography Walk", "Explore campus with cameras", 2, "https://www.computerhope.com/jargon/p/program.png", "2025-11-28 15:00:00", 3, True),
         ("Career Talk: UX Design", "Learn from industry designers", 3, "https://static01.nyt.com/images/2024/11/06/multimedia/03BEATA-gftv/03BEATA-gftv-articleLarge.jpg", "2025-12-03 17:00:00", 1, True),
         ("Coding Challenge", "Solve problems in teams", 3, "https://studio.code.org/shared/images/courses/logo_tall_dance-2022.png", "2025-12-05 13:00:00", 1, True),
@@ -128,6 +128,21 @@ def init_db():
     ("user2@hku.hk", "abcde", "Bob", "https://cdn-icons-png.flaticon.com/128/219/219970.png"),
     ("user3@hku.hk", "xyz123", "Charlie", "https://cdn-icons-png.flaticon.com/128/18354/18354003.png"),
     ("user4@hku.hk", "xyz123", "Emily", "https://cdn-icons-png.flaticon.com/128/18354/18354017.png"),
+    ("user5@hku.hk", "pass123", "David", "https://cdn-icons-png.flaticon.com/128/4140/4140048.png"),
+    ("user6@hku.hk", "hello321", "Fiona", "https://cdn-icons-png.flaticon.com/128/4140/4140047.png"),
+    ("user7@hku.hk", "qwerty", "George", "https://cdn-icons-png.flaticon.com/128/4140/4140051.png"),
+    ("user8@hku.hk", "letmein", "Hannah", "https://cdn-icons-png.flaticon.com/128/4140/4140050.png"),
+    ("user9@hku.hk", "secure!", "Ian", "https://cdn-icons-png.flaticon.com/128/4140/4140045.png"),
+    ("user10@hku.hk", "mypwd", "Jenny", "https://cdn-icons-png.flaticon.com/128/4140/4140046.png"),
+    ("user11@hku.hk", "test789", "Kevin", "https://cdn-icons-png.flaticon.com/128/4140/4140042.png"),
+    ("user12@hku.hk", "alpha22", "Laura", "https://cdn-icons-png.flaticon.com/128/4140/4140044.png"),
+    ("user13@hku.hk", "beta33", "Michael", "https://cdn-icons-png.flaticon.com/128/4140/4140043.png"),
+    ("user14@hku.hk", "gamma44", "Nina", "https://cdn-icons-png.flaticon.com/128/4140/4140041.png"),
+    ("user15@hku.hk", "delta55", "Oscar", "https://cdn-icons-png.flaticon.com/128/4140/4140049.png"),
+    ("user16@hku.hk", "epsilon66", "Paula", "https://cdn-icons-png.flaticon.com/128/4140/4140052.png"),
+    ("user17@hku.hk", "zeta77", "Quentin", "https://cdn-icons-png.flaticon.com/128/4140/4140053.png"),
+    ("user18@hku.hk", "theta88", "Rachel", "https://cdn-icons-png.flaticon.com/128/4140/4140054.png"),
+    ("user19@hku.hk", "iota99", "Sam", "https://cdn-icons-png.flaticon.com/128/4140/4140055.png"),
     ]
 
     for email, password, name, image in users:
@@ -176,6 +191,11 @@ def init_db():
         -- Emily: bronze only (not earlybird, newbie)
         (5, 4)
     ''')
+
+    cur.execute("""
+        INSERT INTO INVITATION (uid, eid) VALUES
+            (2, 7)
+    """)
 
     con.commit()
     con.close()
@@ -238,8 +258,9 @@ def get_user_info(uid):
 def get_all_users():
     with get_connection() as con:
         cur = con.cursor()
-        rows = cur.execute("SELECT uid, email FROM USER").fetchall()
+        rows = cur.execute("SELECT uid, email, name, image FROM USER").fetchall()
         return [dict(r) for r in rows]
+
 
 # ------------------------------
 # Event functions
@@ -347,6 +368,30 @@ def add_event(title, description, oid, cid, date, public=True, participants=[]):
         con.commit()
         return eid
 
+# Edits event
+def edit_event(eid, updates):
+    with get_connection() as con:
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+
+        fields = list(updates.keys())
+        update_clause = ", ".join(f"{field} = ?" for field in fields)
+        values = list(updates.values())
+        values.append(eid)
+
+        cur.execute(f"""
+            UPDATE EVENTS SET {update_clause} WHERE eid = ?
+        """, values)
+        con.commit()
+        
+        # return updated event
+        cur.execute("SELECT * FROM events WHERE eid = ?", (eid,))
+        row = cur.fetchone()
+
+        return dict(row) if row else None
+
+
+
 # Joins event
 def join_event(eid, uid):
     with get_connection() as con:
@@ -376,6 +421,24 @@ def add_invite(eid, uid):
         cur = con.cursor()
         cur.execute("INSERT INTO INVITATION (EID, UID) VALUES (?, ?)", (eid, uid))
         con.commit()
+
+# Gets users that are not invited or participating in that event
+def get_users_not_invited_or_participating(eid):
+    with get_connection() as con:
+        cur = con.cursor()
+        rows = cur.execute("""
+            SELECT uid, email, name, image
+            FROM USER
+            WHERE uid NOT IN (
+                SELECT uid FROM INVITATION WHERE eid = ?
+            )
+            AND uid NOT IN (
+                SELECT uid FROM EVENT_PARTICIPANT WHERE eid = ?
+            )
+        """, (eid, eid)).fetchall()
+        return [dict(r) for r in rows]
+
+
 
 # Gets user's invites - should return event name/eid/image (do a join)
 def get_my_invites(uid):

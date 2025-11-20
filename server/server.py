@@ -192,7 +192,7 @@ def edit_event():
     event = request.json
     eid = event["eid"]
     can_update = ["title", "description", "cid", "public", "date"]
-    updates = {field: val for field, val in event.items() if field in allowed_fields}
+    updates = {field: val for field, val in event.items() if field in can_update}
 
     if not updates:
         return jsonify({"success": False, "error": "No valid fields to update."}), 400

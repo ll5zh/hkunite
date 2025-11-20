@@ -387,7 +387,6 @@ def edit_event(eid, updates):
         # return updated event
         cur.execute("SELECT * FROM events WHERE eid = ?", (eid,))
         row = cur.fetchone()
-        con.close()
 
         return dict(row) if row else None
 

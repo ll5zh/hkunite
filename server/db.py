@@ -368,6 +368,31 @@ def add_event(title, description, oid, cid, date, public=True, participants=[]):
         con.commit()
         return eid
 
+# Edits event
+def edit_event(eid, updates):
+    with get_connection() as con:
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+
+        fields = list(updates.keys())
+        update_clause = ", ".join(f"{field} = ?" for field in fields)
+        values = list(updates.values())
+        values.append(eid)
+
+        cur.execute(f"""
+            UPDATE EVENTS SET {update_clause} WHERE eid = ?
+        """, values)
+        con.commit()
+        
+        # return updated event
+        cur.execute("SELECT * FROM events WHERE eid = ?", (eid,))
+        row = cur.fetchone()
+        con.close()
+
+        return dict(row) if row else None
+
+
+
 # Joins event
 def join_event(eid, uid):
     with get_connection() as con:

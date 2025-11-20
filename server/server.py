@@ -186,6 +186,22 @@ def add_event():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
 
+# Edits event
+@app.route("/edit-event", methods=["POST"])
+def edit_event():
+    event = request.json
+    eid = event["eid"]
+    can_update = ["title", "description", "cid", "public", "date"]
+    updates = {field: val for field, val in event.items() if field in allowed_fields}
+
+    if not updates:
+        return jsonify({"success": False, "error": "No valid fields to update."}), 400
+    try:
+        updated_event = db.edit_event(eid, updates)
+        return jsonify({"success": True, "data": updated_event})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 400
+
 # Joins event
 @app.route("/join-event", methods=["POST"]) # POST /join-event?eid=<eid>?uid=<uid>
 def join_event():

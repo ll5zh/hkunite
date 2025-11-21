@@ -321,9 +321,9 @@ public class AddFragment extends Fragment {
         String time = timeField.getText().toString();
         boolean isPublic = !switchPrivateField.isChecked();
         int publicValue = isPublic ? 0 : 1;
-        Log.d(TAG, "is it pucblic " + publicValue);
+        Log.d(TAG, "is it public " + publicValue);
         String participants = "";
-
+        String imageURLToSend = selectedImageUrl.isEmpty() ? "" : selectedImageUrl;
 
         //hardcoded for now
         int categoryId = 1; // Example category ID. Update this if you have a category selection spinner.
@@ -352,6 +352,7 @@ public class AddFragment extends Fragment {
             jsonBody.put("cid", categoryId);
             jsonBody.put("public", 1); // Flask endpoint uses public=1/0
             jsonBody.put("date", dateTimeCombined);
+            jsonBody.put("image", imageURLToSend );
             //jsonBody.put("participants",participants );
         } catch (JSONException e) {
             Log.e(TAG, "JSON creation error for add-event", e);

@@ -82,14 +82,9 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7fd0da10-d827-4424-8233-2f351e6fcbc8" name="Changes" comment="uploading works now, but not public/private button">
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/dialog_image_item.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/dialog_recyclerview_container.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/db.py" beforeDir="false" afterPath="$PROJECT_DIR$/../server/db.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/../server/server.py" afterDir="false" />
+    <list default="true" id="7fd0da10-d827-4424-8233-2f351e6fcbc8" name="Changes" comment="choosing pictures as coverpictures">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/AddFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/AddFragment.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/Configuration.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/Configuration.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -408,7 +403,15 @@
       <option name="project" value="LOCAL" />
       <updated>1763701508850</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="choosing pictures as coverpictures">
+      <option name="closed" value="true" />
+      <created>1763706396586</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1763706396586</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -434,7 +437,8 @@
     <MESSAGE value="jsut to chechout" />
     <MESSAGE value="so far running" />
     <MESSAGE value="uploading works now, but not public/private button" />
-    <option name="LAST_COMMIT_MESSAGE" value="uploading works now, but not public/private button" />
+    <MESSAGE value="choosing pictures as coverpictures" />
+    <option name="LAST_COMMIT_MESSAGE" value="choosing pictures as coverpictures" />
   </component>
   <component name="play_dynamic_filters_status">
     <option name="appIdToCheckInfo">

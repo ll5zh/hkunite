@@ -21,6 +21,16 @@
           <theme>@style/Theme.Comp3330hkunite</theme>
         </config>
       </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/dialog_image_item.xml">
+        <config>
+          <theme>@style/Theme.Comp3330hkunite</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/dialog_recyclerview_container.xml">
+        <config>
+          <theme>@style/Theme.Comp3330hkunite</theme>
+        </config>
+      </layout>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_add.xml">
         <config>
           <theme>@style/Theme.Comp3330hkunite</theme>
@@ -72,7 +82,10 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7fd0da10-d827-4424-8233-2f351e6fcbc8" name="Changes" comment="so far running">
+    <list default="true" id="7fd0da10-d827-4424-8233-2f351e6fcbc8" name="Changes" comment="uploading works now, but not public/private button">
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/dialog_image_item.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/dialog_recyclerview_container.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/db.py" beforeDir="false" afterPath="$PROJECT_DIR$/../server/db.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../server/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/../server/server.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/AddFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/AddFragment.java" afterDir="false" />
@@ -113,8 +126,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="resourceFile" />
-        <option value="layoutResourceFile" />
         <option value="Class" />
+        <option value="layoutResourceFile" />
       </list>
     </option>
   </component>
@@ -387,7 +400,15 @@
       <option name="project" value="LOCAL" />
       <updated>1763618117164</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="uploading works now, but not public/private button">
+      <option name="closed" value="true" />
+      <created>1763701508850</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1763701508850</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -412,19 +433,20 @@
     <MESSAGE value="implemented &quot;login&quot; and &quot;my profile&quot; logic except the changes about the database and changing mock data later accordingly part" />
     <MESSAGE value="jsut to chechout" />
     <MESSAGE value="so far running" />
-    <option name="LAST_COMMIT_MESSAGE" value="so far running" />
+    <MESSAGE value="uploading works now, but not public/private button" />
+    <option name="LAST_COMMIT_MESSAGE" value="uploading works now, but not public/private button" />
   </component>
   <component name="play_dynamic_filters_status">
     <option name="appIdToCheckInfo">
       <map>
         <entry key="com.example.comp3330_hkunite">
           <value>
-            <CheckInfo lastCheckTimestamp="1763606932697" />
+            <CheckInfo lastCheckTimestamp="1763705328342" />
           </value>
         </entry>
         <entry key="com.example.comp3330_hkunite.test">
           <value>
-            <CheckInfo lastCheckTimestamp="1763606932697" />
+            <CheckInfo lastCheckTimestamp="1763705328341" />
           </value>
         </entry>
       </map>

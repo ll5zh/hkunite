@@ -13,6 +13,7 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -27,6 +28,14 @@ import android.util.Log;
 import android.content.SharedPreferences; // For getting the organizer ID (oid)
 import static android.content.Context.MODE_PRIVATE;
 
+
+//for the pictures
+import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide; // Confirmed to be available from ProfileFragment
+
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +44,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -42,7 +52,9 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.CancellationTokenSource;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 
 public class AddFragment extends Fragment {
@@ -67,12 +79,26 @@ public class AddFragment extends Fragment {
     private RequestQueue requestQueue;
     private static final String TAG = "AddFragment";
     private static final String PREF_NAME = "HKUnitePrefs";
+    private void initializeImageOptions() {
+        imageOptions.add(new ImageOption("Study Session", "https://images.pexels.com/photos/159775/library-la-trobe-study-students-159775.jpeg"));
+        imageOptions.add(new ImageOption("Party", "https://images.pexels.com/photos/2034851/pexels-photo-2034851.jpeg"));
+        imageOptions.add(new ImageOption("Sports", "https://images.pexels.com/photos/69773/uss-nimitz-basketball-silhouettes-sea-69773.jpeg"));
+        imageOptions.add(new ImageOption("Food", "https://images.pexels.com/photos/3026808/pexels-photo-3026808.jpeg"));
+        imageOptions.add(new ImageOption("Lecture", "https://images.pexels.com/photos/1708912/pexels-photo-1708912.jpeg"));
+        imageOptions.add(new ImageOption("Cafe", "https://images.pexels.com/photos/1402407/pexels-photo-1402407.jpeg"));
+        imageOptions.add(new ImageOption("Hangout", "https://images.pexels.com/photos/745045/pexels-photo-745045.jpeg"));
 
+        imageOptions.add(new ImageOption("Placeholder", "")); // Allow clearing the image
+    }
+
+    //to select the image and all that
+    private String selectedImageUrl = ""; // Holds the URL that will be sent
+    private final List<ImageOption> imageOptions = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        initializeImageOptions();
         //database stuff:
         if(getContext() != null){
             requestQueue = Volley.newRequestQueue(getContext());
@@ -105,8 +131,12 @@ public class AddFragment extends Fragment {
         timeField.setOnClickListener(v -> {
             openTimePicker(timeField);
         });
+        //uploadImageButtonField.setOnClickListener(v -> {
+        //    uploadImage(CoverPicture);
+        //});
+
         uploadImageButtonField.setOnClickListener(v -> {
-            uploadImage(CoverPicture);
+            showImageSelectionDialog(); // Call the new method
         });
         LocButtonField.setOnClickListener(v -> {
             checkLocationPermissionGetLoc();});
@@ -172,6 +202,40 @@ public class AddFragment extends Fragment {
         );
         timePicker.show();
     }
+
+
+
+    // NEW METHOD: Shows the visual selection dialog
+    private void showImageSelectionDialog() {
+        // 1. Inflate a simple layout for the dialog to hold the RecyclerView
+        // You MUST create dialog_recyclerview_container.xml (see guide below)
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_recyclerview_container, null);
+        RecyclerView recyclerView = dialogView.findViewById(R.id.recycler_view_dialog);
+
+        // 2. Create the AlertDialog without showing it yet
+        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                .setTitle("Select Cover Image")
+                .setView(dialogView)
+                .setNegativeButton("Cancel", (d, i) -> d.dismiss())
+                .create();
+
+        // 3. Set up the Adapter, passing the dialog reference
+        ImageOptionAdapter adapter = new ImageOptionAdapter(imageOptions, dialog);
+
+        // 4. Set up RecyclerView
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(adapter);
+
+        // 5. Show the dialog
+        dialog.show();
+    }
+
+
+
+
+
+
+
 
     private void uploadImage(ImageView CoverPicture) {
         Intent intent = new Intent(MediaStore.ACTION_PICK_IMAGES);
@@ -343,6 +407,94 @@ public class AddFragment extends Fragment {
         // Reset the ImageView to a default placeholder if possible
         CoverPicture.setImageResource(android.R.drawable.ic_menu_gallery);
     }
+
+
+
+
+
+    //testing new idea for imageupload
+    private static class ImageOption {
+        String name;
+        String url;
+
+        ImageOption(String name, String url) {
+            this.name = name;
+            this.url = url;
+        }
+    }
+
+    // Adapter to display the image and name in the dialog
+    private class ImageOptionAdapter extends RecyclerView.Adapter<ImageOptionAdapter.ViewHolder> {
+        private final List<ImageOption> options;
+        private final AlertDialog dialog; // Reference to the dialog to dismiss it
+
+        public ImageOptionAdapter(List<ImageOption> options, AlertDialog dialog) {
+            this.options = options;
+            this.dialog = dialog;
+        }
+
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            // You MUST create dialog_image_item.xml (see guide below)
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.dialog_image_item, parent, false);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+            ImageOption option = options.get(position);
+
+            // Use Glide (confirmed available!) to load the URL
+            Glide.with(holder.imageView.getContext())
+                    .load(option.url)
+                    .centerCrop()
+                    .placeholder(R.drawable.ic_launcher_background) // Use any placeholder you have
+                    .into(holder.imageView);
+
+            holder.textView.setText(option.name);
+
+            // Set click listener to pass the selected URL back to the fragment
+            holder.itemView.setOnClickListener(v -> {
+                // 1. Update the fragment's state
+                selectedImageUrl = option.url;
+
+                // Updating the  CoverPicture
+                Glide.with(requireContext())
+                        .load(option.url)
+                        .centerCrop()
+                        .into(CoverPicture);
+
+                Toast.makeText(getContext(), "Cover image set to " + option.name, Toast.LENGTH_SHORT).show();
+
+                dialog.dismiss();
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return options.size();
+        }
+
+        public class ViewHolder extends RecyclerView.ViewHolder {
+            ImageView imageView;
+            TextView textView;
+
+            public ViewHolder(@NonNull View itemView) {
+                super(itemView);
+                // These IDs must match the ones you create in dialog_image_item.xml
+                imageView = itemView.findViewById(R.id.image_preview);
+                textView = itemView.findViewById(R.id.image_name);
+            }
+        }
+    }
+
+
+
+
+
+
+
 
 }
 

@@ -182,6 +182,7 @@ def add_event():
             cid=event.get("cid"),
             public=public_status, # Use the clean integer here
             date=event["date"],
+            image = event.get('image'),
             #participants=event.get("participants")
         )
         return jsonify({"success": True, "eid": eid})

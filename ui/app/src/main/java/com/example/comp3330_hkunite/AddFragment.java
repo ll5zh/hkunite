@@ -51,6 +51,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.CancellationTokenSource;
+import com.google.android.libraries.places.api.net.PlacesClient;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -76,6 +77,12 @@ public class AddFragment extends Fragment {
     private FusedLocationProviderClient fusedLocationClient;
     private static final String BASE_URL = Configuration.BASE_URL;
 
+    //for the google maps implementation
+    private PlacesClient placesClient;
+    private static final int AUTOCOMPLETE_REQUEST_CODE = 1001; // Request code for the Activity Result
+
+
+
     private RequestQueue requestQueue;
     private static final String TAG = "AddFragment";
     private static final String PREF_NAME = "HKUnitePrefs";
@@ -99,6 +106,14 @@ public class AddFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initializeImageOptions();
+
+        //for google maps:
+        if (!com.google.android.libraries.places.api.Places.isInitialized() && getContext() != null) {
+            // Android automatically reads the key from the manifest/strings.xml!
+            // We just need to initialize the Places SDK.
+            com.google.android.libraries.places.api.Places.initialize(getContext(), getContext().getString(R.string.google_maps_key));
+        }
+
         //database stuff:
         if(getContext() != null){
             requestQueue = Volley.newRequestQueue(getContext());
@@ -138,8 +153,13 @@ public class AddFragment extends Fragment {
         uploadImageButtonField.setOnClickListener(v -> {
             showImageSelectionDialog(); // Call the new method
         });
-        LocButtonField.setOnClickListener(v -> {
-            checkLocationPermissionGetLoc();});
+
+        locationField.setOnClickListener(v -> { launchPlaceAutocomplete(); });
+        LocButtonField.setOnClickListener(v -> { launchPlaceAutocomplete(); });
+
+
+        //LocButtonField.setOnClickListener(v -> {
+        //   checkLocationPermissionGetLoc();});
         switchPrivateField.setOnClickListener(v -> {
             Boolean isPrivate = switchPrivateField.isChecked();});
 
@@ -316,7 +336,7 @@ public class AddFragment extends Fragment {
 
         String title = titleField.getText().toString();
         String description = descriptionField.getText().toString();
-        String location = locationField.getText().toString();
+        String location = locationField.getText().toString().trim();
         String date = dateField.getText().toString();
         String time = timeField.getText().toString();
         boolean isPublic = !switchPrivateField.isChecked();
@@ -332,6 +352,8 @@ public class AddFragment extends Fragment {
         SharedPreferences prefs = requireContext().getSharedPreferences(PREF_NAME, MODE_PRIVATE);
         int organizerId = prefs.getInt("USER_ID", -1);
 
+        Log.d(TAG, "Retrieved image url: " + imageURLToSend);
+
         Log.d(TAG, "Retrieved Organizer ID (oid): " + organizerId);
         if (organizerId == -1) {
             Toast.makeText(getContext(), "User not logged in. Cannot create event.", Toast.LENGTH_LONG).show();
@@ -339,8 +361,7 @@ public class AddFragment extends Fragment {
         }
 
 
-        String dateTimeCombined = date + " " + time + " " + location; // Combining date, time, and location in one string for simplicity as per Flask 'date' field.
-
+        String dateTimeCombined = date + " at " + time + " - Location: " + location;
 
         String url = BASE_URL + "/add-event";
 
@@ -491,6 +512,52 @@ public class AddFragment extends Fragment {
     }
 
 
+    //new location logic with google m aps.
+    private void launchPlaceAutocomplete() {
+        if (getContext() == null) return;
+
+        // Define which pieces of data we want back from the selected place
+        List<com.google.android.libraries.places.api.model.Place.Field> fields =
+                java.util.Arrays.asList(
+                        com.google.android.libraries.places.api.model.Place.Field.ID,
+                        com.google.android.libraries.places.api.model.Place.Field.NAME,
+                        com.google.android.libraries.places.api.model.Place.Field.ADDRESS // This is the full address string
+                );
+
+        // Build and launch the full-screen search activity
+        Intent intent = new com.google.android.libraries.places.widget.Autocomplete.IntentBuilder(
+                com.google.android.libraries.places.widget.model.AutocompleteActivityMode.FULLSCREEN, fields)
+                .build(getContext());
+
+        startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
+    }
+
+    // Inside AddFragment.java:
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @androidx.annotation.Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == android.app.Activity.RESULT_OK && data != null) {
+                // Success: Retrieve the Place object
+                com.google.android.libraries.places.api.model.Place place =
+                        com.google.android.libraries.places.widget.Autocomplete.getPlaceFromIntent(data);
+
+                // The location we save is the full address string
+                String fullAddress = place.getAddress();
+
+                // 1. Update the UI's EditText field
+                locationField.setText(fullAddress);
+                Toast.makeText(getContext(), "Location Set: " + place.getName(), Toast.LENGTH_LONG).show();
+
+            } else if (resultCode == com.google.android.libraries.places.widget.AutocompleteActivity.RESULT_ERROR && data != null) {
+                // Error handling
+                com.google.android.gms.common.api.Status status = com.google.android.libraries.places.widget.Autocomplete.getStatusFromIntent(data);
+                Log.e(TAG, "Place Autocomplete Error: " + status.getStatusMessage());
+                Toast.makeText(getContext(), "Error selecting location.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 
 
 

@@ -342,7 +342,7 @@ def get_event_participants(eid):
 
 
 # Adds event
-def add_event(title, description, oid, cid, date, public, participants=[]):
+def add_event(title, description, oid, cid, date, public, participants=[],image=None):
     with get_connection() as con:
         cur = con.cursor()
 
@@ -353,9 +353,9 @@ def add_event(title, description, oid, cid, date, public, participants=[]):
         # ----------------------------------------------------------------------
 
         cur.execute("""
-            INSERT INTO EVENT (title, description, oid, cid, public, date)
-            VALUES (?, ?, ?, ?, ?, ?)
-        """, (title, description, oid, cid, public, date))
+            INSERT INTO EVENT (title, description, oid, cid, public, date, image)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, (title, description, oid, cid, public, date, image))
         eid = cur.lastrowid
 
         # If event is private, need to add participants to event (or if participants are specified)

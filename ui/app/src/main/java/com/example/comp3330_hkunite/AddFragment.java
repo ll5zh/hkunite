@@ -17,6 +17,16 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import org.json.JSONException;
+import org.json.JSONObject;
+import android.util.Log;
+import android.content.SharedPreferences; // For getting the organizer ID (oid)
+import static android.content.Context.MODE_PRIVATE;
+
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,13 +62,21 @@ public class AddFragment extends Fragment {
     private ActivityResultLauncher<Intent> pickImageLauncher;
     private ActivityResultLauncher<String[]> locationPermissionRequest;
     private FusedLocationProviderClient fusedLocationClient;
+    private static final String BASE_URL = Configuration.BASE_URL;
+
+    private RequestQueue requestQueue;
+    private static final String TAG = "AddFragment";
+    private static final String PREF_NAME = "HKUnitePrefs";
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // here i should now create the database i think
+        //database stuff:
+        if(getContext() != null){
+            requestQueue = Volley.newRequestQueue(getContext());
+        }
     }
 
     @Override
@@ -95,6 +113,11 @@ public class AddFragment extends Fragment {
         switchPrivateField.setOnClickListener(v -> {
             Boolean isPrivate = switchPrivateField.isChecked();});
 
+        //to finally upload the whole event
+        addButtonField.setOnClickListener( v -> {
+            uploadEventToDatabase();
+        });
+
 
         //for the location:
         if (context != null) {
@@ -115,13 +138,6 @@ public class AddFragment extends Fragment {
         }
 
 
-
-
-
-
-        //trying again only for the buttons that we actually need
-        LocButtonField.setOnClickListener(v -> {checkLocationPermissionGetLoc();});
-        switchPrivateField.setOnClickListener(v -> {Boolean isPrivate = switchPrivateField.isChecked();});
 
         return view;
     }
@@ -226,4 +242,107 @@ public class AddFragment extends Fragment {
                 });
     }
 
+    private void uploadEventToDatabase(){
+
+        if (requestQueue == null) {
+            Toast.makeText(getContext(), "Network error: Request queue not initialized", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
+        String title = titleField.getText().toString();
+        String description = descriptionField.getText().toString();
+        String location = locationField.getText().toString();
+        String date = dateField.getText().toString();
+        String time = timeField.getText().toString();
+        boolean isPublic = !switchPrivateField.isChecked();
+        int publicValue = isPublic ? 0 : 1;
+        Log.d(TAG, "is it pucblic " + publicValue);
+        String participants = "";
+
+
+        //hardcoded for now
+        int categoryId = 1; // Example category ID. Update this if you have a category selection spinner.
+
+        //to get the organizers ID from the Loding activity
+        SharedPreferences prefs = requireContext().getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+        int organizerId = prefs.getInt("USER_ID", -1);
+
+        Log.d(TAG, "Retrieved Organizer ID (oid): " + organizerId);
+        if (organizerId == -1) {
+            Toast.makeText(getContext(), "User not logged in. Cannot create event.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+
+        String dateTimeCombined = date + " " + time + " " + location; // Combining date, time, and location in one string for simplicity as per Flask 'date' field.
+
+
+        String url = BASE_URL + "/add-event";
+
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("title", title);
+            jsonBody.put("description", description);
+            jsonBody.put("oid", organizerId);
+            jsonBody.put("cid", categoryId);
+            jsonBody.put("public", 1); // Flask endpoint uses public=1/0
+            jsonBody.put("date", dateTimeCombined);
+            //jsonBody.put("participants",participants );
+        } catch (JSONException e) {
+            Log.e(TAG, "JSON creation error for add-event", e);
+            Toast.makeText(getContext(), "Error preparing event data.", Toast.LENGTH_LONG).show();
+            return;
+        }
+                        //so ispublic 0 = it is private
+        //no mattter what: public = 1, private = 0
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.POST,
+                url,
+                jsonBody,
+                response -> {
+                    // Success listener
+                    try {
+                        boolean success = response.getBoolean("success");
+                        if (success) {
+                            int eid = response.getInt("eid");
+                            Toast.makeText(getContext(), "Event added successfully! ID: " + eid, Toast.LENGTH_LONG).show();
+                            Log.i(TAG, "Event added successfully with EID: " + eid);
+                            // Clear fields or navigate away after success
+                            resetFormFields();
+                        } else {
+                            // Success is false from server (e.g., DB error)
+                            String errorMsg = response.optString("error", "Unknown server error.");
+                            Toast.makeText(getContext(), "Failed to add event: " + errorMsg, Toast.LENGTH_LONG).show();
+                            Log.e(TAG, "Server reported failure: " + errorMsg);
+                        }
+                    } catch (JSONException e) {
+                        Log.e(TAG, "JSON parsing error on success response", e);
+                        Toast.makeText(getContext(), "Event added, but response could not be parsed.", Toast.LENGTH_LONG).show();
+                    }
+                },
+                error -> {
+                    // Network or Volley error
+                    String errorMsg = error.toString();
+                    Log.e(TAG, "Volley error during add-event: " + errorMsg);
+                    Toast.makeText(getContext(), "Error adding event: " + errorMsg, Toast.LENGTH_LONG).show();
+                }
+        );
+        requestQueue.add(request);
+
+    }
+
+
+    private void resetFormFields() {
+        titleField.setText("");
+        locationField.setText("");
+        dateField.setText("");
+        timeField.setText("");
+        descriptionField.setText("");
+        switchPrivateField.setChecked(false);
+        // Reset the ImageView to a default placeholder if possible
+        CoverPicture.setImageResource(android.R.drawable.ic_menu_gallery);
+    }
+
 }
+

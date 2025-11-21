@@ -108,7 +108,7 @@ def has_joined():
 
 
 
-# Gets events associated with user (participant or organizer)
+# Gets events associated with user (participant or organizer)a
 @app.route("/my-events", methods=["GET"])
 def get_my_events():
     # TESTING on server side - GET /my-events?uid=<uid> (if we prefer to pass uid to url)
@@ -180,7 +180,7 @@ def add_event():
             cid=event.get("cid"),
             public=event.get("public", True),
             date=event["date"],
-            participants=event.get("participants")
+            #participants=event.get("participants")
         )
         return jsonify({"success": True, "eid": eid})
     except Exception as e:

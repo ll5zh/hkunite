@@ -7,26 +7,11 @@
     <layouts>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_event_detail.xml">
         <config>
-          <theme>@style/Theme.Comp3330hkunite</theme>
-        </config>
-      </layout>
-      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_login.xml">
-        <config>
           <night>night</night>
           <theme>@style/Theme.Comp3330hkunite</theme>
         </config>
       </layout>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml">
-        <config>
-          <theme>@style/Theme.Comp3330hkunite</theme>
-        </config>
-      </layout>
-      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/dialog_image_item.xml">
-        <config>
-          <theme>@style/Theme.Comp3330hkunite</theme>
-        </config>
-      </layout>
-      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/dialog_recyclerview_container.xml">
         <config>
           <theme>@style/Theme.Comp3330hkunite</theme>
         </config>
@@ -51,17 +36,7 @@
           <theme>@style/Theme.Comp3330hkunite</theme>
         </config>
       </layout>
-      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/item_badge.xml">
-        <config>
-          <theme>@style/Theme.Comp3330hkunite</theme>
-        </config>
-      </layout>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/item_category_section.xml">
-        <config>
-          <theme>@style/Theme.Comp3330hkunite</theme>
-        </config>
-      </layout>
-      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/item_event.xml">
         <config>
           <theme>@style/Theme.Comp3330hkunite</theme>
         </config>
@@ -82,7 +57,14 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7fd0da10-d827-4424-8233-2f351e6fcbc8" name="Changes" comment="" />
+    <list default="true" id="7fd0da10-d827-4424-8233-2f351e6fcbc8" name="Changes" comment="uploading pictures from the gallery implemented">
+      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/ExploreFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/ExploreFragment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/HomeFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/HomeFragment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/LoginActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/LoginActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/reports/problems/problems-report.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/reports/problems/problems-report.html" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -91,7 +73,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=C:\Users\elena\.android\avd\Medium_Phone_2.avd)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=/Users/carolynyang/.android/avd/Medium_Phone_2.avd)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -118,6 +100,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="resourceFile" />
+        <option value="layoutResourceFile" />
         <option value="Class" />
         <option value="layoutResourceFile" />
       </list>
@@ -140,9 +123,10 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/ll5zh/hkunite.git&quot;,
-    &quot;accountId&quot;: &quot;24dc54f5-da23-42b4-a503-344d38c3204b&quot;
+    &quot;accountId&quot;: &quot;fb847169-00e8-44c5-a21f-839c72b18147&quot;
   }
 }</component>
+  <component name="GradleScriptDefinitionsStorage" workingDir="$PROJECT_DIR$" gradleHome="$USER_HOME$/.gradle/wrapper/dists/gradle-8.13-bin/5xuhj0ry160q40clulazy9h7d/gradle-8.13" javaHome="$APPLICATION_HOME_DIR$/jbr/Contents/Home" gradleVersion="8.13" />
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
@@ -170,24 +154,16 @@
     &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
     &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
     &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Elena3&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/petekkaragedik/Desktop/hkunite/ui&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.17&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;AndroidSdkUpdater&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Carolyn&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/carolynyang/AndroidStudioProjects/hkunite/ui&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;device.screenrecording&quot;,
     &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
   }
 }</component>
   <component name="RecentsManager">
     <key name="android.template.-715512984">
       <recent name="com.example.comp3330_hkunite" />
-    </key>
-    <key name="android.template.506115674">
-      <recent name="com.example.comp3330_hkunite" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/app/src/main/res/drawable" />
     </key>
   </component>
   <component name="RunManager">
@@ -352,71 +328,15 @@
       <option name="project" value="LOCAL" />
       <updated>1762070482717</updated>
     </task>
-    <task id="LOCAL-00011" summary="implemented &quot;login&quot; and &quot;my profile&quot; logic except the changes about the database and changing mock data later accordingly part">
+    <task id="LOCAL-00011" summary="uploading pictures from the gallery implemented">
       <option name="closed" value="true" />
-      <created>1762967256166</created>
+      <created>1762969647910</created>
       <option name="number" value="00011" />
       <option name="presentableId" value="LOCAL-00011" />
       <option name="project" value="LOCAL" />
-      <updated>1762967256166</updated>
+      <updated>1762969647910</updated>
     </task>
-    <task id="LOCAL-00012" summary="implemented &quot;login&quot; and &quot;my profile&quot; logic except the changes about the database and changing mock data later accordingly part">
-      <option name="closed" value="true" />
-      <created>1763439026996</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1763439026996</updated>
-    </task>
-    <task id="LOCAL-00013" summary="jsut to chechout">
-      <option name="closed" value="true" />
-      <created>1763616367161</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1763616367161</updated>
-    </task>
-    <task id="LOCAL-00014" summary="so far running">
-      <option name="closed" value="true" />
-      <created>1763618104614</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1763618104614</updated>
-    </task>
-    <task id="LOCAL-00015" summary="so far running">
-      <option name="closed" value="true" />
-      <created>1763618117164</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
-      <option name="project" value="LOCAL" />
-      <updated>1763618117164</updated>
-    </task>
-    <task id="LOCAL-00016" summary="uploading works now, but not public/private button">
-      <option name="closed" value="true" />
-      <created>1763701508850</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1763701508850</updated>
-    </task>
-    <task id="LOCAL-00017" summary="choosing pictures as coverpictures">
-      <option name="closed" value="true" />
-      <created>1763706396586</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1763706396586</updated>
-    </task>
-    <task id="LOCAL-00018" summary="choosing pictures as coverpictures">
-      <option name="closed" value="true" />
-      <created>1763709527686</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1763709527686</updated>
-    </task>
-    <option name="localTasksCounter" value="19" />
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -438,24 +358,20 @@
     <MESSAGE value="timePicker implementation" />
     <MESSAGE value="connect all textfields to variables" />
     <MESSAGE value="location button, gradle and manifest additions" />
-    <MESSAGE value="implemented &quot;login&quot; and &quot;my profile&quot; logic except the changes about the database and changing mock data later accordingly part" />
-    <MESSAGE value="jsut to chechout" />
-    <MESSAGE value="so far running" />
-    <MESSAGE value="uploading works now, but not public/private button" />
-    <MESSAGE value="choosing pictures as coverpictures" />
-    <option name="LAST_COMMIT_MESSAGE" value="choosing pictures as coverpictures" />
+    <MESSAGE value="uploading pictures from the gallery implemented" />
+    <option name="LAST_COMMIT_MESSAGE" value="uploading pictures from the gallery implemented" />
   </component>
   <component name="play_dynamic_filters_status">
     <option name="appIdToCheckInfo">
       <map>
         <entry key="com.example.comp3330_hkunite">
           <value>
-            <CheckInfo lastCheckTimestamp="1763705328342" />
+            <CheckInfo lastCheckTimestamp="1763706803489" />
           </value>
         </entry>
         <entry key="com.example.comp3330_hkunite.test">
           <value>
-            <CheckInfo lastCheckTimestamp="1763705328341" />
+            <CheckInfo lastCheckTimestamp="1763706803472" />
           </value>
         </entry>
       </map>

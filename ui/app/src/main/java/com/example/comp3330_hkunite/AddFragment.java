@@ -157,9 +157,6 @@ public class AddFragment extends Fragment {
         locationField.setOnClickListener(v -> { launchPlaceAutocomplete(); });
         LocButtonField.setOnClickListener(v -> { launchPlaceAutocomplete(); });
 
-
-        //LocButtonField.setOnClickListener(v -> {
-        //   checkLocationPermissionGetLoc();});
         switchPrivateField.setOnClickListener(v -> {
             Boolean isPrivate = switchPrivateField.isChecked();});
 

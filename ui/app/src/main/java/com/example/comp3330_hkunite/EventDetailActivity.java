@@ -17,6 +17,7 @@ import com.android.volley.Request;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.google.android.material.card.MaterialCardView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,8 +26,10 @@ public class EventDetailActivity extends AppCompatActivity {
     private ImageView eventImage;
     private TextView eventOwner, eventTitle, eventDate, eventDescription;
     private Button joinButton, joinButtonSide, declineButton;
+    private LinearLayout invitationCard;
     private TextView invitationNotice;
-    private View inviteButtonRow;
+    private ImageView invitationIcon;
+    private LinearLayout inviteButtonRow;
 
     private int uid; // loaded from SharedPreferences
     private int ownerId = -1;
@@ -51,17 +54,17 @@ public class EventDetailActivity extends AppCompatActivity {
         joinButton = findViewById(R.id.buttonJoinEvent);
         joinButtonSide = findViewById(R.id.buttonJoinEventSide);
         declineButton = findViewById(R.id.buttonDeclineInvite);
+        invitationCard = findViewById(R.id.invitationCard);
         invitationNotice = findViewById(R.id.textInvitationNotice);
+        invitationIcon = findViewById(R.id.invitationIcon);
         inviteButtonRow = findViewById(R.id.inviteButtonRow);
 
-        // Hide invite UI by default
-        invitationNotice.setVisibility(View.GONE);
+        invitationCard.setVisibility(View.GONE);
         inviteButtonRow.setVisibility(View.GONE);
 
         ImageButton backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> finish());
 
-        // ✅ Load UID from SharedPreferences
         SharedPreferences prefs = getSharedPreferences(LoginActivity.PREF_NAME, MODE_PRIVATE);
         uid = prefs.getInt("USER_ID", -1);
         Log.d(TAG, "Loaded UID: " + uid);
@@ -83,7 +86,7 @@ public class EventDetailActivity extends AppCompatActivity {
     }
 
     private void loadEventFromServer(int eid) {
-        String url = "http://10.70.170.80:5001/events/" + eid;
+        String url = "http://10.68.166.59:5001/events/" + eid;
 
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.GET,
@@ -129,7 +132,7 @@ public class EventDetailActivity extends AppCompatActivity {
     }
 
     private void checkIfJoined(int uid, int eid) {
-        String url = "http://10.70.170.80:5001/has-joined?uid=" + uid + "&eid=" + eid;
+        String url = "http://10.68.166.59:5001/has-joined?uid=" + uid + "&eid=" + eid;
 
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.GET,
@@ -153,7 +156,7 @@ public class EventDetailActivity extends AppCompatActivity {
     }
 
     private void checkIfInvited(int uid, int eid) {
-        String url = "http://10.70.170.80:5001/has-invite?uid=" + uid + "&eid=" + eid;
+        String url = "http://10.68.166.59:5001/has-invite?uid=" + uid + "&eid=" + eid;
 
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.GET,
@@ -180,23 +183,20 @@ public class EventDetailActivity extends AppCompatActivity {
         if (!eventLoaded || !joinStatusChecked || !inviteStatusChecked) return;
 
         if (hasJoined) {
-            // Joined: disable join buttons
             joinButton.setVisibility(View.VISIBLE);
             joinButton.setEnabled(false);
             joinButton.setText("Joined");
 
             inviteButtonRow.setVisibility(View.GONE);
-            invitationNotice.setVisibility(View.GONE);
+            invitationCard.setVisibility(View.GONE);
         } else {
             if (invited) {
-                // Invited but not joined: show side-by-side row
                 inviteButtonRow.setVisibility(View.VISIBLE);
-                invitationNotice.setVisibility(View.VISIBLE);
+                invitationCard.setVisibility(View.VISIBLE);
                 joinButton.setVisibility(View.GONE);
             } else {
-                // Not invited: show full-width join
                 inviteButtonRow.setVisibility(View.GONE);
-                invitationNotice.setVisibility(View.GONE);
+                invitationCard.setVisibility(View.GONE);
                 joinButton.setVisibility(View.VISIBLE);
                 joinButton.setEnabled(true);
                 joinButton.setText("Join");
@@ -204,8 +204,9 @@ public class EventDetailActivity extends AppCompatActivity {
         }
     }
 
+
     private void sendJoinEventToServer(int uid, int eid) {
-        String url = "http://10.70.170.80:5001/join-event?uid=" + uid + "&eid=" + eid;
+        String url = "http://10.68.166.59:5001/join-event?uid=" + uid + "&eid=" + eid;
 
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.POST,
@@ -226,7 +227,7 @@ public class EventDetailActivity extends AppCompatActivity {
     }
 
     private void declineInvite(int uid, int eid) {
-        String url = "http://10.70.170.80:5001/decline-invite?uid=" + uid + "&eid=" + eid;
+        String url = " http://10.68.166.59:5001/decline-invite?uid=" + uid + "&eid=" + eid;
 
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.POST,

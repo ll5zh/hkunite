@@ -17,36 +17,36 @@
         android:theme="@style/Theme.Comp3330hkunite"
         android:usesCleartextTraffic="true">
 
+        <activity android:name=".EditEventFragment" />
+        <activity android:name=".UpdateEventActivity" />
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-
 
         <activity
             android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+
         <activity
             android:name=".EventDetailActivity"
             android:exported="false"
             android:label="@string/title_activity_event_detail"
             android:theme="@style/Theme.Comp3330hkunite" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".InviteActivity"
+        <activity
+            android:name=".InviteActivity"
             android:exported="false" />
+
     </application>
 
 </manifest>

@@ -65,7 +65,8 @@ public class EditEventFragment extends AppCompatActivity {
     }
 
     private void loadEventFromServer(int eid) {
-        String url = "http://10.70.8.141:5001/event/" + eid;
+        //String url = "http://10.70.8.141:5001/event/" + eid;
+        String url = Configuration.BASE_URL + "/event/" + eid;
 
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.GET,
@@ -115,7 +116,8 @@ public class EditEventFragment extends AppCompatActivity {
     }
 
     private void checkIfJoined(int uid, int eid) {
-        String url = "http://10.70.8.141:5001/has-joined?uid=" + uid + "&eid=" + eid;
+        //String url = "http://10.70.208.59:5001/has-joined?uid=" + uid + "&eid=" + eid;
+        String url = Configuration.BASE_URL + "/has-joined?uid=" + uid + "&eid=" + eid;
 
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.GET,
@@ -153,7 +155,8 @@ public class EditEventFragment extends AppCompatActivity {
     }
 
     private void sendJoinEventToServer(int uid, int eid) {
-        String url = "http://10.70.8.141:5001/join-event";
+        //String url = "http://10.70.208.59:5001/join-event";
+        String url = Configuration.BASE_URL + "/join-event";
 
         JSONObject jsonBody = new JSONObject();
         try {

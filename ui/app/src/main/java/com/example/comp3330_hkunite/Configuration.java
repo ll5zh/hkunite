@@ -1,5 +1,5 @@
 package com.example.comp3330_hkunite;
 
 public class Configuration {
-    public static final String BASE_URL = "http://10.0.4.131:5001";
+    public static final String BASE_URL = "http://10.70.208.59:5001";
 }

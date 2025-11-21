@@ -226,6 +226,7 @@ def verify_user(email, password):
         return dict(user) if user else None
 
 # Gets user information for profile page
+# Gets user information for profile page
 def get_user_info(uid):
     with get_connection() as con:
         cur = con.cursor()
@@ -238,22 +239,24 @@ def get_user_info(uid):
             return None
         
         user_data = dict(user)
-          
+        
         org_count = cur.execute(
             "SELECT COUNT(*) FROM EVENT WHERE oid = ?",
             (uid,)
         ).fetchone()[0]
         
-        join_count = cur.execute(
-            "SELECT COUNT(*) FROM EVENT_PARTICIPANT WHERE uid = ?",
-            (uid,)
-        ).fetchone()[0]
+        # FIX: Only count joins where I am NOT the owner (E.oid != uid)
+        join_count = cur.execute("""
+            SELECT COUNT(*)
+            FROM EVENT_PARTICIPANT EP
+            JOIN EVENT E ON EP.eid = E.eid
+            WHERE EP.uid = ? AND E.oid != ?
+        """, (uid, uid)).fetchone()[0]
         
         user_data["organized_count"] = org_count
         user_data["joined_count"] = join_count
         
         return user_data
-
 # Gets all user emails
 def get_all_users():
     with get_connection() as con:
@@ -313,11 +316,12 @@ def get_events_participated_by_user(uid):
     with get_connection() as con:
         con.row_factory = sqlite3.Row
         cur = con.cursor()
+        # FIX: Filter out events where the participant (uid) is also the owner (E.oid)
         rows = cur.execute("""
             SELECT E.*
             FROM EVENT E JOIN EVENT_PARTICIPANT EP ON E.eid = EP.eid
-            WHERE EP.uid = ?
-        """, (uid,)).fetchall()
+            WHERE EP.uid = ? AND E.oid != ?
+        """, (uid, uid)).fetchall()
         return [dict(r) for r in rows]
 
 # Gets event
@@ -386,17 +390,18 @@ def edit_event(eid, updates):
         values = list(updates.values())
         values.append(eid)
 
+        # FIX: Changed "UPDATE EVENTS" to "UPDATE EVENT" (Singular)
         cur.execute(f"""
-            UPDATE EVENTS SET {update_clause} WHERE eid = ?
+            UPDATE EVENT SET {update_clause} WHERE eid = ?
         """, values)
+        
         con.commit()
         
         # return updated event
-        cur.execute("SELECT * FROM events WHERE eid = ?", (eid,))
+        cur.execute("SELECT * FROM EVENT WHERE eid = ?", (eid,))
         row = cur.fetchone()
 
         return dict(row) if row else None
-
 
 
 # Joins event
@@ -475,31 +480,31 @@ def decline_invite(eid, uid):
         con.commit()
 
 # Badge logic
+# Badge logic
 def get_my_badges(uid):
     with get_connection() as con:
         cur = con.cursor()
 
-        #gather user stats
-        #count how many events they joined
-        join_count = cur.execute(
-            "SELECT COUNT(*) FROM EVENT_PARTICIPANT WHERE uid = ?",
-            (uid,)
-        ).fetchone()[0]
+        # gather user stats
+        # FIX: count how many events they joined (EXCLUDING their own)
+        join_count = cur.execute("""
+            SELECT COUNT(*)
+            FROM EVENT_PARTICIPANT EP
+            JOIN EVENT E ON EP.eid = E.eid
+            WHERE EP.uid = ? AND E.oid != ?
+        """, (uid, uid)).fetchone()[0]
 
-        #get titles of all events they joined
+        # FIX: get titles of all events they joined (EXCLUDING their own)
         titles_rows = cur.execute("""
             SELECT E.title
             FROM EVENT E JOIN EVENT_PARTICIPANT EP ON E.eid = EP.eid
-            WHERE EP.uid = ?
-        """, (uid,)).fetchall()
+            WHERE EP.uid = ? AND E.oid != ?
+        """, (uid, uid)).fetchall()
         joined_titles = [row[0] for row in titles_rows]
 
-
-        #define rules:
-        #list of badges this user should have based on their stats
+        # define rules:
         earned_badge_names = []
 
-        #rule: bronze (1 event), silver (5 events), gold (10 events)
         if join_count >= 1:
             earned_badge_names.append('Bronze User')
         if join_count >= 5:
@@ -507,32 +512,27 @@ def get_my_badges(uid):
         if join_count >= 10:
             earned_badge_names.append('Gold User')
 
-        #rule: python pro - joined an event with "Python" in the title
         for title in joined_titles:
             if "Python" in title:
                 earned_badge_names.append('Python Pro')
                 break
         
-        #rule: first 3 users to sign up (uid <= 3)
         if uid <= 3:
-             earned_badge_names.append('Early Bird')
+            earned_badge_names.append('Early Bird')
 
-        #award missing badges
+        # award missing badges
         for badge_name in earned_badge_names:
-            #get the badge id:
             badge = cur.execute("SELECT bid FROM BADGE WHERE name = ?", (badge_name,)).fetchone()
             if badge:
                 bid = badge[0]
-                #insert into badge owner if not there already
                 cur.execute("""
                     INSERT OR IGNORE INTO BADGE_OWNER (bid, uid)
                     VALUES (?, ?)
                 """, (bid, uid))
         
-        con.commit() #save any new badges added
+        con.commit()
 
-
-        #return all badges
+        # return all badges
         con.row_factory = sqlite3.Row
         cur = con.cursor()
         rows = cur.execute("""

@@ -173,7 +173,7 @@ public class InviteActivity extends AppCompatActivity {
     }
 
     private void sendInvite(int uid, int eid) {
-        String url = "http://10.0.2.2:5001/add-invite?uid=" + uid + "&eid=" + eid;
+        String url = "http://10.70.208.59:5001/add-invite?uid=" + uid + "&eid=" + eid;
 
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.POST,

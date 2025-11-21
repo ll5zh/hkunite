@@ -37,6 +37,7 @@ import org.json.JSONObject;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+import com.example.comp3330_hkunite.Configuration;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -119,16 +120,27 @@ public class HomeFragment extends Fragment {
 
         return view;
     }
-
+/*
 private void showEvents(int uID, String filter) {
     // Load data from database. Loads all events associated with user by default
-    String serverUrl = "http://10.0.2.2:5000/my-events?uid=" + uID;
+    String serverUrl = "http://10.70.208.59:5000/my-events?uid=" + uID;
     if (filter.equals("hosting")) {
-        serverUrl = "http://10.0.2.2:5000/my-organized-events?uid=" + uID;
+        serverUrl = "http://10.70.208.59:5000/my-organized-events?uid=" + uID;
     } else if (filter.equals("invitations")) {
-        serverUrl = "http://10.0.2.2:5000/my-invites/" + uID; //TODO:: Something still wrong with invitations
+        serverUrl = "http://10.70.208.59:5000/my-invites/" + uID; //TODO:: Something still wrong with invitations
     }
+*/
+// config version:
+private void showEvents(int uID, String filter) {
+    // Use Configuration.BASE_URL so you don't have to type the IP again
+    String serverUrl = Configuration.BASE_URL + "/my-events?uid=" + uID;
 
+    if (filter.equals("hosting")) {
+        serverUrl = Configuration.BASE_URL + "/my-organized-events?uid=" + uID;
+    } else if (filter.equals("invitations")) {
+        // Note: Check if your teammates changed this route to use ?uid= like the others!
+        serverUrl = Configuration.BASE_URL + "/my-invites/" + uID;
+    }
 
     JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
             Request.Method.GET,

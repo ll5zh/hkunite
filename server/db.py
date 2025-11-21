@@ -342,13 +342,20 @@ def get_event_participants(eid):
 
 
 # Adds event
-def add_event(title, description, oid, cid, date, public=True, participants=[]):
+def add_event(title, description, oid, cid, date, public, participants=[],image=None):
     with get_connection() as con:
         cur = con.cursor()
+
+        # ----------------------------------------------------------------------
+        # ADD THESE TWO DEBUG LINES:
+        import logging
+        logging.warning(f"DB.ADD_EVENT: Received public value: {public} (Type: {type(public)})")
+        # ----------------------------------------------------------------------
+
         cur.execute("""
-            INSERT INTO EVENT (title, description, oid, cid, public, date)
-            VALUES (?, ?, ?, ?, ?, ?)
-        """, (title, description, oid, cid, int(public), date))
+            INSERT INTO EVENT (title, description, oid, cid, public, date, image)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, (title, description, oid, cid, public, date, image))
         eid = cur.lastrowid
 
         # If event is private, need to add participants to event (or if participants are specified)

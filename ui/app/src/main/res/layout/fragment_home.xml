@@ -100,6 +100,20 @@
 
         </HorizontalScrollView>
 
+
+
+
+        <Button
+            android:id="@+id/btn_invite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Invite"
+            android:textAllCaps="false"
+            android:backgroundTint="#9C27B0"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:padding="12dp"
+            android:layout_marginBottom="32dp"/>
     </LinearLayout>
 
 </ScrollView>

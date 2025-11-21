@@ -41,7 +41,7 @@ public class ExploreFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerViewExplore);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // ✅ Load UID from SharedPreferences
+        // Load UID from SharedPreferences
         SharedPreferences prefs = requireContext().getSharedPreferences(LoginActivity.PREF_NAME, getContext().MODE_PRIVATE);
         uid = prefs.getInt("USER_ID", -1);
         Log.d(TAG, "Loaded UID in ExploreFragment: " + uid);
@@ -63,7 +63,7 @@ public class ExploreFragment extends Fragment {
     private void loadEventsFromServer() {
         Log.d(TAG, "loadEventsFromServer() called");
 
-        String url = "http://10.70.170.80:5001/events";
+        String url = "http://10.0.2.2:5000/events";
 
         JsonArrayRequest request = new JsonArrayRequest(
                 url,

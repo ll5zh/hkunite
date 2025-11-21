@@ -5,6 +5,7 @@ import static android.content.ContentValues.TAG;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -44,13 +45,10 @@ import java.util.List;
  */
 public class HomeFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_USERID = "userID";
+//    private static final String ARG_USERID = "userID";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String userID;
     private Button buttonUpcomingField;
     private Button buttonHostingField;
     private Button buttonInvitationsField;
@@ -68,26 +66,23 @@ public class HomeFragment extends Fragment {
      * @param userID userID.
      * @return A new instance of fragment HomeFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static HomeFragment newInstance(String userID) {
         HomeFragment fragment = new HomeFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_USERID, userID);
 //        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            //where do I get the userID from??? How do I know who is who
-//            userID = getArguments().getString(ARG_USERID);
-            String userID = "1"; //Update logic
-//            loadUserEvents(uID);
-        }
-    }
+//    @Override
+//    public void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        if (getArguments() != null) {
+//            //where do I get the userID from??? How do I know who is who
+////            userID = getArguments().getString(ARG_USERID);
+////            loadUserEvents(uID);
+//        }
+//    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -96,7 +91,10 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         Context context = getContext();
 
-        String userID = "1";
+        // Load UID from SharedPreferences
+        SharedPreferences prefs = requireContext().getSharedPreferences(LoginActivity.PREF_NAME, getContext().MODE_PRIVATE);
+        int uid = prefs.getInt("USER_ID", -1);
+        Log.d(TAG, "Loaded UID in ExploreFragment: " + uid);
 
         //connect the buttons
         buttonUpcomingField = view.findViewById(R.id.buttonUpcoming);
@@ -105,26 +103,32 @@ public class HomeFragment extends Fragment {
         eventsCarosel = view.findViewById(R.id.eventsCarosel);
 
         //by default show all upcoming events
-        showEvents(userID, "upcoming");
+        showEvents(uid, "upcoming");
 
         buttonUpcomingField.setOnClickListener(v -> {
-            showEvents(userID, "upcoming");
+            showEvents(uid, "upcoming");
         });
 
         buttonHostingField.setOnClickListener(v -> {
-            showEvents(userID, "hosting");
+            showEvents(uid, "hosting");
         });
 
         buttonInvitationsField.setOnClickListener(v -> {
-            showEvents(userID, "invitations");
+            showEvents(uid, "invitations");
         });
 
         return view;
     }
 
-private void showEvents(String uID, String filter) {
-    // Load data from database
-    String serverUrl = "http://10.70.201.199:5001/my-events?uid=" + uID;
+private void showEvents(int uID, String filter) {
+    // Load data from database. Loads all events associated with user by default
+    String serverUrl = "http://10.0.2.2:5000/my-events?uid=" + uID;
+    if (filter.equals("hosting")) {
+        serverUrl = "http://10.0.2.2:5000/my-organized-events?uid=" + uID;
+    } else if (filter.equals("invitations")) {
+        serverUrl = "http://10.0.2.2:5000/my-invites/" + uID; //TODO:: Something still wrong with invitations
+    }
+
 
     JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
             Request.Method.GET,
@@ -161,17 +165,6 @@ private void showEvents(String uID, String filter) {
                         ArrayList<Event> eventsList = parseEvents(eventsArray);
                         Log.d("API Debug", "Parsed events: " + eventsList.size());
 
-                        // Apply filters
-                        if (filter.equals("upcoming")) {
-                            eventsList = filterUpcoming(eventsList);
-                        } else if (filter.equals("hosting")) {
-                            eventsList = filterHosting(eventsList, uID);
-                        } else if (filter.equals("invitations")) {
-                            eventsList = filterInvitations(eventsList);
-                        }
-
-                        Log.d("API Debug", "After filtering: " + eventsList.size() + " events");
-
                         // Display events in UI
                         showEventsinUI(eventsList);
 
@@ -207,6 +200,8 @@ private void showEvents(String uID, String filter) {
             // Log each event to see actual structure
             Log.d("EventDebug", "Event " + i + ": " + eventJson.toString());
 
+            //get_events_for_user
+
             try {
                 // Use proper field names - adjust based on what your backend actually returns
                 Event event = new Event(
@@ -232,7 +227,7 @@ private void showEvents(String uID, String filter) {
         return events;
     }
 
-    //TODO::maybe change this to a viewerpage for better UI experience
+    //TODO::maybe change this to a viewerpage or recycler view for better UI experience
     private void showEventsinUI(ArrayList<Event> events) {
         if (getActivity() != null) {
             getActivity().runOnUiThread(new Runnable() {
@@ -304,22 +299,4 @@ private void showEvents(String uID, String filter) {
         return eventView;
     }
 
-    private ArrayList<Event> filterUpcoming(ArrayList<Event> events) {
-        return events;
-    }
-
-    private ArrayList<Event> filterHosting(ArrayList<Event> events, String userID) {
-        ArrayList<Event> hostingEvents = new ArrayList<>();
-        for(Event event : events){
-             if(userID.equals(event.getOwnerUsername())){
-                 hostingEvents.add(event);
-             }
-        }
-        return hostingEvents;
-    }
-
-    private ArrayList<Event> filterInvitations(ArrayList<Event> events) {
-        //TODO::do we have this in the database??
-        return events;
-    }
 }

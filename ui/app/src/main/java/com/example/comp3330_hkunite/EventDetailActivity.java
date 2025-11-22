@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -152,13 +154,11 @@ public class EventDetailActivity extends AppCompatActivity {
     private void updateButtons() {
         if (!eventLoaded || !joinStatusChecked || !inviteStatusChecked) return;
 
-        // --- 1. THE HOST CHECK ---
         if (uid == ownerId) {
             joinButton.setVisibility(View.VISIBLE);
             joinButton.setText("Edit Event");
             joinButton.setEnabled(true);
 
-            // POINT TO THE NEW UPDATE ACTIVITY
             joinButton.setOnClickListener(v -> {
                 Intent intent = new Intent(EventDetailActivity.this, UpdateEventActivity.class);
                 intent.putExtra("EID", getIntent().getIntExtra("EID", -1));
@@ -166,25 +166,24 @@ public class EventDetailActivity extends AppCompatActivity {
             });
 
             inviteButtonRow.setVisibility(View.GONE);
-            invitationCard.setVisibility(View.GONE);
+            slideOut(invitationCard);
             return;
         }
 
-        // --- 2. Normal User Logic ---
         if (hasJoined) {
             joinButton.setVisibility(View.VISIBLE);
             joinButton.setEnabled(false);
             joinButton.setText("Joined");
             inviteButtonRow.setVisibility(View.GONE);
-            invitationCard.setVisibility(View.GONE);
+            slideOut(invitationCard);
         } else {
             if (invited) {
                 inviteButtonRow.setVisibility(View.VISIBLE);
-                invitationCard.setVisibility(View.VISIBLE);
+                slideIn(invitationCard);
                 joinButton.setVisibility(View.GONE);
             } else {
                 inviteButtonRow.setVisibility(View.GONE);
-                invitationCard.setVisibility(View.GONE);
+                slideOut(invitationCard);
                 joinButton.setVisibility(View.VISIBLE);
                 joinButton.setEnabled(true);
                 joinButton.setText("Join");
@@ -196,14 +195,12 @@ public class EventDetailActivity extends AppCompatActivity {
     }
 
     private void sendJoinEventToServer(int uid, int eid) {
-        String url = Configuration.BASE_URL + "/join-event";
-        JSONObject jsonBody = new JSONObject();
-        try {
-            jsonBody.put("uid", uid);
-            jsonBody.put("eid", eid);
-        } catch (JSONException e) { return; }
+        String url = Configuration.BASE_URL + "/join-event?uid=" + uid + "&eid=" + eid;
 
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, jsonBody,
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.POST,
+                url,
+                null,
                 response -> {
                     Toast.makeText(this, "Joined event successfully", Toast.LENGTH_SHORT).show();
                     hasJoined = true;
@@ -216,22 +213,68 @@ public class EventDetailActivity extends AppCompatActivity {
     }
 
     private void declineInvite(int uid, int eid) {
-        String url = Configuration.BASE_URL + "/decline-invite";
-        JSONObject jsonBody = new JSONObject();
-        try {
-            jsonBody.put("uid", uid);
-            jsonBody.put("eid", eid);
-        } catch (JSONException e) { return; }
+        String url = Configuration.BASE_URL + "/decline-invite?uid=" + uid + "&eid=" + eid;
 
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, jsonBody,
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.POST,
+                url,
+                null,
                 response -> {
                     Toast.makeText(this, "Invite declined", Toast.LENGTH_SHORT).show();
+
                     joinButtonSide.setVisibility(View.GONE);
+
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                            (int) (getResources().getDisplayMetrics().density * 250),
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                    );
+                    params.gravity = android.view.Gravity.CENTER_HORIZONTAL;
+                    declineButton.setLayoutParams(params);
+
                     declineButton.setText("Declined");
                     declineButton.setEnabled(false);
+
+                    slideOut(invitationCard);
                 },
                 error -> Toast.makeText(this, "Error declining invite", Toast.LENGTH_SHORT).show()
         );
         Volley.newRequestQueue(this).add(request);
     }
+
+    // --- Animation helpers ---
+    private void fadeOut(View view) {
+        if (view.getVisibility() == View.VISIBLE) {
+            view.animate()
+                    .alpha(0f)
+                    .setDuration(300)
+                    .withEndAction(() -> {
+                        view.setVisibility(View.GONE);
+                        view.setAlpha(1f); // reset for next time
+                    });
+        }
+    }
+
+
+    private void slideIn(View view) {
+        view.setVisibility(View.VISIBLE);
+        view.startAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_in_left));
+    }
+
+    private void slideOut(View view) {
+        Animation anim = AnimationUtils.loadAnimation(this, R.anim.slide_out_left);
+        anim.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {}
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                view.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+        });
+        view.startAnimation(anim);
+    }
+
 }

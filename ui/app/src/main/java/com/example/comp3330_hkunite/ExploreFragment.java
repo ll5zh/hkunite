@@ -63,8 +63,7 @@ public class ExploreFragment extends Fragment {
 
     private void loadEventsFromServer() {
         Log.d(TAG, "loadEventsFromServer() called");
-
-        //String url = "http://10.70.208.59:5000/events";
+        
         String url = Configuration.BASE_URL + "/events";
 
         JsonArrayRequest request = new JsonArrayRequest(

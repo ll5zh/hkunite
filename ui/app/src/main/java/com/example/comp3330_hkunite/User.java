@@ -4,7 +4,7 @@ public class User {
     private int uid;
     private String name;
     private String imageUrl;
-    private boolean selected; // NEW
+    private boolean selected;
 
     public User(int uid, String name, String imageUrl) {
         this.uid = uid;

@@ -2,5 +2,5 @@
     <!-- Selected state -->
     <item android:color="#114337" android:state_checked="true"/>
     <!-- Default (unselected) state -->
-    <item android:color="#808080"/> <!-- light gray for unselected -->
+    <item android:color="#808080"/>
 </selector>

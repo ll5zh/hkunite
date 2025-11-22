@@ -3,13 +3,11 @@ import db
 import os
 
 app = Flask(__name__)
-# app.config["DEBUG"] = True # Enable debug mode to enable hot-reloader.
 
 # ------------------------------
 # User endpoints
 # ------------------------------
 
-# Handles user login
 @app.route("/login", methods=["POST"])
 def user_login():
     data = request.json
@@ -17,11 +15,9 @@ def user_login():
     if user:
         import secrets
         token = secrets.token_hex(16)
-        # Normally store token in DB or memory
         return jsonify({"success": True, "user": user, "token": token})
     return jsonify({"success": False, "message": "Invalid credentials"}), 401
 
-# Adds user account
 @app.route("/signup", methods=["POST"])
 def user_signup():
     data = request.json
@@ -36,7 +32,6 @@ def user_signup():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
 
-# Adds profile picture
 @app.route("/add-image", methods=["POST"])
 def user_add_image():
     data = request.json
@@ -46,18 +41,15 @@ def user_add_image():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
 
-# Gets user information (profile page)
 @app.route("/users/<int:uid>")
 def get_user_info(uid):
     return jsonify({"success": True, "data": db.get_user_info(uid)}), 200
 
-# Gets user badges
 @app.route("/badges/<int:uid>")
 def get_badges(uid):
-    badges = db.get_my_badges(uid) #calls smart badge function
+    badges = db.get_my_badges(uid)
     return jsonify({"success": True, "data": badges}), 200
 
-# Gets all users
 @app.route("/users", methods=["GET"])
 def get_all_users():
     try:
@@ -70,20 +62,16 @@ def get_all_users():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
 
-
-
 # ------------------------------
 # Event endpoints
 # ------------------------------
 
-# Gets all events (explore page - public)
 @app.route("/events", methods=["GET"])
 def get_events():
     con = db.get_connection()
     cur = con.cursor()
-    # join EVENT with CATEGORY and USER to get category name and organizer name
     rows = cur.execute("""
-        SELECT E.*, 
+        SELECT E.*,
                C.name AS category_name,
                U.name AS owner_name
         FROM EVENT E
@@ -94,8 +82,6 @@ def get_events():
     con.close()
     return jsonify([dict(r) for r in rows])
 
-
-# Check if user has already joined the event
 @app.route("/has-joined", methods=["GET"])
 def has_joined():
     uid = request.args.get("uid", type=int)
@@ -106,45 +92,28 @@ def has_joined():
     ).fetchone()
     return jsonify({"success": True, "joined": row is not None})
 
-
-
-# Gets events associated with user (participant or organizer)a
 @app.route("/my-events", methods=["GET"])
 def get_my_events():
-    # TESTING on server side - GET /my-events?uid=<uid> (if we prefer to pass uid to url)
     uid = request.args.get("uid")
-
     organized = db.get_events_organized_by_user(uid)
     participated = db.get_events_participated_by_user(uid)
-    
-    # Merge results
     my_events = {event["eid"]: event for event in organized}
     for event in participated:
-        my_events[event["eid"]] = event  # adds new or overwrites same event
-    
+        my_events[event["eid"]] = event
     return jsonify({"success": True, "data": list(my_events.values())}), 200
 
-    # UNCOMMENT when hooking up with mobile app (if we prefer to pass uid in json body)
-    # event = request.json # Pass uid
-    # return jsonify({"success": True, "data": db.get_events_for_user(event["uid"])}), 200
-
-# Gets events by category
-
-# Gets events organized by user
-@app.route("/my-organized-events", methods=["GET"])  # GET /my-organized-events?uid=<uid>
+@app.route("/my-organized-events", methods=["GET"])
 def get_my_organized_events():
     uid = request.args.get("uid")
     organized = db.get_events_organized_by_user(uid)
     return jsonify({"success": True, "data": organized}), 200
 
-# Gets events where user is participant
-@app.route("/my-participated-events", methods=["GET"]) # GET /my-participated-events?uid=<uid>
+@app.route("/my-participated-events", methods=["GET"])
 def get_my_participated_events():
     uid = request.args.get("uid")
     participated = db.get_events_participated_by_user(uid)
     return jsonify({"success": True, "data": list(participated.values())}), 200
 
-# Gets event
 @app.route("/events/<int:eid>", methods=["GET"])
 def get_event(eid):
     con = db.get_connection()
@@ -160,41 +129,36 @@ def get_event(eid):
         return jsonify({"success": True, "data": dict(row)}), 200
     return jsonify({"success": False, "error": "Event not found"}), 404
 
-
-
-# Gets event participants
 @app.route("/event-participants/<int:eid>", methods=["GET"])
 def get_event_participants(eid):
     participants = db.get_event_participants(eid)
     return jsonify({"success": True, "data": list(participants.values())}), 200
 
-# Adds event
 @app.route("/add-event", methods=["POST"])
 def add_event():
     event = request.json
     try:
-
         public_status = int(event["public"])
         eid = db.add_event(
             title=event["title"],
             description=event.get("description"),
             oid=event["oid"],
             cid=event.get("cid"),
-            public=public_status, # Use the clean integer here
+            public=public_status,
             date=event["date"],
-            image = event.get('image'),
-            #participants=event.get("participants")
+            image=event.get("image"),
+            location=event.get("location")   # NEW FIELD
         )
         return jsonify({"success": True, "eid": eid})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
 
-# Edits event
+
 @app.route("/edit-event", methods=["POST"])
 def edit_event():
     event = request.json
     eid = event["eid"]
-    can_update = ["title", "description", "cid", "public", "date"]
+    can_update = ["title", "description", "cid", "public", "date", "location"]
     updates = {field: val for field, val in event.items() if field in can_update}
 
     if not updates:
@@ -205,69 +169,56 @@ def edit_event():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
 
-# Joins event
-@app.route("/join-event", methods=["POST"]) # POST /join-event?eid=<eid>?uid=<uid>
+@app.route("/join-event", methods=["POST"])
 def join_event():
     uid = request.args.get("uid")
     eid = request.args.get("eid")
-
     try:
         db.join_event(eid, uid)
         return jsonify({"success": True, "eid": eid, "uid": uid})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
 
-
 # ------------------------------
 # Invitation endpoints
 # ------------------------------
 
-# Adds invite for event to user
-@app.route("/add-invite", methods=["POST"]) # POST /add-invite?eid=<eid>?uid=<uid>
+@app.route("/add-invite", methods=["POST"])
 def add_invite():
     uid = request.args.get("uid")
     eid = request.args.get("eid")
-
     try:
         db.add_invite(eid, uid)
         return jsonify({"success": True, "eid": eid, "uid": uid})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
 
-
-# Gets user invites
 @app.route("/my-invites/<int:uid>", methods=["GET"])
 def get_my_invites(uid):
     my_invites = db.get_my_invites(uid)
     return jsonify({"success": True, "data": list(my_invites.values())})
 
-# Gets all invites for event
 @app.route("/event-invites/<int:eid>", methods=["GET"])
 def get_invites_for_event(eid):
     event_invites = db.get_event_invites(eid)
     return jsonify({"success": True, "data": list(event_invites.values())}), 200
 
-# Declines invite for event from user
-@app.route("/decline-invite", methods=["POST"]) # POST /decline-invite?eid=<eid>?uid=<uid>
+@app.route("/decline-invite", methods=["POST"])
 def decline_invite():
     uid = request.args.get("uid")
     eid = request.args.get("eid")
-
     try:
         db.decline_invite(eid, uid)
         return jsonify({"success": True, "eid": eid, "uid": uid})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
 
-# Check if user has invite
 @app.route("/has-invite", methods=["GET"])
 def has_invite():
     uid = request.args.get("uid", type=int)
     eid = request.args.get("eid", type=int)
-
     if uid is None or eid is None:
         return jsonify({"success": False, "error": "Missing uid or eid"}), 400
-
     con = db.get_connection()
     cur = con.cursor()
     row = cur.execute(
@@ -275,17 +226,41 @@ def has_invite():
         (uid, eid)
     ).fetchone()
     con.close()
-
     invited = row is not None
     return jsonify({"success": True, "invited": invited}), 200
 
+# ---------------------------------------------------------
+# UPDATE EVENT (MOVED UP SO IT LOADS BEFORE SERVER STARTS)
+# ---------------------------------------------------------
+@app.route('/update-event/<int:eid>', methods=['POST'])
+def update_event_specific(eid):
+    data = request.get_json()
+    updates = {}
+    if 'title' in data:
+        updates['title'] = data['title']
+    if 'description' in data:
+        updates['description'] = data['description']
+    if 'date' in data:
+        updates['date'] = data['date']
+    if 'location' in data:
+        updates['location'] = data['location']
 
+    try:
+        result = db.edit_event(eid, updates)
+        if result:
+            return jsonify({"success": True, "data": result}), 200
+        else:
+            return jsonify({"success": False, "message": "Update failed"}), 500
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+# ---------------------------------------------------------
+# MAIN APP START
+# ---------------------------------------------------------
 if __name__ == "__main__":
-    # Initialize db on startup
     print("DB path:", os.path.abspath(db.DB_NAME))
-
     if not os.path.exists(db.DB_NAME):
-        
         db.init_db()
 
     # adds host="0.0.0.0" to make the server publicly available

@@ -40,6 +40,7 @@ public class InviteActivity extends AppCompatActivity {
     private LinearLayout selectedUsersContainer;
     private View selectedUsersDivider;
     private HorizontalScrollView selectedUsersScroll;
+    private static final String BASE_URL = Configuration.BASE_URL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +82,6 @@ public class InviteActivity extends AppCompatActivity {
         backButton.setOnClickListener(v -> finish());
 
         // Confirm button
-        // Confirm button (arrow ImageButton)
         ImageButton confirmButton = findViewById(R.id.btnConfirmInvite);
         confirmButton.setOnClickListener(v -> {
             List<User> selectedUsers = new ArrayList<>();
@@ -110,7 +110,7 @@ public class InviteActivity extends AppCompatActivity {
 
     private void loadUsersFromServer() {
         // Pass eventId to exclude already invited or participating users
-        String url = "http://10.0.2.2:5001/users?eid=" + eventId;
+        String url = BASE_URL + "/users?eid=" + eventId;
 
         JsonObjectRequest request = new JsonObjectRequest(
                 url,
@@ -139,7 +139,6 @@ public class InviteActivity extends AppCompatActivity {
                             }
                             userAdapter.updateList(allUsers);
 
-                            // Hook into adapter clicks
                             userAdapter.setOnUserClickListener(user -> {
                                 if (user.isSelected()) {
                                     addSelectedUserChip(user);
@@ -173,7 +172,7 @@ public class InviteActivity extends AppCompatActivity {
     }
 
     private void sendInvite(int uid, int eid) {
-        String url = "http://10.0.2.2:5001/add-invite?uid=" + uid + "&eid=" + eid;
+        String url = BASE_URL + "/add-invite?uid=" + uid + "&eid=" + eid;
 
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.POST,
@@ -190,7 +189,6 @@ public class InviteActivity extends AppCompatActivity {
         Volley.newRequestQueue(this).add(request);
     }
 
-    // --- Selected user chips with animations ---
     private void addSelectedUserChip(User user) {
         View chip = LayoutInflater.from(this).inflate(R.layout.item_selected_user, selectedUsersContainer, false);
 
@@ -243,7 +241,7 @@ public class InviteActivity extends AppCompatActivity {
             View chip = selectedUsersContainer.getChildAt(i);
             Object tag = chip.getTag();
             if (tag instanceof Integer && ((Integer) tag) == user.getUid()) {
-                // Smooth removal animation for consistency
+                // Removal animation
                 chip.animate()
                         .alpha(0f)
                         .scaleX(0.8f)
@@ -260,8 +258,6 @@ public class InviteActivity extends AppCompatActivity {
         }
     }
 
-
-    // --- Divider animations ---
     private void showDivider() {
         if (selectedUsersDivider.getVisibility() != View.VISIBLE) {
             selectedUsersDivider.setAlpha(0f);

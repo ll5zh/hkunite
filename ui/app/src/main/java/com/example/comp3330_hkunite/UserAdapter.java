@@ -17,7 +17,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     private List<User> users;
     private Context context;
 
-    // Listener for clicks
     public interface OnUserClickListener {
         void onUserClick(User user);
     }

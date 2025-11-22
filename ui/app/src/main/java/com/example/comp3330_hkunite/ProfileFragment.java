@@ -104,6 +104,16 @@ public class ProfileFragment extends Fragment {
         return root;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Re-fetch events every time the fragment comes back into view
+        if (currentUserID != -1) {
+            fetchUserEvents(currentUserID);
+        }
+    }
+
+
     private void setupRecyclerViews() {
         //badge list:
         badgeAdapter = new BadgeAdapter(badgeList);
@@ -112,7 +122,7 @@ public class ProfileFragment extends Fragment {
 
         //events list (using ExploreAdapter and Grid):
         eventAdapter = new ExploreAdapter(getContext(), eventList);
-        eventsRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        eventsRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         eventsRecyclerView.setAdapter(eventAdapter);
         eventsRecyclerView.setNestedScrollingEnabled(false);
     }
@@ -130,6 +140,13 @@ public class ProfileFragment extends Fragment {
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                 response -> {
+                    // --- SAFETY CHECK START ---
+                    // If the user has left the screen, stop here. Don't try to load images.
+                    if (!isAdded() || getActivity() == null) {
+                        return;
+                    }
+                    // --- SAFETY CHECK END ---
+
                     try {
                         if (response.getBoolean("success")) {
                             JSONObject user = response.getJSONObject("data");
@@ -149,6 +166,7 @@ public class ProfileFragment extends Fragment {
                             eventsJoinedCount.setText(String.valueOf(joinCount));
 
                             //load the image
+                            // Now safe because we checked isAdded() above
                             Glide.with(this)
                                     .load(imageUrl)
                                     .placeholder(R.drawable.default_profile)
@@ -161,7 +179,10 @@ public class ProfileFragment extends Fragment {
                 },
                 error -> {
                     Log.e(TAG, "Volley error fetching user info: " + error.toString());
-                    Toast.makeText(getContext(), "Error loading profile info", Toast.LENGTH_SHORT).show();
+                    // Only show toast if still attached
+                    if (isAdded() && getContext() != null) {
+                        Toast.makeText(getContext(), "Error loading profile info", Toast.LENGTH_SHORT).show();
+                    }
                 }
         );
         queue.add(request);
@@ -216,6 +237,7 @@ public class ProfileFragment extends Fragment {
                                         eventObject.optString("image", null),
                                         eventObject.getString("date"),
                                         eventObject.getInt("cid"),
+                                        "",
                                         "",
                                         ""
                                 );

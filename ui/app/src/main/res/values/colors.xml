@@ -8,8 +8,17 @@
     <color name="primary_dark">#3700B3</color>
     <color name="secondary">#03DAC6</color>
     <color name="app_text">#212121</color>
-
-    <color name="brand_text">#114337</color>
     <color name="search_bg">#f9f9f9</color>
     <color name="divider">#DDDDDD</color>
+
+    <color name="brand_bg_start">#E5FCF6</color>
+    <color name="brand_bg_end">#E3F7FF</color>
+
+    <color name="brand_title">#114337</color>
+
+    <color name="brand_text">#114337</color>
+
+    <color name="brand_body">#0F1F02</color>
+
+    <color name="brand_primary">#6DBC2F</color>
 </resources>

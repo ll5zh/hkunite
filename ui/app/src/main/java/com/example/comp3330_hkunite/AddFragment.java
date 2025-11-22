@@ -52,10 +52,13 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.CancellationTokenSource;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 
 public class AddFragment extends Fragment {
@@ -68,7 +71,7 @@ public class AddFragment extends Fragment {
     private EditText dateField;
     private EditText timeField;
     private EditText descriptionField;
-    private Switch switchPrivateField;
+    private SwitchMaterial switchPrivateField;
     private ImageView CoverPicture;
     private Button LocButtonField;
 
@@ -138,6 +141,9 @@ public class AddFragment extends Fragment {
         CoverPicture = view.findViewById(R.id.picture);
         LocButtonField = view.findViewById(R.id.LocationButton);
         registerPictureUpload();
+        CoverPicture = view.findViewById(R.id.picture);
+        CoverPicture.setImageResource(R.drawable.image_placeholder);
+
 
         //making the datepicker and timepicker pop up:
         dateField.setOnClickListener(v -> {
@@ -214,7 +220,10 @@ public class AddFragment extends Fragment {
 
         TimePickerDialog timePicker = new TimePickerDialog(
                 getContext(),
-                (view, h, m) -> time.setText(h + ":" + m),
+                (view, h, m) -> {
+                    String formatted = String.format(Locale.getDefault(), "%02d:%02d", h, m);
+                    time.setText(formatted);
+                },
                 hour, minute, true
         );
         timePicker.show();
@@ -309,7 +318,7 @@ public class AddFragment extends Fragment {
                         // Location found
                         double latitude = location.getLatitude();
                         double longitude = location.getLongitude();
-                        Toast.makeText(getContext(), "Location: Lat " + latitude + ", Lon " + longitude, Toast.LENGTH_LONG).show();
+//                        Toast.makeText(getContext(), "Location: Lat " + latitude + ", Lon " + longitude, Toast.LENGTH_LONG).show();
                         String locString = "Latitude:"+latitude+" Longitude:"+longitude;
                         locationField.setText(locString);
                     } else {
@@ -323,13 +332,11 @@ public class AddFragment extends Fragment {
                 });
     }
 
-    private void uploadEventToDatabase(){
-
+    private void uploadEventToDatabase() {
         if (requestQueue == null) {
             Toast.makeText(getContext(), "Network error: Request queue not initialized", Toast.LENGTH_SHORT).show();
             return;
         }
-
 
         String title = titleField.getText().toString();
         String description = descriptionField.getText().toString();
@@ -337,28 +344,17 @@ public class AddFragment extends Fragment {
         String date = dateField.getText().toString();
         String time = timeField.getText().toString();
         boolean isPublic = !switchPrivateField.isChecked();
-        int publicValue = isPublic ? 0 : 1;
-        Log.d(TAG, "is it public " + publicValue);
-        String participants = "";
+        int publicValue = isPublic ? 1 : 0; // 1 = public, 0 = private
         String imageURLToSend = selectedImageUrl.isEmpty() ? "" : selectedImageUrl;
 
-        //hardcoded for now
-        int categoryId = 1; // Example category ID. Update this if you have a category selection spinner.
-
-        //to get the organizers ID from the Loding activity
+        int categoryId = 1; // Example category ID
         SharedPreferences prefs = requireContext().getSharedPreferences(PREF_NAME, MODE_PRIVATE);
         int organizerId = prefs.getInt("USER_ID", -1);
 
-        Log.d(TAG, "Retrieved image url: " + imageURLToSend);
-
-        Log.d(TAG, "Retrieved Organizer ID (oid): " + organizerId);
         if (organizerId == -1) {
             Toast.makeText(getContext(), "User not logged in. Cannot create event.", Toast.LENGTH_LONG).show();
             return;
         }
-
-
-        String dateTimeCombined = date + " at " + time + " - Location: " + location;
 
         String url = BASE_URL + "/add-event";
 
@@ -368,52 +364,65 @@ public class AddFragment extends Fragment {
             jsonBody.put("description", description);
             jsonBody.put("oid", organizerId);
             jsonBody.put("cid", categoryId);
-            jsonBody.put("public", 1); // Flask endpoint uses public=1/0
-            jsonBody.put("date", dateTimeCombined);
-            jsonBody.put("image", imageURLToSend );
-            //jsonBody.put("participants",participants );
+            jsonBody.put("public", publicValue);
+            try {
+                // Parse the raw strings from the fields
+                String[] dateParts = date.split("/"); // dd/MM/yyyy
+                String[] timeParts = time.split(":"); // HH:mm
+
+                int day = Integer.parseInt(dateParts[0]);
+                int month = Integer.parseInt(dateParts[1]) - 1; // Calendar months are 0-based
+                int year = Integer.parseInt(dateParts[2]);
+
+                int hour = Integer.parseInt(timeParts[0]);
+                int minute = Integer.parseInt(timeParts[1]);
+
+                Calendar cal = Calendar.getInstance();
+                cal.set(year, month, day, hour, minute, 0); // seconds = 0
+
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                String formattedDateTime = sdf.format(cal.getTime());
+
+                jsonBody.put("date", formattedDateTime);
+            } catch (Exception e) {
+                Log.e(TAG, "Date formatting error", e);
+                Toast.makeText(getContext(), "Invalid date/time format", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            jsonBody.put("location", location);
+            jsonBody.put("image", imageURLToSend);
         } catch (JSONException e) {
             Log.e(TAG, "JSON creation error for add-event", e);
             Toast.makeText(getContext(), "Error preparing event data.", Toast.LENGTH_LONG).show();
             return;
         }
-                        //so ispublic 0 = it is private
-        //no mattter what: public = 1, private = 0
+
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.POST,
                 url,
                 jsonBody,
                 response -> {
-                    // Success listener
                     try {
                         boolean success = response.getBoolean("success");
                         if (success) {
                             int eid = response.getInt("eid");
-                            Toast.makeText(getContext(), "Event added successfully! ID: " + eid, Toast.LENGTH_LONG).show();
-                            Log.i(TAG, "Event added successfully with EID: " + eid);
-                            // Clear fields or navigate away after success
+                            Toast.makeText(getContext(), "Event added successfully!", Toast.LENGTH_LONG).show();
                             resetFormFields();
                         } else {
-                            // Success is false from server (e.g., DB error)
                             String errorMsg = response.optString("error", "Unknown server error.");
                             Toast.makeText(getContext(), "Failed to add event: " + errorMsg, Toast.LENGTH_LONG).show();
-                            Log.e(TAG, "Server reported failure: " + errorMsg);
                         }
                     } catch (JSONException e) {
-                        Log.e(TAG, "JSON parsing error on success response", e);
                         Toast.makeText(getContext(), "Event added, but response could not be parsed.", Toast.LENGTH_LONG).show();
                     }
                 },
                 error -> {
-                    // Network or Volley error
-                    String errorMsg = error.toString();
-                    Log.e(TAG, "Volley error during add-event: " + errorMsg);
-                    Toast.makeText(getContext(), "Error adding event: " + errorMsg, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "Error adding event: " + error.toString(), Toast.LENGTH_LONG).show();
                 }
         );
         requestQueue.add(request);
-
     }
+
 
 
     private void resetFormFields() {
@@ -424,7 +433,8 @@ public class AddFragment extends Fragment {
         descriptionField.setText("");
         switchPrivateField.setChecked(false);
         // Reset the ImageView to a default placeholder if possible
-        CoverPicture.setImageResource(android.R.drawable.ic_menu_gallery);
+        CoverPicture.setImageResource(R.drawable.image_placeholder);
+        selectedImageUrl = "";
     }
 
 
@@ -484,7 +494,7 @@ public class AddFragment extends Fragment {
                         .centerCrop()
                         .into(CoverPicture);
 
-                Toast.makeText(getContext(), "Cover image set to " + option.name, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(), "Cover image set to " + option.name, Toast.LENGTH_SHORT).show();
 
                 dialog.dismiss();
             });
@@ -545,7 +555,7 @@ public class AddFragment extends Fragment {
 
                 // 1. Update the UI's EditText field
                 locationField.setText(fullAddress);
-                Toast.makeText(getContext(), "Location Set: " + place.getName(), Toast.LENGTH_LONG).show();
+//                Toast.makeText(getContext(), "Location Set: " + place.getName(), Toast.LENGTH_LONG).show();
 
             } else if (resultCode == com.google.android.libraries.places.widget.AutocompleteActivity.RESULT_ERROR && data != null) {
                 // Error handling

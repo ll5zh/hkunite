@@ -12,11 +12,12 @@
 
         <!-- Three lines of text at the top -->
         <TextView
+            android:layout_marginTop="45dp"
             android:id="@+id/welcomeText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Welcome User!"
-            android:textSize="24sp"
+            android:textSize="40sp"
             android:textStyle="bold"
             android:gravity="start"
             android:layout_marginBottom="8dp" />
@@ -26,8 +27,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="You have _ upcoming events and"
-            android:textSize="16sp"
+            android:textSize="25sp"
             android:gravity="start"
+            android:layout_marginTop="8dp"
             android:layout_marginBottom="4dp" />
 
         <TextView
@@ -35,7 +37,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="_ invitations"
-            android:textSize="16sp"
+            android:textSize="25sp"
             android:gravity="start"
             android:layout_marginBottom="32dp" />
 
@@ -44,7 +46,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="32dp"
+            android:layout_marginBottom="16dp"
             android:weightSum="3">
 
             <Button
@@ -56,9 +58,9 @@
                 android:textAllCaps="false"
                 android:backgroundTint="#2196F3"
                 android:textColor="@android:color/white"
-                android:textSize="14sp"
+                android:textSize="18sp"
                 android:layout_marginEnd="8dp"
-                android:padding="12dp" />
+                android:padding="5dp" />
 
             <Button
                 android:id="@+id/buttonHosting"
@@ -69,9 +71,9 @@
                 android:textAllCaps="false"
                 android:backgroundTint="#4CAF50"
                 android:textColor="@android:color/white"
-                android:textSize="14sp"
+                android:textSize="18sp"
                 android:layout_marginEnd="8dp"
-                android:padding="12dp" />
+                android:padding="5dp" />
 
             <Button
                 android:id="@+id/buttonInvitations"
@@ -82,38 +84,18 @@
                 android:textAllCaps="false"
                 android:backgroundTint="#FF9800"
                 android:textColor="@android:color/white"
-                android:textSize="14sp"
-                android:padding="12dp" />
+                android:textSize="18sp"
+                android:padding="5dp" />
 
         </LinearLayout>
 
         <!-- Image Carousel Section -->
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:id="@+id/eventsCarosel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal" />
-
-        </HorizontalScrollView>
-
-
-
-
-        <Button
-            android:id="@+id/btn_invite"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/eventsRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Invite"
-            android:textAllCaps="false"
-            android:backgroundTint="#9C27B0"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
-            android:padding="12dp"
-            android:layout_marginBottom="32dp"/>
+            android:layout_marginTop="0dp"
+            android:padding="0dp" />
     </LinearLayout>
 
 </ScrollView>

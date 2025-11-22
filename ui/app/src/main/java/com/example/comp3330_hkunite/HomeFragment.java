@@ -11,6 +11,8 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -52,8 +54,10 @@ public class HomeFragment extends Fragment {
     private Button buttonUpcomingField;
     private Button buttonHostingField;
     private Button buttonInvitationsField;
-    private ArrayList<Event> currentEvents;
-    private LinearLayout eventsCarosel;
+    private RecyclerView eventsRecyclerViewField;
+    private TextView welcomeTextField;
+    private TextView upcomingTextField;
+    private HomeEventAdapter homeEventAdapter;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -74,15 +78,6 @@ public class HomeFragment extends Fragment {
         return fragment;
     }
 
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        if (getArguments() != null) {
-//            //where do I get the userID from??? How do I know who is who
-////            userID = getArguments().getString(ARG_USERID);
-////            loadUserEvents(uID);
-//        }
-//    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -100,7 +95,9 @@ public class HomeFragment extends Fragment {
         buttonUpcomingField = view.findViewById(R.id.buttonUpcoming);
         buttonHostingField = view.findViewById(R.id.buttonHosting);
         buttonInvitationsField = view.findViewById(R.id.buttonInvitations);
-        eventsCarosel = view.findViewById(R.id.eventsCarosel);
+        eventsRecyclerViewField = view.findViewById(R.id.eventsRecyclerView);
+        welcomeTextField = view.findViewById(R.id.welcomeText);
+        upcomingTextField = view.findViewById(R.id.upcomingText);
 
         //by default show all upcoming events
         showEvents(uid, "upcoming");
@@ -117,6 +114,10 @@ public class HomeFragment extends Fragment {
             showEvents(uid, "invitations");
         });
 
+        getUsername(uid);
+
+        //TODO:: Implement username and numbers (Number of invitations, upcoming events)
+
         return view;
     }
 
@@ -126,7 +127,8 @@ private void showEvents(int uID, String filter) {
     if (filter.equals("hosting")) {
         serverUrl = "http://10.0.2.2:5000/my-organized-events?uid=" + uID;
     } else if (filter.equals("invitations")) {
-        serverUrl = "http://10.0.2.2:5000/my-invites/" + uID; //TODO:: Something still wrong with invitations
+        //TODO:: Something still wrong with invitations
+        serverUrl = "http://10.0.2.2:5000/my-invites?uid=" + uID;
     }
 
 
@@ -162,11 +164,38 @@ private void showEvents(int uID, String filter) {
                         Log.d("API Debug", "Events array length: " + eventsArray.length());
 
                         // Parse events with proper field names
-                        ArrayList<Event> eventsList = parseEvents(eventsArray);
+                        ArrayList<Event> eventsList = new ArrayList<>(); //parseEvents(eventsArray);
+                        for (int i = 0; i < eventsArray.length(); i++) {
+                            JSONObject eventJson = eventsArray.getJSONObject(i);
+
+                            // Log each event to see actual structure
+                            Log.d("EventDebug", "Event " + i + ": " + eventJson.toString());
+
+                            // Use proper field names - adjust based on what your backend actually returns
+                            Event event = new Event(
+                                    eventJson.getInt("eid"),  // or "EID" if uppercase
+                                    eventJson.getString("title"),  // or "TITLE"
+                                    eventJson.optString("description", ""),  // Use optString with default
+                                    eventJson.optString("image"),  // Use actual image field with fallback
+                                    eventJson.getString("date"),  // or "DATE"
+                                    eventJson.optInt("cid", 0),  // Use optInt with default
+                                    eventJson.optString("category_name", "Unknown"),  // or "CATEGORY_NAME"
+                                    eventJson.optString("owner_username", "Unknown")  // or "OWNER_USERNAME" or "oid"
+                            );
+                            eventsList.add(event);
+                        }
+
                         Log.d("API Debug", "Parsed events: " + eventsList.size());
 
                         // Display events in UI
-                        showEventsinUI(eventsList);
+//                        showEventsinUI(eventsList);
+//                        homeEventAdapter = new CategoryAdapter(getContext(), eventsList);
+//                        eventsRecyclerViewField.setAdapter(homeEventAdapter);
+
+                        HomeEventAdapter adapter = new HomeEventAdapter(getContext(), eventsList);
+                        eventsRecyclerViewField.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+                        eventsRecyclerViewField.setAdapter(adapter);
+
 
                         Toast.makeText(getContext(), "Loaded " + eventsList.size() + " events", Toast.LENGTH_SHORT).show();
 
@@ -189,114 +218,128 @@ private void showEvents(int uID, String filter) {
     Volley.newRequestQueue(getContext()).add(jsonObjectRequest);
     Log.d("HomeFragment", "Request added to queue");
 }
+//    private void showEventsinUI(ArrayList<Event> events) {
+//        if (getActivity() != null) {
+//            getActivity().runOnUiThread(() -> {
+//                EventAdapter.updateEvents(events);
+//
+//                if (events.isEmpty()) {
+//                    Log.d("HomeFragment", "No events to display");
+//                    // You can show a "No events" message here
+//                } else {
+//                    Log.d("HomeFragment", "Displaying " + events.size() + " events in RecyclerView");
+//                }
+//            });
+//        }
+//    }
+
+//    private View createEventView(Event event) {
+//        LayoutInflater inflater = LayoutInflater.from(getContext());
+//        View eventView = inflater.inflate(R.layout.events_layout, eventsCarosel, false);
+//
+//        // Set proper layout params for horizontal scrolling
+//        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+//                LinearLayout.LayoutParams.WRAP_CONTENT,
+//                LinearLayout.LayoutParams.WRAP_CONTENT
+//        );
+//        params.setMargins(8, 0, 8, 0); // Reduced margins for better scrolling
+//        eventView.setLayoutParams(params);
+//
+//        ImageView eventImageField = eventView.findViewById(R.id.EventImage);
+//        TextView eventTitleField = eventView.findViewById(R.id.EventTitle);
+//
+//        // Set fixed dimensions for ImageView
+//        LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(280, 180); // Slightly smaller for better fit
+//        eventImageField.setLayoutParams(imageParams);
+//
+//        // Load image and set text (your existing code)
+//        String imageUrl = event.getImageUrl();
+//        if (imageUrl != null && !imageUrl.isEmpty() && !imageUrl.equals("null")) {
+//            Glide.with(getContext())
+//                    .load(imageUrl)
+//                    .placeholder(android.R.drawable.ic_dialog_info)
+//                    .error(android.R.drawable.ic_dialog_alert)
+//                    .into(eventImageField);
+//        } else {
+//            eventImageField.setImageResource(android.R.drawable.ic_dialog_map);
+//        }
+//
+//        eventTitleField.setText(event.getTitle());
+//
+//        eventView.setOnClickListener(v -> {
+//            openEventDetails(event.getEid());
+//        });
+//
+//        return eventView;
+//    }
+
+    // ✅ NEW METHOD: Handle opening event details
+    private void openEventDetails(int eventId) {
+        // Create the fragment you want to open (EventDetailFragment or EditEventFragment)
+        EditEventFragment fragment = new EditEventFragment();
+
+        // Pass the event ID via arguments
+        Bundle args = new Bundle();
+        args.putInt("EID", eventId);
+        fragment.setArguments(args);
 
 
-    private ArrayList<Event> parseEvents(JSONArray eventsArray) throws JSONException {
-        ArrayList<Event> events = new ArrayList<>();
+        // Use FragmentManager from the fragment (not Activity)
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, fragment) // Make sure you have this container in your activity
+                .addToBackStack("home_to_event_detail") // Add to back stack so user can go back
+                .commit();
 
-        for (int i = 0; i < eventsArray.length(); i++) {
-            JSONObject eventJson = eventsArray.getJSONObject(i);
-
-            // Log each event to see actual structure
-            Log.d("EventDebug", "Event " + i + ": " + eventJson.toString());
-
-            //get_events_for_user
-
-            try {
-                // Use proper field names - adjust based on what your backend actually returns
-                Event event = new Event(
-                        eventJson.getInt("eid"),  // or "EID" if uppercase
-                        eventJson.getString("title"),  // or "TITLE"
-                        eventJson.optString("description", ""),  // Use optString with default
-                        eventJson.optString("image"),  // Use actual image field with fallback
-                        eventJson.getString("date"),  // or "DATE"
-                        eventJson.optInt("cid", 0),  // Use optInt with default
-                        eventJson.optString("category_name", "Unknown"),  // or "CATEGORY_NAME"
-                        eventJson.optString("owner_username", "Unknown")  // or "OWNER_USERNAME" or "oid"
-                );
-
-                Log.d("ImageLoading", "Event: " + event.getTitle() + ", Image: " + event.getImageUrl());
-                events.add(event);
-
-            } catch (JSONException e) {
-                Log.e("ParseError", "Failed to parse event at index " + i + ": " + e.getMessage());
-                // Continue with next event instead of failing entirely
-            }
-        }
-
-        return events;
+        Log.d(TAG, "Opening event details for EID: " + eventId);
     }
 
-    //TODO::maybe change this to a viewerpage or recycler view for better UI experience
-    private void showEventsinUI(ArrayList<Event> events) {
-        if (getActivity() != null) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    //update UI elements
-                    eventsCarosel.removeAllViews();
 
-                    for (Event event : events) {
-                        View eventView = createEventView(event);
-                        eventsCarosel.addView(eventView);
-                    }
+    private void getUsername(int uID){
+        if (welcomeTextField == null || upcomingTextField == null) {
+            Log.e(TAG, "TextViews not initialized");
+            return;
+        }
 
-                    // Optional: Show a message if no events found
-                    if (events.isEmpty()) {
-                        // You might want to show a TextView with "No events found"
-                        // For example: textViewNoEvents.setVisibility(View.VISIBLE);
-                        Log.d("HomeFragment", "No events to display");
-                    } else {
-                        // Hide the no events message if it exists
-                        // textViewNoEvents.setVisibility(View.GONE);
-                        Log.d("HomeFragment", "Displaying " + events.size() + " events");
+        String serverUrl = "http://10.0.2.2:5000/users/" + uID;
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.GET,
+                serverUrl,
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            Log.d("API Debug", "Full response: " + response.toString());
+
+                            if (response.has("success") && !response.getBoolean("success")) {
+                                Log.e("API", "Server returned success: false");
+                                return;
+                            }
+
+                            // Update UI on main threadill;
+                            if (getActivity() != null) {
+                                getActivity().runOnUiThread(() -> {
+                                    try {
+                                        welcomeTextField.setText("Welcomehh " + response.getString("name") + "!");
+                                        upcomingTextField.setText("You have " + response.getInt("joined_count") + " upcoming events!");
+                                    } catch (JSONException e) {
+                                        Log.e(TAG, "Error updating UI", e);
+                                    }
+                                });
+                            }
+
+                        } catch (JSONException e) {
+                            Log.e("Volley", "JSON parsing error: " + e.getMessage());
+                        }
                     }
+                },
+                error -> {
+                    Log.e("Volley", "Error: " + error.toString());
                 }
-            });
-        }
-    }
-
-    private View createEventView(Event event){
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-        View eventView = inflater.inflate(R.layout.events_layout, eventsCarosel, false);
-
-        // Set proper layout params for the event view
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
         );
-        params.setMargins(16, 0, 16, 0);
-        eventView.setLayoutParams(params);
 
-        ImageView eventImageField = eventView.findViewById(R.id.EventImage);
-        TextView eventTitleField = eventView.findViewById(R.id.EventTitle);
-
-        // Set fixed dimensions for ImageView
-        LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(300, 200);
-        eventImageField.setLayoutParams(imageParams);
-
-        // Load image from database using Glide with proper error handling
-        String imageUrl = event.getImageUrl();
-        Log.d("ImageLoad", "Loading image for: " + event.getTitle());
-        Log.d("ImageLoad", "Image URL: " + imageUrl);
-
-        if (imageUrl != null && !imageUrl.isEmpty() && !imageUrl.equals("null")) {
-            // Use the actual image URL from the database
-            Glide.with(getContext())
-                    .load(imageUrl)
-                    .placeholder(android.R.drawable.ic_dialog_info) // Show while loading
-                    .error(android.R.drawable.ic_dialog_alert) // Show if error
-                    .into(eventImageField);
-            Log.d("ImageLoad", "Glide load called for: " + imageUrl);
-        } else {
-            // Use fallback image if no URL or empty URL
-            Log.w("ImageLoad", "No valid image URL for: " + event.getTitle() + ", using fallback");
-            eventImageField.setImageResource(android.R.drawable.ic_dialog_map);
-        }
-
-        eventTitleField.setText(event.getTitle());
-
-        return eventView;
+        Volley.newRequestQueue(getContext()).add(jsonObjectRequest);
     }
 
 }

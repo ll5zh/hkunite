@@ -86,7 +86,7 @@ public class EventDetailActivity extends AppCompatActivity {
     }
 
     private void loadEventFromServer(int eid) {
-        String url = "http://10.68.166.59:5001/events/" + eid;
+        String url = "http://10.0.2.2:5000/events/" + eid;
 
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.GET,

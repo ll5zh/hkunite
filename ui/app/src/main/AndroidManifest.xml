@@ -16,11 +16,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Comp3330hkunite"
         android:usesCleartextTraffic="true">
+        <activity
+            android:name=".EditEventActivity"
+            android:exported="false" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-
 
         <activity
             android:name=".LoginActivity"
@@ -45,7 +47,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".InviteActivity"
+        <activity
+            android:name=".InviteActivity"
             android:exported="false" />
     </application>
 

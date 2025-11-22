@@ -120,7 +120,7 @@ public class EditEventFragment extends Fragment {
         Context context = getContext();
 
         //connecting all the buttons to their UI button, use: findViewById(R.id.btn_add)
-        saveEditsButtonField = view.findViewById(R.id.saveEditsButton);
+//        saveEditsButtonField = view.findViewById(R.id.saveEditsButton);
         uploadImageButtonField = view.findViewById(R.id.add_image);
         titleField = view.findViewById(R.id.editTextTitle);
         locationField = view.findViewById(R.id.editTextLocation);
@@ -130,10 +130,10 @@ public class EditEventFragment extends Fragment {
         switchPrivateField = view.findViewById(R.id.switchPrivate);
         CoverPicture = view.findViewById(R.id.picture);
         LocButtonField = view.findViewById(R.id.LocationButton);
-
-        textInputTitleField = view.findViewById(R.id.textInputTitle);
-        textInputLocationField = view.findViewById(R.id.textInputLocation);
-        textInputDateField = view.findViewById(R.id.textInputDate);
+//
+//        textInputTitleField = view.findViewById(R.id.textInputTitle);
+//        textInputLocationField = view.findViewById(R.id.textInputLocation);
+//        textInputDateField = view.findViewById(R.id.textInputDate);
         registerPictureUpload();
 
         // Get UID from SharedPreferences

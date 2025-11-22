@@ -16,9 +16,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Comp3330hkunite"
         android:usesCleartextTraffic="true">
-        <activity
-            android:name=".EditEventActivity"
-            android:exported="false" />
 
         <activity android:name=".EditEventFragment" />
         <activity android:name=".UpdateEventActivity" />
@@ -47,17 +44,9 @@
             android:theme="@style/Theme.Comp3330hkunite" />
 
         <activity
-            android:name=".MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
             android:name=".InviteActivity"
             android:exported="false" />
+
     </application>
 
 </manifest>

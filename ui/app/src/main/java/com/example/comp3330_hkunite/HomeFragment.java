@@ -180,7 +180,8 @@ private void showEvents(int uID, String filter) {
                                     eventJson.getString("date"),  // or "DATE"
                                     eventJson.optInt("cid", 0),  // Use optInt with default
                                     eventJson.optString("category_name", "Unknown"),  // or "CATEGORY_NAME"
-                                    eventJson.optString("owner_username", "Unknown")  // or "OWNER_USERNAME" or "oid"
+                                    eventJson.optString("owner_username", "Unknown"),  // or "OWNER_USERNAME" or "oid"
+                                    eventJson.optString("location", "Unknown")
                             );
                             eventsList.add(event);
                         }

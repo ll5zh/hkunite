@@ -1,7 +1,10 @@
 package com.example.comp3330_hkunite;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -13,8 +16,10 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.view.ViewCompat;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -85,12 +90,26 @@ public class HomeEventAdapter extends RecyclerView.Adapter<HomeEventAdapter.Expl
             return true; // consume touch, but performClick() ensures click still fires
         });
 
-        // Click listener for navigation
-        holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(context, EventDetailActivity.class);
-            intent.putExtra("EID", event.getEid());
-            context.startActivity(intent);
-        });
+//        holder.itemView.setOnClickListener(v -> {
+//            // Create the fragment instance
+//            EditEventFragment fragment = new EditEventFragment();
+//
+//            // Pass arguments to the fragment
+//            Bundle args = new Bundle();
+//            args.putString("EID", event.getEid());
+//            fragment.setArguments(args);
+//
+//            // Get the FragmentManager from the context
+//            FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
+//
+//            // Begin the transaction to replace the current fragment
+//            FragmentTransaction transaction = fragmentManager.beginTransaction();
+//            transaction.replace(R.id.fragment_container, fragment); // R.id.fragment_container is the layout where fragments are hosted
+//            transaction.addToBackStack(null); // Optional: allows user to navigate back
+//            transaction.commit();
+//        });
+
+
     }
 
     @Override

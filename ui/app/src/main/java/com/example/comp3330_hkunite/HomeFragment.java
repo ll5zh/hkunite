@@ -188,14 +188,10 @@ private void showEvents(int uID, String filter) {
 
                         Log.d("API Debug", "Parsed events: " + eventsList.size());
 
-                        // Display events in UI
-//                        showEventsinUI(eventsList);
-//                        homeEventAdapter = new CategoryAdapter(getContext(), eventsList);
-//                        eventsRecyclerViewField.setAdapter(homeEventAdapter);
-
                         HomeEventAdapter adapter = new HomeEventAdapter(getContext(), eventsList);
                         eventsRecyclerViewField.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
                         eventsRecyclerViewField.setAdapter(adapter);
+
 
 
                         Toast.makeText(getContext(), "Loaded " + eventsList.size() + " events", Toast.LENGTH_SHORT).show();
@@ -219,82 +215,8 @@ private void showEvents(int uID, String filter) {
     Volley.newRequestQueue(getContext()).add(jsonObjectRequest);
     Log.d("HomeFragment", "Request added to queue");
 }
-//    private void showEventsinUI(ArrayList<Event> events) {
-//        if (getActivity() != null) {
-//            getActivity().runOnUiThread(() -> {
-//                EventAdapter.updateEvents(events);
-//
-//                if (events.isEmpty()) {
-//                    Log.d("HomeFragment", "No events to display");
-//                    // You can show a "No events" message here
-//                } else {
-//                    Log.d("HomeFragment", "Displaying " + events.size() + " events in RecyclerView");
-//                }
-//            });
-//        }
-//    }
 
-//    private View createEventView(Event event) {
-//        LayoutInflater inflater = LayoutInflater.from(getContext());
-//        View eventView = inflater.inflate(R.layout.events_layout, eventsCarosel, false);
-//
-//        // Set proper layout params for horizontal scrolling
-//        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-//                LinearLayout.LayoutParams.WRAP_CONTENT,
-//                LinearLayout.LayoutParams.WRAP_CONTENT
-//        );
-//        params.setMargins(8, 0, 8, 0); // Reduced margins for better scrolling
-//        eventView.setLayoutParams(params);
-//
-//        ImageView eventImageField = eventView.findViewById(R.id.EventImage);
-//        TextView eventTitleField = eventView.findViewById(R.id.EventTitle);
-//
-//        // Set fixed dimensions for ImageView
-//        LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(280, 180); // Slightly smaller for better fit
-//        eventImageField.setLayoutParams(imageParams);
-//
-//        // Load image and set text (your existing code)
-//        String imageUrl = event.getImageUrl();
-//        if (imageUrl != null && !imageUrl.isEmpty() && !imageUrl.equals("null")) {
-//            Glide.with(getContext())
-//                    .load(imageUrl)
-//                    .placeholder(android.R.drawable.ic_dialog_info)
-//                    .error(android.R.drawable.ic_dialog_alert)
-//                    .into(eventImageField);
-//        } else {
-//            eventImageField.setImageResource(android.R.drawable.ic_dialog_map);
-//        }
-//
-//        eventTitleField.setText(event.getTitle());
-//
-//        eventView.setOnClickListener(v -> {
-//            openEventDetails(event.getEid());
-//        });
-//
-//        return eventView;
-//    }
-
-    // ✅ NEW METHOD: Handle opening event details
-    private void openEventDetails(int eventId) {
-        // Create the fragment you want to open (EventDetailFragment or EditEventFragment)
-        EditEventFragment fragment = new EditEventFragment();
-
-        // Pass the event ID via arguments
-        Bundle args = new Bundle();
-        args.putInt("EID", eventId);
-        fragment.setArguments(args);
-
-
-        // Use FragmentManager from the fragment (not Activity)
-        requireActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, fragment) // Make sure you have this container in your activity
-                .addToBackStack("home_to_event_detail") // Add to back stack so user can go back
-                .commit();
-
-        Log.d(TAG, "Opening event details for EID: " + eventId);
-    }
-
-
+//TODO::Fix this!!
     private void getUsername(int uID){
         if (welcomeTextField == null || upcomingTextField == null) {
             Log.e(TAG, "TextViews not initialized");

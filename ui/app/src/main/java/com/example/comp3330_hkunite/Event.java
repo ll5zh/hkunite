@@ -10,9 +10,10 @@ public class Event {
     private int cid;
     private String categoryName;
     private String ownerUsername;
+    private String location;
 
 
-    public Event(int eid, String title, String description, String imageUrl, String date, int cid, String categoryName, String ownerUsername) {
+    public Event(int eid, String title, String description, String imageUrl, String date, int cid, String categoryName, String ownerUsername, String location) {
         this.eid = eid;
         this.title = title;
         this.description = description;
@@ -21,6 +22,7 @@ public class Event {
         this.cid = cid;
         this.categoryName = categoryName;
         this.ownerUsername = ownerUsername;
+        this.location = location;
     }
 
 
@@ -36,5 +38,6 @@ public class Event {
     public String getDescription() { return description; }
     public String getImageUrl() { return imageUrl; }
     public String getDate() { return date; }
+    public String getLocation() { return location; }
 }
 

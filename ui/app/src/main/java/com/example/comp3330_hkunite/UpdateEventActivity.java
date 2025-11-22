@@ -93,7 +93,7 @@ public class UpdateEventActivity extends AppCompatActivity {
 
                 String fullAddress = place.getAddress();
                 inputLocation.setText(fullAddress);
-                Toast.makeText(this, "Location Set: " + place.getName(), Toast.LENGTH_LONG).show();
+//                Toast.makeText(this, "Location Set: " + place.getName(), Toast.LENGTH_LONG).show();
 
             } else if (resultCode == com.google.android.libraries.places.widget.AutocompleteActivity.RESULT_ERROR && data != null) {
                 com.google.android.gms.common.api.Status status =

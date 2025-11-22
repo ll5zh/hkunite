@@ -318,7 +318,7 @@ public class AddFragment extends Fragment {
                         // Location found
                         double latitude = location.getLatitude();
                         double longitude = location.getLongitude();
-                        Toast.makeText(getContext(), "Location: Lat " + latitude + ", Lon " + longitude, Toast.LENGTH_LONG).show();
+//                        Toast.makeText(getContext(), "Location: Lat " + latitude + ", Lon " + longitude, Toast.LENGTH_LONG).show();
                         String locString = "Latitude:"+latitude+" Longitude:"+longitude;
                         locationField.setText(locString);
                     } else {
@@ -406,7 +406,7 @@ public class AddFragment extends Fragment {
                         boolean success = response.getBoolean("success");
                         if (success) {
                             int eid = response.getInt("eid");
-                            Toast.makeText(getContext(), "Event added successfully! ID: " + eid, Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), "Event added successfully!", Toast.LENGTH_LONG).show();
                             resetFormFields();
                         } else {
                             String errorMsg = response.optString("error", "Unknown server error.");
@@ -494,7 +494,7 @@ public class AddFragment extends Fragment {
                         .centerCrop()
                         .into(CoverPicture);
 
-                Toast.makeText(getContext(), "Cover image set to " + option.name, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(), "Cover image set to " + option.name, Toast.LENGTH_SHORT).show();
 
                 dialog.dismiss();
             });
@@ -555,7 +555,7 @@ public class AddFragment extends Fragment {
 
                 // 1. Update the UI's EditText field
                 locationField.setText(fullAddress);
-                Toast.makeText(getContext(), "Location Set: " + place.getName(), Toast.LENGTH_LONG).show();
+//                Toast.makeText(getContext(), "Location Set: " + place.getName(), Toast.LENGTH_LONG).show();
 
             } else if (resultCode == com.google.android.libraries.places.widget.AutocompleteActivity.RESULT_ERROR && data != null) {
                 // Error handling

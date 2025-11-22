@@ -82,7 +82,6 @@ public class InviteActivity extends AppCompatActivity {
         backButton.setOnClickListener(v -> finish());
 
         // Confirm button
-        // Confirm button (arrow ImageButton)
         ImageButton confirmButton = findViewById(R.id.btnConfirmInvite);
         confirmButton.setOnClickListener(v -> {
             List<User> selectedUsers = new ArrayList<>();
@@ -140,7 +139,6 @@ public class InviteActivity extends AppCompatActivity {
                             }
                             userAdapter.updateList(allUsers);
 
-                            // Hook into adapter clicks
                             userAdapter.setOnUserClickListener(user -> {
                                 if (user.isSelected()) {
                                     addSelectedUserChip(user);
@@ -191,7 +189,6 @@ public class InviteActivity extends AppCompatActivity {
         Volley.newRequestQueue(this).add(request);
     }
 
-    // --- Selected user chips with animations ---
     private void addSelectedUserChip(User user) {
         View chip = LayoutInflater.from(this).inflate(R.layout.item_selected_user, selectedUsersContainer, false);
 
@@ -244,7 +241,7 @@ public class InviteActivity extends AppCompatActivity {
             View chip = selectedUsersContainer.getChildAt(i);
             Object tag = chip.getTag();
             if (tag instanceof Integer && ((Integer) tag) == user.getUid()) {
-                // Smooth removal animation for consistency
+                // Removal animation
                 chip.animate()
                         .alpha(0f)
                         .scaleX(0.8f)
@@ -261,8 +258,6 @@ public class InviteActivity extends AppCompatActivity {
         }
     }
 
-
-    // --- Divider animations ---
     private void showDivider() {
         if (selectedUsersDivider.getVisibility() != View.VISIBLE) {
             selectedUsersDivider.setAlpha(0f);

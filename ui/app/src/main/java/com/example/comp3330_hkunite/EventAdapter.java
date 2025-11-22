@@ -51,9 +51,6 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             eventImage = itemView.findViewById(R.id.event_image);
             eventTitle = itemView.findViewById(R.id.event_title);
             eventDate = itemView.findViewById(R.id.event_date);
-
-            // TODO: You could add a click listener here to open EventDetailActivity
-            // itemView.setOnClickListener(v -> { ... });
         }
     }
 }

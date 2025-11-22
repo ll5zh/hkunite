@@ -238,6 +238,7 @@ public class ProfileFragment extends Fragment {
                                         eventObject.getString("date"),
                                         eventObject.getInt("cid"),
                                         "",
+                                        "",
                                         ""
                                 );
                                 eventList.add(event);

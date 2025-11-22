@@ -18,7 +18,7 @@
             android:background="@drawable/search_background"
             android:elevation="2dp"
             android:padding="8dp"
-            android:layout_margin="12dp">   <!-- margin added -->
+            android:layout_margin="12dp">
 
             <!-- Back button inside the search bar -->
             <ImageButton

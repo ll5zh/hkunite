@@ -74,7 +74,6 @@ public class ExploreAdapter extends RecyclerView.Adapter<ExploreAdapter.ExploreV
                 case MotionEvent.ACTION_UP:
                     v.animate().scaleX(1f).scaleY(1f).setDuration(100).start();
                     ViewCompat.setElevation(v, 2f);
-                    // Required for accessibility + proper click handling
                     v.performClick();
                     break;
                 case MotionEvent.ACTION_CANCEL:
@@ -82,7 +81,7 @@ public class ExploreAdapter extends RecyclerView.Adapter<ExploreAdapter.ExploreV
                     ViewCompat.setElevation(v, 2f);
                     break;
             }
-            return true; // consume touch, but performClick() ensures click still fires
+            return true;
         });
 
         // Click listener for navigation

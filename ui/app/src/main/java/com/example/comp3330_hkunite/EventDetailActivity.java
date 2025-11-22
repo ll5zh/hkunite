@@ -119,7 +119,7 @@ public class EventDetailActivity extends AppCompatActivity {
                         String description = data.optString("description", "");
                         String image = data.optString("image", null);
                         String date = data.optString("date");
-                        String location = data.optString("location", ""); // NEW
+                        String location = data.optString("location", "");
                         ownerId = data.optInt("oid", -1);
 
                         String ownerName = data.optString("owner_name");
@@ -129,9 +129,9 @@ public class EventDetailActivity extends AppCompatActivity {
                         eventTitle.setText(title);
                         eventDate.setText(date);
                         eventDescription.setText(description);
-                        eventLocation.setText("Location: " + location); // NEW
+                        eventLocation.setText("Location: " + location);
 
-                        // Click → open Google Maps
+                        // Open Google Maps
                         eventLocation.setOnClickListener(v -> {
                             if (!location.isEmpty()) {
                                 Intent mapIntent = new Intent(Intent.ACTION_VIEW,
@@ -193,7 +193,7 @@ public class EventDetailActivity extends AppCompatActivity {
         long now = System.currentTimeMillis();
         boolean eventNotPassed = false;
         try {
-            // parse eventDate string to millis
+            // Parse eventDate string
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
             Date eventDateObj = sdf.parse(eventDate.getText().toString());
             if (eventDateObj != null) {
@@ -231,7 +231,7 @@ public class EventDetailActivity extends AppCompatActivity {
                     startActivity(intent);
                 });
             } else {
-                // Past event → hide all edit/invite buttons
+                // Past event should hide all edit/invite buttons
                 findViewById(R.id.editInviteRow).setVisibility(View.GONE);
             }
             return;
@@ -270,7 +270,7 @@ public class EventDetailActivity extends AppCompatActivity {
                 url,
                 null,
                 response -> {
-                    Toast.makeText(this, "Joined event successfully", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "Joined event successfully", Toast.LENGTH_SHORT).show();
                     hasJoined = true;
                     joinStatusChecked = true;
                     updateButtons();
@@ -288,7 +288,7 @@ public class EventDetailActivity extends AppCompatActivity {
                 url,
                 null,
                 response -> {
-                    Toast.makeText(this, "Invite declined", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "Invite declined", Toast.LENGTH_SHORT).show();
 
                     joinButtonSide.setVisibility(View.GONE);
 
@@ -309,7 +309,7 @@ public class EventDetailActivity extends AppCompatActivity {
         Volley.newRequestQueue(this).add(request);
     }
 
-    // --- Animation helpers ---
+    // Animation helpers
     private void fadeOut(View view) {
         if (view.getVisibility() == View.VISIBLE) {
             view.animate()

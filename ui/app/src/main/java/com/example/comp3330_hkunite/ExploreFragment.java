@@ -33,7 +33,7 @@ public class ExploreFragment extends Fragment {
     private Map<String, List<Event>> categorizedEvents = new LinkedHashMap<>();
     private static final String TAG = "ExploreFragment";
 
-    private int uid = -1; // current user ID
+    private int uid = -1;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -63,7 +63,7 @@ public class ExploreFragment extends Fragment {
 
     private void loadEventsFromServer() {
         Log.d(TAG, "loadEventsFromServer() called");
-        
+
         String url = Configuration.BASE_URL + "/events";
 
         JsonArrayRequest request = new JsonArrayRequest(
@@ -85,8 +85,9 @@ public class ExploreFragment extends Fragment {
 
                             String categoryName = obj.optString("category_name", "Uncategorized");
                             String ownerUsername = obj.optString("owner_name", "Unknown");
+                            String location = obj.optString("location", "");
 
-                            Event event = new Event(eid, title, description, image, date, cid, categoryName, ownerUsername);
+                            Event event = new Event(eid, title, description, image, date, cid, categoryName, ownerUsername, location);
 
                             if (ownerId == uid) {
                                 Log.d(TAG, "Skipping event " + eid + " owned by current user " + uid);
@@ -126,7 +127,8 @@ public class ExploreFragment extends Fragment {
             for (Event event : entry.getValue()) {
                 if (event.getTitle().toLowerCase().contains(lowerKeyword) ||
                         event.getDescription().toLowerCase().contains(lowerKeyword) ||
-                        event.getOwnerUsername().toLowerCase().contains(lowerKeyword)) {
+                        event.getOwnerUsername().toLowerCase().contains(lowerKeyword) ||
+                        event.getLocation().toLowerCase().contains(lowerKeyword)){
                     filteredList.add(event);
                 }
             }

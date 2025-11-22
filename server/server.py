@@ -245,15 +245,15 @@ def update_event_specific(eid):
     if 'location' in data:
         updates['location'] = data['location']
 
-        
     try:
         result = db.edit_event(eid, updates)
         if result:
-             return jsonify({"success": True, "message": "Updated successfully"}), 200
+            return jsonify({"success": True, "data": result}), 200
         else:
-             return jsonify({"success": False, "message": "Update failed"}), 500
+            return jsonify({"success": False, "message": "Update failed"}), 500
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
+
 
 # ---------------------------------------------------------
 # MAIN APP START

@@ -104,6 +104,16 @@ public class ProfileFragment extends Fragment {
         return root;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Re-fetch events every time the fragment comes back into view
+        if (currentUserID != -1) {
+            fetchUserEvents(currentUserID);
+        }
+    }
+
+
     private void setupRecyclerViews() {
         //badge list:
         badgeAdapter = new BadgeAdapter(badgeList);

@@ -323,13 +323,11 @@ public class AddFragment extends Fragment {
                 });
     }
 
-    private void uploadEventToDatabase(){
-
+    private void uploadEventToDatabase() {
         if (requestQueue == null) {
             Toast.makeText(getContext(), "Network error: Request queue not initialized", Toast.LENGTH_SHORT).show();
             return;
         }
-
 
         String title = titleField.getText().toString();
         String description = descriptionField.getText().toString();
@@ -337,28 +335,17 @@ public class AddFragment extends Fragment {
         String date = dateField.getText().toString();
         String time = timeField.getText().toString();
         boolean isPublic = !switchPrivateField.isChecked();
-        int publicValue = isPublic ? 0 : 1;
-        Log.d(TAG, "is it public " + publicValue);
-        String participants = "";
+        int publicValue = isPublic ? 1 : 0; // 1 = public, 0 = private
         String imageURLToSend = selectedImageUrl.isEmpty() ? "" : selectedImageUrl;
 
-        //hardcoded for now
-        int categoryId = 1; // Example category ID. Update this if you have a category selection spinner.
-
-        //to get the organizers ID from the Loding activity
+        int categoryId = 1; // Example category ID
         SharedPreferences prefs = requireContext().getSharedPreferences(PREF_NAME, MODE_PRIVATE);
         int organizerId = prefs.getInt("USER_ID", -1);
 
-        Log.d(TAG, "Retrieved image url: " + imageURLToSend);
-
-        Log.d(TAG, "Retrieved Organizer ID (oid): " + organizerId);
         if (organizerId == -1) {
             Toast.makeText(getContext(), "User not logged in. Cannot create event.", Toast.LENGTH_LONG).show();
             return;
         }
-
-
-        String dateTimeCombined = date + " at " + time + " - Location: " + location;
 
         String url = BASE_URL + "/add-event";
 
@@ -368,52 +355,42 @@ public class AddFragment extends Fragment {
             jsonBody.put("description", description);
             jsonBody.put("oid", organizerId);
             jsonBody.put("cid", categoryId);
-            jsonBody.put("public", 1); // Flask endpoint uses public=1/0
-            jsonBody.put("date", dateTimeCombined);
-            jsonBody.put("image", imageURLToSend );
-            //jsonBody.put("participants",participants );
+            jsonBody.put("public", publicValue);
+            jsonBody.put("date", date + " " + time);
+            jsonBody.put("location", location);
+            jsonBody.put("image", imageURLToSend);
         } catch (JSONException e) {
             Log.e(TAG, "JSON creation error for add-event", e);
             Toast.makeText(getContext(), "Error preparing event data.", Toast.LENGTH_LONG).show();
             return;
         }
-                        //so ispublic 0 = it is private
-        //no mattter what: public = 1, private = 0
+
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.POST,
                 url,
                 jsonBody,
                 response -> {
-                    // Success listener
                     try {
                         boolean success = response.getBoolean("success");
                         if (success) {
                             int eid = response.getInt("eid");
                             Toast.makeText(getContext(), "Event added successfully! ID: " + eid, Toast.LENGTH_LONG).show();
-                            Log.i(TAG, "Event added successfully with EID: " + eid);
-                            // Clear fields or navigate away after success
                             resetFormFields();
                         } else {
-                            // Success is false from server (e.g., DB error)
                             String errorMsg = response.optString("error", "Unknown server error.");
                             Toast.makeText(getContext(), "Failed to add event: " + errorMsg, Toast.LENGTH_LONG).show();
-                            Log.e(TAG, "Server reported failure: " + errorMsg);
                         }
                     } catch (JSONException e) {
-                        Log.e(TAG, "JSON parsing error on success response", e);
                         Toast.makeText(getContext(), "Event added, but response could not be parsed.", Toast.LENGTH_LONG).show();
                     }
                 },
                 error -> {
-                    // Network or Volley error
-                    String errorMsg = error.toString();
-                    Log.e(TAG, "Volley error during add-event: " + errorMsg);
-                    Toast.makeText(getContext(), "Error adding event: " + errorMsg, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "Error adding event: " + error.toString(), Toast.LENGTH_LONG).show();
                 }
         );
         requestQueue.add(request);
-
     }
+
 
 
     private void resetFormFields() {

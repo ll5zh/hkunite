@@ -6,24 +6,43 @@
     android:layout_height="match_parent"
     android:padding="24dp">
 
-    <TextView
-        android:id="@+id/headerTitle"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/headerRow"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Update Event"
-        android:textColor="@color/brand_title"
-        android:textSize="28sp"
-        android:textStyle="bold"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:layout_marginTop="32dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent">
+
+        <!-- Back button -->
+        <ImageButton
+            android:id="@+id/backButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_arrow_back"
+            android:contentDescription="Back"
+            android:layout_marginEnd="8dp"/>
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/headerTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Update Event"
+            android:textColor="@color/brand_title"
+            android:textSize="28sp"
+            android:textStyle="bold"/>
+    </LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="24dp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintTop_toBottomOf="@id/headerTitle"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintTop_toBottomOf="@id/headerRow"
         app:layout_constraintBottom_toTopOf="@id/buttonSaveChanges">
 
         <LinearLayout
@@ -65,6 +84,40 @@
                 android:background="@android:color/white"
                 android:textColor="@color/brand_body"
                 android:hint="2025-01-01 12:00:00"
+                android:layout_marginBottom="24dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Location"
+                android:textColor="@color/brand_body"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"/>
+
+            <EditText
+                android:id="@+id/inputLocation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:background="@android:color/white"
+                android:textColor="@color/brand_body"
+                android:hint="Enter location"
+                android:clickable="true"
+                android:focusable="true"
+                android:layout_marginBottom="8dp"/>
+
+            <Button
+                android:id="@+id/buttonSearchLocation"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:text="Search Location"
+                android:layout_gravity="center"
+                android:minHeight="56dp"
+                android:backgroundTint="#114337"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                app:cornerRadius="16dp"
                 android:layout_marginBottom="24dp"/>
 
             <TextView

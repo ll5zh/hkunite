@@ -2,6 +2,7 @@ package com.example.comp3330_hkunite;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -14,6 +15,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.Request;
@@ -30,6 +33,7 @@ public class EventDetailActivity extends AppCompatActivity {
     private Button joinButton, joinButtonSide, declineButton;
     private LinearLayout invitationCard;
     private LinearLayout inviteButtonRow;
+    private TextView eventLocation;
 
     private int uid;
     private int ownerId = -1;
@@ -38,6 +42,7 @@ public class EventDetailActivity extends AppCompatActivity {
     private boolean joinStatusChecked = false;
     private boolean inviteStatusChecked = false;
     private boolean invited = false;
+    private ActivityResultLauncher<Intent> updateEventLauncher;
 
     private static final String TAG = "EventDetailActivity";
 
@@ -51,6 +56,7 @@ public class EventDetailActivity extends AppCompatActivity {
         eventTitle = findViewById(R.id.eventTitle);
         eventDate = findViewById(R.id.eventDate);
         eventDescription = findViewById(R.id.eventDescription);
+        eventLocation = findViewById(R.id.eventLocation);
         joinButton = findViewById(R.id.buttonJoinEvent);
         joinButtonSide = findViewById(R.id.buttonJoinEventSide);
         declineButton = findViewById(R.id.buttonDeclineInvite);
@@ -59,6 +65,19 @@ public class EventDetailActivity extends AppCompatActivity {
 
         invitationCard.setVisibility(View.GONE);
         inviteButtonRow.setVisibility(View.GONE);
+
+        updateEventLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK) {
+                        Intent data = result.getData();
+                        if (data != null && data.getBooleanExtra("UPDATED", false)) {
+                            int eid = getIntent().getIntExtra("EID", -1);
+                            loadEventFromServer(eid); // reload immediately
+                        }
+                    }
+                }
+        );
 
         ImageButton backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> finish());
@@ -95,6 +114,7 @@ public class EventDetailActivity extends AppCompatActivity {
                         String description = data.optString("description", "");
                         String image = data.optString("image", null);
                         String date = data.optString("date");
+                        String location = data.optString("location", ""); // NEW
                         ownerId = data.optInt("oid", -1);
 
                         String ownerName = data.optString("owner_name");
@@ -104,6 +124,17 @@ public class EventDetailActivity extends AppCompatActivity {
                         eventTitle.setText(title);
                         eventDate.setText(date);
                         eventDescription.setText(description);
+                        eventLocation.setText("Location: " + location); // NEW
+
+                        // Click → open Google Maps
+                        eventLocation.setOnClickListener(v -> {
+                            if (!location.isEmpty()) {
+                                Intent mapIntent = new Intent(Intent.ACTION_VIEW,
+                                        android.net.Uri.parse("geo:0,0?q=" + Uri.encode(location)));
+                                mapIntent.setPackage("com.google.android.apps.maps");
+                                startActivity(mapIntent);
+                            }
+                        });
 
                         if (image != null && !image.isEmpty() && !image.equals("null")) {
                             Glide.with(this).load(image).into(eventImage);
@@ -162,7 +193,7 @@ public class EventDetailActivity extends AppCompatActivity {
             joinButton.setOnClickListener(v -> {
                 Intent intent = new Intent(EventDetailActivity.this, UpdateEventActivity.class);
                 intent.putExtra("EID", getIntent().getIntExtra("EID", -1));
-                startActivity(intent);
+                updateEventLauncher.launch(intent);
             });
 
             inviteButtonRow.setVisibility(View.GONE);

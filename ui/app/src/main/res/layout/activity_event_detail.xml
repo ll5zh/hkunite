@@ -221,21 +221,6 @@
                         app:cornerRadius="16dp"/>
                 </LinearLayout>
 
-                <!-- Solo edit -->
-                <Button
-                    android:id="@+id/buttonEditEventSolo"
-                    android:layout_width="250dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:minHeight="56dp"
-                    android:text="Edit Event"
-                    android:backgroundTint="@color/button_background_tint"
-                    android:textColor="@color/button_text_color"
-                    android:textStyle="bold"
-                    android:textSize="18sp"
-                    app:cornerRadius="16dp"
-                    android:visibility="gone"/>
-
             </LinearLayout>
 
             <View android:layout_width="match_parent" android:layout_height="50dp"/>

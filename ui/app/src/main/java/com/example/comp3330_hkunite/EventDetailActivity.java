@@ -204,6 +204,7 @@ public class EventDetailActivity extends AppCompatActivity {
         }
 
         if (uid == ownerId) {
+            // Owners should never see Join/Decline
             joinButton.setVisibility(View.GONE);
             joinButtonSide.setVisibility(View.GONE);
             declineButton.setVisibility(View.GONE);
@@ -211,9 +212,8 @@ public class EventDetailActivity extends AppCompatActivity {
             slideOut(invitationCard);
 
             if (eventNotPassed) {
-                // show Edit + Invite row
+                // Show Edit + Invite row
                 findViewById(R.id.editInviteRow).setVisibility(View.VISIBLE);
-                findViewById(R.id.buttonEditEventSolo).setVisibility(View.GONE);
 
                 Button editBtn = findViewById(R.id.buttonEditEventSide);
                 Button inviteBtn = findViewById(R.id.buttonInviteEvent);
@@ -226,29 +226,17 @@ public class EventDetailActivity extends AppCompatActivity {
 
                 inviteBtn.setOnClickListener(v -> {
                     int eid = getIntent().getIntExtra("EID", -1);
-                    if (eid != -1) {
-                        Intent intent = new Intent(EventDetailActivity.this, InviteActivity.class);
-                        intent.putExtra("EVENT_ID", eid);   // pass event ID to InviteActivity
-                        startActivity(intent);
-                    } else {
-                        Toast.makeText(this, "Invalid event ID", Toast.LENGTH_SHORT).show();
-                    }
+                    Intent intent = new Intent(this, InviteActivity.class);
+                    intent.putExtra("EVENT_ID", eid);
+                    startActivity(intent);
                 });
-
             } else {
-                // show solo Edit button
+                // Past event → hide all edit/invite buttons
                 findViewById(R.id.editInviteRow).setVisibility(View.GONE);
-                findViewById(R.id.buttonEditEventSolo).setVisibility(View.VISIBLE);
-
-                Button editSolo = findViewById(R.id.buttonEditEventSolo);
-                editSolo.setOnClickListener(v -> {
-                    Intent intent = new Intent(this, UpdateEventActivity.class);
-                    intent.putExtra("EID", getIntent().getIntExtra("EID", -1));
-                    updateEventLauncher.launch(intent);
-                });
             }
             return;
         }
+
 
         if (hasJoined) {
             joinButton.setVisibility(View.VISIBLE);

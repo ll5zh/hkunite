@@ -183,6 +183,59 @@
                     android:textStyle="bold"
                     android:textSize="18sp"
                     app:cornerRadius="16dp"/>
+
+                <!-- Edit + Invite pair -->
+                <LinearLayout
+                    android:id="@+id/editInviteRow"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:gravity="center">
+
+                    <Button
+                        android:id="@+id/buttonEditEventSide"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        android:minHeight="56dp"
+                        android:text="Edit Event"
+                        android:backgroundTint="@color/button_background_tint"
+                        android:textColor="@color/button_text_color"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        app:cornerRadius="16dp"/>
+
+                    <Button
+                        android:id="@+id/buttonInviteEvent"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:minHeight="56dp"
+                        android:text="Invite"
+                        android:backgroundTint="@color/brand_text"
+                        android:textColor="@color/button_text_color"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        app:cornerRadius="16dp"/>
+                </LinearLayout>
+
+                <!-- Solo edit -->
+                <Button
+                    android:id="@+id/buttonEditEventSolo"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:minHeight="56dp"
+                    android:text="Edit Event"
+                    android:backgroundTint="@color/button_background_tint"
+                    android:textColor="@color/button_text_color"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    app:cornerRadius="16dp"
+                    android:visibility="gone"/>
+
             </LinearLayout>
 
             <View android:layout_width="match_parent" android:layout_height="50dp"/>

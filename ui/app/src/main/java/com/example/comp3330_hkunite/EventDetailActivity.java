@@ -27,6 +27,11 @@ import com.bumptech.glide.Glide;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class EventDetailActivity extends AppCompatActivity {
     private ImageView eventImage;
     private TextView eventOwner, eventTitle, eventDate, eventDescription;
@@ -185,19 +190,63 @@ public class EventDetailActivity extends AppCompatActivity {
     private void updateButtons() {
         if (!eventLoaded || !joinStatusChecked || !inviteStatusChecked) return;
 
+        long now = System.currentTimeMillis();
+        boolean eventNotPassed = false;
+        try {
+            // parse eventDate string to millis
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+            Date eventDateObj = sdf.parse(eventDate.getText().toString());
+            if (eventDateObj != null) {
+                eventNotPassed = eventDateObj.getTime() > now;
+            }
+        } catch (ParseException e) {
+            Log.e(TAG, "Date parse error", e);
+        }
+
         if (uid == ownerId) {
-            joinButton.setVisibility(View.VISIBLE);
-            joinButton.setText("Edit Event");
-            joinButton.setEnabled(true);
-
-            joinButton.setOnClickListener(v -> {
-                Intent intent = new Intent(EventDetailActivity.this, UpdateEventActivity.class);
-                intent.putExtra("EID", getIntent().getIntExtra("EID", -1));
-                updateEventLauncher.launch(intent);
-            });
-
+            joinButton.setVisibility(View.GONE);
+            joinButtonSide.setVisibility(View.GONE);
+            declineButton.setVisibility(View.GONE);
             inviteButtonRow.setVisibility(View.GONE);
             slideOut(invitationCard);
+
+            if (eventNotPassed) {
+                // show Edit + Invite row
+                findViewById(R.id.editInviteRow).setVisibility(View.VISIBLE);
+                findViewById(R.id.buttonEditEventSolo).setVisibility(View.GONE);
+
+                Button editBtn = findViewById(R.id.buttonEditEventSide);
+                Button inviteBtn = findViewById(R.id.buttonInviteEvent);
+
+                editBtn.setOnClickListener(v -> {
+                    Intent intent = new Intent(this, UpdateEventActivity.class);
+                    intent.putExtra("EID", getIntent().getIntExtra("EID", -1));
+                    updateEventLauncher.launch(intent);
+                });
+
+                inviteBtn.setOnClickListener(v -> {
+                    int eid = getIntent().getIntExtra("EID", -1);
+                    if (eid != -1) {
+                        Intent intent = new Intent(EventDetailActivity.this, InviteActivity.class);
+                        intent.putExtra("EVENT_ID", eid);   // pass event ID to InviteActivity
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(this, "Invalid event ID", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+            } else {
+                // show solo Edit button
+                findViewById(R.id.editInviteRow).setVisibility(View.GONE);
+                findViewById(R.id.buttonEditEventSolo).setVisibility(View.VISIBLE);
+
+                Button editSolo = findViewById(R.id.buttonEditEventSolo);
+                editSolo.setOnClickListener(v -> {
+                    Intent intent = new Intent(this, UpdateEventActivity.class);
+                    intent.putExtra("EID", getIntent().getIntExtra("EID", -1));
+                    updateEventLauncher.launch(intent);
+                });
+            }
             return;
         }
 

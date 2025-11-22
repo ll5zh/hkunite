@@ -40,6 +40,7 @@ public class InviteActivity extends AppCompatActivity {
     private LinearLayout selectedUsersContainer;
     private View selectedUsersDivider;
     private HorizontalScrollView selectedUsersScroll;
+    private static final String BASE_URL = Configuration.BASE_URL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,7 +111,7 @@ public class InviteActivity extends AppCompatActivity {
 
     private void loadUsersFromServer() {
         // Pass eventId to exclude already invited or participating users
-        String url = "http://10.0.2.2:5001/users?eid=" + eventId;
+        String url = BASE_URL + "/users?eid=" + eventId;
 
         JsonObjectRequest request = new JsonObjectRequest(
                 url,
@@ -173,7 +174,7 @@ public class InviteActivity extends AppCompatActivity {
     }
 
     private void sendInvite(int uid, int eid) {
-        String url = "http://10.70.208.59:5001/add-invite?uid=" + uid + "&eid=" + eid;
+        String url = BASE_URL + "/add-invite?uid=" + uid + "&eid=" + eid;
 
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.POST,

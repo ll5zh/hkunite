@@ -52,10 +52,13 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.CancellationTokenSource;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 
 public class AddFragment extends Fragment {
@@ -68,7 +71,7 @@ public class AddFragment extends Fragment {
     private EditText dateField;
     private EditText timeField;
     private EditText descriptionField;
-    private Switch switchPrivateField;
+    private SwitchMaterial switchPrivateField;
     private ImageView CoverPicture;
     private Button LocButtonField;
 
@@ -138,6 +141,9 @@ public class AddFragment extends Fragment {
         CoverPicture = view.findViewById(R.id.picture);
         LocButtonField = view.findViewById(R.id.LocationButton);
         registerPictureUpload();
+        CoverPicture = view.findViewById(R.id.picture);
+        CoverPicture.setImageResource(R.drawable.image_placeholder);
+
 
         //making the datepicker and timepicker pop up:
         dateField.setOnClickListener(v -> {
@@ -214,7 +220,10 @@ public class AddFragment extends Fragment {
 
         TimePickerDialog timePicker = new TimePickerDialog(
                 getContext(),
-                (view, h, m) -> time.setText(h + ":" + m),
+                (view, h, m) -> {
+                    String formatted = String.format(Locale.getDefault(), "%02d:%02d", h, m);
+                    time.setText(formatted);
+                },
                 hour, minute, true
         );
         timePicker.show();
@@ -356,7 +365,30 @@ public class AddFragment extends Fragment {
             jsonBody.put("oid", organizerId);
             jsonBody.put("cid", categoryId);
             jsonBody.put("public", publicValue);
-            jsonBody.put("date", date + " " + time);
+            try {
+                // Parse the raw strings from the fields
+                String[] dateParts = date.split("/"); // dd/MM/yyyy
+                String[] timeParts = time.split(":"); // HH:mm
+
+                int day = Integer.parseInt(dateParts[0]);
+                int month = Integer.parseInt(dateParts[1]) - 1; // Calendar months are 0-based
+                int year = Integer.parseInt(dateParts[2]);
+
+                int hour = Integer.parseInt(timeParts[0]);
+                int minute = Integer.parseInt(timeParts[1]);
+
+                Calendar cal = Calendar.getInstance();
+                cal.set(year, month, day, hour, minute, 0); // seconds = 0
+
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                String formattedDateTime = sdf.format(cal.getTime());
+
+                jsonBody.put("date", formattedDateTime);
+            } catch (Exception e) {
+                Log.e(TAG, "Date formatting error", e);
+                Toast.makeText(getContext(), "Invalid date/time format", Toast.LENGTH_SHORT).show();
+                return;
+            }
             jsonBody.put("location", location);
             jsonBody.put("image", imageURLToSend);
         } catch (JSONException e) {
@@ -401,7 +433,8 @@ public class AddFragment extends Fragment {
         descriptionField.setText("");
         switchPrivateField.setChecked(false);
         // Reset the ImageView to a default placeholder if possible
-        CoverPicture.setImageResource(android.R.drawable.ic_menu_gallery);
+        CoverPicture.setImageResource(R.drawable.image_placeholder);
+        selectedImageUrl = "";
     }
 
 

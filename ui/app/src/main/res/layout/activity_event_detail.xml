@@ -182,7 +182,8 @@
                     android:textColor="@color/button_text_color"
                     android:textStyle="bold"
                     android:textSize="18sp"
-                    app:cornerRadius="16dp"/>
+                    app:cornerRadius="16dp"
+                    android:visibility="gone"/>
 
                 <!-- Edit + Invite pair -->
                 <LinearLayout

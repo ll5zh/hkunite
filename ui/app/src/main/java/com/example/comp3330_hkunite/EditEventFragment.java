@@ -103,7 +103,7 @@ public class EditEventFragment extends Fragment {
     private RequestQueue requestQueue;
     private static final String TAG = "EditFragment";
     private static final String PREF_NAME = "HKUnitePrefs";
-    private static final String ARG_EID = "-1";
+    private static final String ARG_EID = "EID";
     private int eid;
     private void initializeImageOptions() {
         imageOptions.add(new ImageOption("Study Session", "https://images.pexels.com/photos/159775/library-la-trobe-study-students-159775.jpeg"));
@@ -124,7 +124,7 @@ public class EditEventFragment extends Fragment {
     public static EditEventFragment newInstance(int eid) {
         EditEventFragment fragment = new EditEventFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_EID, eid);   // 👈 store int
+        args.putInt(ARG_EID, eid);
         fragment.setArguments(args);
         return fragment;
     }
@@ -169,7 +169,7 @@ public class EditEventFragment extends Fragment {
 //        CoverPicture.setImageResource(R.drawable.image_placeholder);
 
         if (getArguments() != null) {
-            eid = getArguments().getInt(ARG_EID);
+            eid = getArguments().getInt(ARG_EID, -1);
         }
 
 
@@ -455,7 +455,9 @@ public class EditEventFragment extends Fragment {
 
 
     private void loadPreviousInfo(int eid) {
-        String serverUrl = "http://10.0.2.2:5000/events/<int:eid>" + eid;
+        String serverUrl = "http://10.0.2.2:5000/events/" + eid;
+
+        Toast.makeText(getContext(), "Eid: " + eid, Toast.LENGTH_SHORT).show();
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.GET,
@@ -474,7 +476,7 @@ public class EditEventFragment extends Fragment {
                                 return;
                             }
 
-
+                            Toast.makeText(getContext(), "Parse Events", Toast.LENGTH_SHORT).show();
                             // Parse events with proper field names
                                 // Log each event to see actual structure
                                 Log.d("EventDebug", "Event " + ": " + response.toString());
@@ -501,11 +503,9 @@ public class EditEventFragment extends Fragment {
                                     .load(response.optString("image"))
                                     .into(CoverPicture);
                             //for the public switch: 1 = public, 0 = private
-                            if(response.getInt("public_status") == 1){
-                                switchPrivateField.setChecked(false); //make sure this is correct
-                            } else {
-                                switchPrivateField.setChecked(true);
-                            }
+                                switchPrivateField.setChecked(response.getBoolean("public_status")); //make sure this is correct
+
+                            response.getInt("cid");
 
                             Log.d("API Debug", "Parsed events into an object ");
 
@@ -530,8 +530,6 @@ public class EditEventFragment extends Fragment {
         Volley.newRequestQueue(getContext()).add(jsonObjectRequest);
         Log.d("HomeFragment", "Request added to queue");
     }
-
-
 
     private void resetFormFields() {
         titleField.setText("");

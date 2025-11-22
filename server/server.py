@@ -146,17 +146,19 @@ def add_event():
             cid=event.get("cid"),
             public=public_status,
             date=event["date"],
-            image = event.get('image'),
+            image=event.get("image"),
+            location=event.get("location")   # NEW FIELD
         )
         return jsonify({"success": True, "eid": eid})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
 
+
 @app.route("/edit-event", methods=["POST"])
 def edit_event():
     event = request.json
     eid = event["eid"]
-    can_update = ["title", "description", "cid", "public", "date"]
+    can_update = ["title", "description", "cid", "public", "date", "location"]
     updates = {field: val for field, val in event.items() if field in can_update}
 
     if not updates:
@@ -240,6 +242,9 @@ def update_event_specific(eid):
         updates['description'] = data['description']
     if 'date' in data:
         updates['date'] = data['date']
+    if 'location' in data:
+        updates['location'] = data['location']
+
         
     try:
         result = db.edit_event(eid, updates)

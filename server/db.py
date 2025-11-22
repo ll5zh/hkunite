@@ -39,12 +39,14 @@ def init_db():
             cid INTEGER,
             image TEXT,
             date TIMESTAMP NOT NULL,
+            location TEXT,
             oid INTEGER NOT NULL,
             public BOOLEAN NOT NULL,
             FOREIGN KEY (oid) REFERENCES USER(uid),
             FOREIGN KEY (cid) REFERENCES CATEGORY(cid)
         );
     """)
+
 
     # Event Category table
     cur.execute("""
@@ -105,23 +107,58 @@ def init_db():
         cur.execute("INSERT OR IGNORE INTO CATEGORY (name) VALUES (?)", (cat,))
     
     default_events = [
-        ("Kotlin Meetup", "Learn Kotlin basics", 1, "https://hips.hearstapps.com/hmg-prod/images/dog-puppy-on-garden-royalty-free-image-1586966191.jpg", "2025-11-10 18:00:00", 1, True),
-        ("Python Workshop", "Hands-on Python", 2, "https://img.freepik.com/free-photo/pug-dog-isolated-white-background_2829-11416.jpg", "2025-11-15 14:00:00", 2, True),
-        ("Music Concert", "Live local bands", 3, "https://www.cdc.gov/healthy-pets/media/images/2024/04/GettyImages-598175960-cute-dog-headshot.jpg", "2025-12-01 20:00:00", 3, False),
-        ("Art Jam", "Paint with friends", 4, "https://images.unsplash.com/photo-1513364776144-60967b0f800f", "2025-11-20 16:00:00", 4, True),
-        ("Startup Pitch Night", "Watch student startups pitch ideas", 5, "https://images.unsplash.com/photo-1551836022-d5d88e9218df", "2025-11-22 19:00:00", 4, True),
-        ("Board Game Social", "Play Codenames and Dixit. Make new friends! Rules are meant to be broken, don't fuss too much about the game rules.", 1, "https://images.unsplash.com/photo-1607746882042-944635dfe10e", "2025-11-25 18:30:00", 3, True),
-        ("Photography Walk", "Explore campus with cameras", 2, "https://www.computerhope.com/jargon/p/program.png", "2025-11-28 15:00:00", 3, True),
-        ("Career Talk: UX Design", "Learn from industry designers", 3, "https://static01.nyt.com/images/2024/11/06/multimedia/03BEATA-gftv/03BEATA-gftv-articleLarge.jpg", "2025-12-03 17:00:00", 1, True),
-        ("Coding Challenge", "Solve problems in teams", 3, "https://studio.code.org/shared/images/courses/logo_tall_dance-2022.png", "2025-12-05 13:00:00", 1, True),
-        ("Movie Night", "Watch a surprise film", 4, "https://cdn.britannica.com/70/234870-050-D4D024BB/Orange-colored-cat-yawns-displaying-teeth.jpg", "2025-12-07 20:00:00", 2, True),
-        ("Christmas Fair", "Food, crafts, and music", 2, "https://www.eatingwell.com/thmb/m5xUzIOmhWSoXZnY-oZcO9SdArQ=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/article_291139_the-top-10-healthiest-foods-for-kids_-02-4b745e57928c4786a61b47d8ba920058.jpg", "2025-12-15 12:00:00", 4, True)
+    ("Kotlin Meetup", "Learn Kotlin basics", 1,
+     "https://hips.hearstapps.com/hmg-prod/images/dog-puppy-on-garden-royalty-free-image-1586966191.jpg",
+     "2025-11-10 18:00:00", "Main Library, Pok Fu Lam Rd, Pok Fu Lam, Hong Kong", 1, True),
+
+    ("Python Workshop", "Hands-on Python", 2,
+     "https://img.freepik.com/free-photo/pug-dog-isolated-white-background_2829-11416.jpg",
+     "2025-11-15 14:00:00", "Chow Yei Ching Building, Pok Fu Lam Rd, Hong Kong", 2, True),
+
+    ("Music Concert", "Live local bands", 3,
+     "https://www.cdc.gov/healthy-pets/media/images/2024/04/GettyImages-598175960-cute-dog-headshot.jpg",
+     "2025-12-01 20:00:00", "Student Union Building, Pok Fu Lam Rd, Hong Kong", 3, False),
+
+    ("Art Jam", "Paint with friends", 4,
+     "https://images.unsplash.com/photo-1513364776144-60967b0f800f",
+     "2025-11-20 16:00:00", "Centennial Campus, HKU, Pok Fu Lam Rd, Hong Kong", 4, True),
+
+    ("Startup Pitch Night", "Watch student startups pitch ideas", 5,
+     "https://images.unsplash.com/photo-1551836022-d5d88e9218df",
+     "2025-11-22 19:00:00", "iCube, HKU, Knowles Building, Pok Fu Lam Rd, Hong Kong", 4, True),
+
+    ("Board Game Social", "Play Codenames and Dixit. Make new friends!", 1,
+     "https://images.unsplash.com/photo-1607746882042-944635dfe10e",
+     "2025-11-25 18:30:00", "Common Room, Meng Wah Complex, Pok Fu Lam Rd, Hong Kong", 3, True),
+
+    ("Photography Walk", "Explore campus with cameras", 2,
+     "https://www.computerhope.com/jargon/p/program.png",
+     "2025-11-28 15:00:00", "HKU Main Quad, Pok Fu Lam Rd, Hong Kong", 3, True),
+
+    ("Career Talk: UX Design", "Learn from industry designers", 3,
+     "https://static01.nyt.com/images/2024/11/06/multimedia/03BEATA-gftv/03BEATA-gftv-articleLarge.jpg",
+     "2025-12-03 17:00:00", "Rayson Huang Theatre, HKU, Pok Fu Lam Rd, Hong Kong", 1, True),
+
+    ("Coding Challenge", "Solve problems in teams", 3,
+     "https://studio.code.org/shared/images/courses/logo_tall_dance-2022.png",
+     "2025-12-05 13:00:00", "Tam Wing Fan Innovation Wing, HKU, Pok Fu Lam Rd, Hong Kong", 1, True),
+
+    ("Movie Night", "Watch a surprise film", 4,
+     "https://cdn.britannica.com/70/234870-050-D4D024BB/Orange-colored-cat-yawns-displaying-teeth.jpg",
+     "2025-12-07 20:00:00", "Cheng Yu Tung Building Auditorium, HKU, Pok Fu Lam Rd, Hong Kong", 2, True),
+
+    ("Christmas Fair", "Food, crafts, and music", 2,
+     "https://www.eatingwell.com/thmb/m5xUzIOmhWSoXZnY-oZcO9SdArQ=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/article_291139_the-top-10-healthiest-foods-for-kids_-02-4b745e57928c4786a61b47d8ba920058.jpg",
+     "2025-12-15 12:00:00", "Sun Yat-sen Place, HKU, Pok Fu Lam Rd, Hong Kong", 4, True)
     ]
-    for title, desc, cid, image, date, oid, public in default_events:
+
+    for title, desc, cid, image, date, location, oid, public in default_events:
         cur.execute("""
-            INSERT OR IGNORE INTO EVENT (title, description, cid, image, date, oid, public)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        """, (title, desc, cid, image, date, oid, int(public)))
+            INSERT OR IGNORE INTO EVENT (title, description, cid, image, date, location, oid, public)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, (title, desc, cid, image, date, location, oid, int(public)))
+
+
     
     users = [
     ("u3649750@connect.hku.hk", "12345", "Alice", "https://cdn-icons-png.flaticon.com/128/17246/17246479.png"),
@@ -346,38 +383,39 @@ def get_event_participants(eid):
 
 
 # Adds event
-def add_event(title, description, oid, cid, date, public, participants=[],image=None):
+def add_event(title, description, oid, cid, date, public, participants=[], image=None, location=None):
     with get_connection() as con:
         cur = con.cursor()
 
         # ----------------------------------------------------------------------
-        # ADD THESE TWO DEBUG LINES:
+        # Debug logging for public value
         import logging
         logging.warning(f"DB.ADD_EVENT: Received public value: {public} (Type: {type(public)})")
         # ----------------------------------------------------------------------
 
+        # Insert event including location
         cur.execute("""
-            INSERT INTO EVENT (title, description, oid, cid, public, date, image)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        """, (title, description, oid, cid, public, date, image))
+            INSERT INTO EVENT (title, description, oid, cid, public, date, image, location)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, (title, description, oid, cid, public, date, image, location))
         eid = cur.lastrowid
 
-        # If event is private, need to add participants to event (or if participants are specified)
+        # If event is private or participants are specified, add participants
         if not public or participants:
-            # Get participant uids from emails
-            formatted_participants = ",".join("?" for _ in participants)
-            query = f"SELECT uid FROM USER WHERE email IN ({formatted_participants})"
-            cur.execute(query, participants)
-            uids = [row[0] for row in cur.fetchall()]
+            if participants:
+                formatted_participants = ",".join("?" for _ in participants)
+                query = f"SELECT uid FROM USER WHERE email IN ({formatted_participants})"
+                cur.execute(query, participants)
+                uids = [row[0] for row in cur.fetchall()]
 
-            # Add participants by uid
-            cur.executemany(
-                "INSERT OR IGNORE INTO EVENT_PARTICIPANT (eid, uid) VALUES (?, ?)",
-                [(eid, uid) for uid in uids]
-            )
+                cur.executemany(
+                    "INSERT OR IGNORE INTO EVENT_PARTICIPANT (eid, uid) VALUES (?, ?)",
+                    [(eid, uid) for uid in uids]
+                )
 
         con.commit()
         return eid
+
 
 # Edits event
 def edit_event(eid, updates):
@@ -385,19 +423,19 @@ def edit_event(eid, updates):
         con.row_factory = sqlite3.Row
         cur = con.cursor()
 
+        # Allow updating location too
         fields = list(updates.keys())
         update_clause = ", ".join(f"{field} = ?" for field in fields)
         values = list(updates.values())
         values.append(eid)
 
-        # FIX: Changed "UPDATE EVENTS" to "UPDATE EVENT" (Singular)
         cur.execute(f"""
             UPDATE EVENT SET {update_clause} WHERE eid = ?
         """, values)
-        
+
         con.commit()
-        
-        # return updated event
+
+        # Return updated event
         cur.execute("SELECT * FROM EVENT WHERE eid = ?", (eid,))
         row = cur.fetchone()
 

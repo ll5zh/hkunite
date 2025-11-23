@@ -92,7 +92,7 @@ public class EditEventFragment extends Fragment {
     private ActivityResultLauncher<Intent> pickImageLauncher;
     private ActivityResultLauncher<String[]> locationPermissionRequest;
     private FusedLocationProviderClient fusedLocationClient;
-    private static final String BASE_URL = Configuration.BASE_URL;
+    private static final String BASE_URL = "http://10.0.2.2:5000";//Configuration.BASE_URL;
 
     //for the google maps implementation
     private PlacesClient placesClient;
@@ -170,6 +170,7 @@ public class EditEventFragment extends Fragment {
 
         if (getArguments() != null) {
             eid = getArguments().getInt(ARG_EID, -1);
+            eid = 1;
         }
 
 
@@ -198,7 +199,7 @@ public class EditEventFragment extends Fragment {
 
         //to finally upload the whole event
         addButtonField.setOnClickListener( v -> {
-            uploadEventToDatabase();
+            saveEventToDatabase(eid);
         });
 
 
@@ -362,7 +363,7 @@ public class EditEventFragment extends Fragment {
                 });
     }
 
-    private void uploadEventToDatabase() {
+    private void saveEventToDatabase(int eid) {   // pass eid of the event you want to edit
         if (requestQueue == null) {
             Toast.makeText(getContext(), "Network error: Request queue not initialized", Toast.LENGTH_SHORT).show();
             return;
@@ -378,23 +379,17 @@ public class EditEventFragment extends Fragment {
         String imageURLToSend = selectedImageUrl.isEmpty() ? "" : selectedImageUrl;
 
         int categoryId = 1; // Example category ID
-        SharedPreferences prefs = requireContext().getSharedPreferences(PREF_NAME, MODE_PRIVATE);
-        int organizerId = prefs.getInt("USER_ID", -1);
 
-        if (organizerId == -1) {
-            Toast.makeText(getContext(), "User not logged in. Cannot create event.", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        String url = BASE_URL + "/add-event";
+        String url = BASE_URL + "/edit-event";
 
         JSONObject jsonBody = new JSONObject();
         try {
+            jsonBody.put("eid", eid);  // REQUIRED for edit-event
             jsonBody.put("title", title);
             jsonBody.put("description", description);
-            jsonBody.put("oid", organizerId);
             jsonBody.put("cid", categoryId);
             jsonBody.put("public", publicValue);
+
             try {
                 // Parse the raw strings from the fields
                 String[] dateParts = date.split("/"); // dd/MM/yyyy
@@ -419,10 +414,12 @@ public class EditEventFragment extends Fragment {
                 Toast.makeText(getContext(), "Invalid date/time format", Toast.LENGTH_SHORT).show();
                 return;
             }
+
             jsonBody.put("location", location);
             jsonBody.put("image", imageURLToSend);
+
         } catch (JSONException e) {
-            Log.e(TAG, "JSON creation error for add-event", e);
+            Log.e(TAG, "JSON creation error for edit-event", e);
             Toast.makeText(getContext(), "Error preparing event data.", Toast.LENGTH_LONG).show();
             return;
         }
@@ -435,27 +432,28 @@ public class EditEventFragment extends Fragment {
                     try {
                         boolean success = response.getBoolean("success");
                         if (success) {
-                            int eid = response.getInt("eid");
-                            Toast.makeText(getContext(), "Event added successfully!", Toast.LENGTH_LONG).show();
+                            JSONObject updatedEvent = response.getJSONObject("data");
+                            Toast.makeText(getContext(), "Event updated successfully!", Toast.LENGTH_LONG).show();
                             resetFormFields();
                         } else {
                             String errorMsg = response.optString("error", "Unknown server error.");
-                            Toast.makeText(getContext(), "Failed to add event: " + errorMsg, Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), "Failed to update event: " + errorMsg, Toast.LENGTH_LONG).show();
                         }
                     } catch (JSONException e) {
-                        Toast.makeText(getContext(), "Event added, but response could not be parsed.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), "Event updated, but response could not be parsed.", Toast.LENGTH_LONG).show();
                     }
                 },
                 error -> {
-                    Toast.makeText(getContext(), "Error adding event: " + error.toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "Error updating event: " + error.toString(), Toast.LENGTH_LONG).show();
                 }
         );
         requestQueue.add(request);
     }
 
 
+
     private void loadPreviousInfo(int eid) {
-        String serverUrl = "http://10.0.2.2:5000/events/" + eid;
+        String serverUrl = "http://10.0.2.2:5000/events/1"; //+ eid
 
         Toast.makeText(getContext(), "Eid: " + eid, Toast.LENGTH_SHORT).show();
 
@@ -469,45 +467,45 @@ public class EditEventFragment extends Fragment {
                         try {
                             Log.d("API Debug", "Full response: " + response.toString());
 
-                            // Check if response has "success" field
                             if (response.has("success") && !response.getBoolean("success")) {
                                 Log.e("API", "Server returned success: false");
                                 Toast.makeText(getContext(), "Server error", Toast.LENGTH_SHORT).show();
                                 return;
                             }
 
-                            Toast.makeText(getContext(), "Parse Events", Toast.LENGTH_SHORT).show();
-                            // Parse events with proper field names
-                                // Log each event to see actual structure
-                                Log.d("EventDebug", "Event " + ": " + response.toString());
+                            // Get the "data" object
+                            JSONObject data = response.getJSONObject("data");
 
+                            titleField.setText(data.getString("title"));
+                            locationField.setText(data.optString("location", "Unknown"));
 
-                            titleField.setText(response.getString("title"));
-                            locationField.setText(response.optString("location", "Unknown"));
-
-                            /// Get the combined string from JSON
-                            String dateTimeString = response.getString("date"); // Example: "2025-11-22 20:50:00"
-                            // Split into date and time parts
+                            String dateTimeString = data.getString("date");
                             String[] parts = dateTimeString.split(" ");
-                            String onlyDate = parts[0]; // "2025-11-22"
-                            String onlyTime = parts[1]; // "20:50:00"
-                            timeField.setText(onlyDate);
-                            dateField.setText(onlyTime);
+                            String onlyDate = parts[0];
+                            String onlyTime = parts[1];
 
-                            descriptionField.setText(response.optString("description", ""));
-                            // Reset the ImageView to a default placeholder if possible
+                            // Reformat date: replace "-" with "/"
+                            String formattedDate = onlyDate.replace("-", "/"); // "23/11/2025"
+                            String[] timeParts = onlyTime.split(":");
+                            String formattedTime = timeParts[0] + ":" + timeParts[1]; // "18:30"
+                            dateField.setText(formattedDate);
+                            timeField.setText(formattedTime);
+
+                            //TODO::Location not working
+
+                            descriptionField.setText(data.optString("description", ""));
                             CoverPicture.setImageResource(R.drawable.image_placeholder);
-                            //render image
 
                             Glide.with(getContext())
-                                    .load(response.optString("image"))
+                                    .load(data.optString("image"))
                                     .into(CoverPicture);
-                            //for the public switch: 1 = public, 0 = private
-                                switchPrivateField.setChecked(response.getBoolean("public_status")); //make sure this is correct
 
-                            response.getInt("cid");
+                            // Note: your JSON uses "public", not "public_status"
+                            int isPublic = data.getInt("public");
+                            switchPrivateField.setChecked(isPublic == 0); // checked = private
 
-                            Log.d("API Debug", "Parsed events into an object ");
+                            int cid = data.getInt("cid");
+                            Log.d("API Debug", "Parsed event cid: " + cid);
 
                             Toast.makeText(getContext(), "Loaded event id: " + eid, Toast.LENGTH_SHORT).show();
 
@@ -517,6 +515,7 @@ public class EditEventFragment extends Fragment {
                             Toast.makeText(getContext(), "Error parsing data", Toast.LENGTH_SHORT).show();
                         }
                     }
+
                 },
                 new Response.ErrorListener() {
                     @Override

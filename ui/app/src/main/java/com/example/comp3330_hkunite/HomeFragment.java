@@ -114,7 +114,7 @@ public class HomeFragment extends Fragment {
             showEvents(uid, "invitations");
         });
 
-        getUsername(uid);
+        displayUserInfo(uid);
 
         //TODO:: Implement username and numbers (Number of invitations, upcoming events)
 
@@ -193,7 +193,6 @@ private void showEvents(int uID, String filter) {
                         eventsRecyclerViewField.setAdapter(adapter);
 
 
-
                         Toast.makeText(getContext(), "Loaded " + eventsList.size() + " events", Toast.LENGTH_SHORT).show();
 
                     } catch (JSONException e) {
@@ -216,53 +215,58 @@ private void showEvents(int uID, String filter) {
     Log.d("HomeFragment", "Request added to queue");
 }
 
-//TODO::Fix this!!
-    private void getUsername(int uID){
+    private void displayUserInfo(int uID) {
         if (welcomeTextField == null || upcomingTextField == null) {
             Log.e(TAG, "TextViews not initialized");
             return;
         }
 
+        // Use the correct port (your Flask server runs on 5001, not 5000)
         String serverUrl = "http://10.0.2.2:5000/users/" + uID;
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.GET,
                 serverUrl,
                 null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            Log.d("API Debug", "Full response: " + response.toString());
+                response -> {
+                    try {
+                        Log.d("API Debug", "Full response: " + response.toString());
 
-                            if (response.has("success") && !response.getBoolean("success")) {
-                                Log.e("API", "Server returned success: false");
-                                return;
-                            }
-
-                            // Update UI on main threadill;
-                            if (getActivity() != null) {
-                                getActivity().runOnUiThread(() -> {
-                                    try {
-                                        welcomeTextField.setText("Welcomehh " + response.getString("name") + "!");
-                                        upcomingTextField.setText("You have " + response.getInt("joined_count") + " upcoming events!");
-                                    } catch (JSONException e) {
-                                        Log.e(TAG, "Error updating UI", e);
-                                    }
-                                });
-                            }
-
-                        } catch (JSONException e) {
-                            Log.e("Volley", "JSON parsing error: " + e.getMessage());
+                        if (response.has("success") && !response.getBoolean("success")) {
+                            Log.e("API", "Server returned success: false");
+                            return;
                         }
+
+                        // Extract the "data" object
+                        JSONObject data = response.getJSONObject("data");
+
+                        if (getActivity() != null) {
+                            getActivity().runOnUiThread(() -> {
+                                try {
+                                    String name = data.getString("name");
+                                    int joinedCount = data.getInt("joined_count");
+                                    int organizedCount = data.getInt("organized_count");
+
+                                    welcomeTextField.setText("Welcome " + name + "!");
+                                    upcomingTextField.setText(
+                                            "You have " + joinedCount + " upcoming events and " +
+                                                    organizedCount + " organized events!"
+                                    );
+                                } catch (JSONException e) {
+                                    Log.e(TAG, "Error updating UI", e);
+                                }
+                            });
+                        }
+
+                    } catch (JSONException e) {
+                        Log.e("Volley", "JSON parsing error: " + e.getMessage());
                     }
                 },
-                error -> {
-                    Log.e("Volley", "Error: " + error.toString());
-                }
+                error -> Log.e("Volley", "Error: " + error.toString())
         );
 
         Volley.newRequestQueue(getContext()).add(jsonObjectRequest);
     }
+
 
 }

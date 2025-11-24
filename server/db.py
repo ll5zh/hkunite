@@ -491,7 +491,7 @@ def get_users_not_invited_or_participating(eid):
 
 
 # Gets user's invites - should return event name/eid/image (do a join)
-ef get_my_invites(uid):
+def get_my_invites(uid):
     with get_connection() as con:
         cur = con.cursor()
         con.row_factory = sqlite3.Row

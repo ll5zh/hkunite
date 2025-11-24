@@ -248,10 +248,12 @@ private void showEvents(int uID, String filter) {
                                     int joinedCount = data.getInt("joined_count");
                                     int organizedCount = data.getInt("organized_count");
 
+                                    int overall = joinedCount + organizedCount;
+
                                     welcomeTextField.setText("Welcome " + name + "!");
                                     upcomingTextField.setText(
-                                            "You have " + joinedCount + " upcoming events and " +
-                                                    organizedCount + " organized events!"
+                                            "You have " + overall + " upcoming events and " +
+                                                    organizedCount + " events you are organizing!"
                                     );
                                 } catch (JSONException e) {
                                     Log.e(TAG, "Error updating UI", e);

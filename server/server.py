@@ -196,7 +196,7 @@ def add_invite():
 @app.route("/my-invites/<int:uid>", methods=["GET"])
 def get_my_invites(uid):
     my_invites = db.get_my_invites(uid)
-    return jsonify({"success": True, "data": list(my_invites.values())})
+    return jsonify({"success": True, "data": my_invites})
 
 @app.route("/event-invites/<int:eid>", methods=["GET"])
 def get_invites_for_event(eid):

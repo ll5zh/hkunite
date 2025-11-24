@@ -58,6 +58,7 @@ public class HomeFragment extends Fragment {
     private TextView welcomeTextField;
     private TextView upcomingTextField;
     private HomeEventAdapter homeEventAdapter;
+    private static final String BASE_URL = Configuration.BASE_URL;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -123,12 +124,12 @@ public class HomeFragment extends Fragment {
 
 private void showEvents(int uID, String filter) {
     // Load data from database. Loads all events associated with user by default
-    String serverUrl = "http://10.0.2.2:5000/my-events?uid=" + uID;
+    String serverUrl = BASE_URL + "/my-events?uid=" + uID;
     if (filter.equals("hosting")) {
-        serverUrl = "http://10.0.2.2:5000/my-organized-events?uid=" + uID;
+        serverUrl = BASE_URL + "/my-organized-events?uid=" + uID;
     } else if (filter.equals("invitations")) {
         //TODO:: Something still wrong with invitations
-        serverUrl = "http://10.0.2.2:5000/my-invites?uid=" + uID;
+        serverUrl = BASE_URL + "/my-invites?uid=" + uID;
     }
 
 
@@ -222,7 +223,7 @@ private void showEvents(int uID, String filter) {
         }
 
         // Use the correct port (your Flask server runs on 5001, not 5000)
-        String serverUrl = "http://10.0.2.2:5000/users/" + uID;
+        String serverUrl = BASE_URL + "/users/" + uID;
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.GET,

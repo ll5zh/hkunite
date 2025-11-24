@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,6 +62,7 @@ public class ProfileFragment extends Fragment {
 
     //volley logic
     private RequestQueue queue;
+    private ScrollView headerContainer;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -85,7 +88,7 @@ public class ProfileFragment extends Fragment {
         badgesRecyclerView = root.findViewById(R.id.profile_badges_recyclerview);
         eventsRecyclerView = root.findViewById(R.id.profile_events_recyclerview);
         logoutButton = root.findViewById(R.id.profile_logout_button);
-
+        headerContainer = root.findViewById(R.id.headerContainer);
         //initializing volley:
         queue = Volley.newRequestQueue(requireContext());
 
@@ -164,7 +167,7 @@ public class ProfileFragment extends Fragment {
                             profileEmail.setText(email);
                             eventsOrganizedCount.setText(String.valueOf(orgCount));
                             eventsJoinedCount.setText(String.valueOf(joinCount));
-
+                            headerContainer.setVisibility(View.VISIBLE);
                             //load the image
                             // Now safe because we checked isAdded() above
                             Glide.with(this)

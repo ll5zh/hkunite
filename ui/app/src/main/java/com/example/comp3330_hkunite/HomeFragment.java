@@ -58,6 +58,7 @@ public class HomeFragment extends Fragment {
     private TextView welcomeTextField;
     private TextView upcomingTextField;
     private HomeEventAdapter homeEventAdapter;
+    private LinearLayout headerContainer;
     private static final String BASE_URL = Configuration.BASE_URL;
 
     public HomeFragment() {
@@ -99,6 +100,7 @@ public class HomeFragment extends Fragment {
         eventsRecyclerViewField = view.findViewById(R.id.eventsRecyclerView);
         welcomeTextField = view.findViewById(R.id.welcomeText);
         upcomingTextField = view.findViewById(R.id.upcomingText);
+        headerContainer = view.findViewById(R.id.headerContainer);
 
         //by default show all upcoming events
         showEvents(uid, "upcoming");
@@ -194,7 +196,7 @@ private void showEvents(int uID, String filter) {
                         eventsRecyclerViewField.setAdapter(adapter);
 
 
-                        Toast.makeText(getContext(), "Loaded " + eventsList.size() + " events", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getContext(), "Loaded " + eventsList.size() + " events", Toast.LENGTH_SHORT).show();
 
                     } catch (JSONException e) {
                         Log.e("Volley", "JSON parsing error: " + e.getMessage());
@@ -255,6 +257,7 @@ private void showEvents(int uID, String filter) {
                                             "You have " + overall + " upcoming events and " +
                                                     organizedCount + " events you are organizing!"
                                     );
+                                    headerContainer.setVisibility(View.VISIBLE); // show everything at once
                                 } catch (JSONException e) {
                                     Log.e(TAG, "Error updating UI", e);
                                 }

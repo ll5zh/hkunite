@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -93,27 +94,35 @@ public class HomeEventAdapter extends RecyclerView.Adapter<HomeEventAdapter.Expl
             return true; // consume touch, but performClick() ensures click still fires
         });
 
+
+        // Click listener for navigation
         holder.itemView.setOnClickListener(v -> {
-            // Create the fragment instance
-            Fragment fragment = new EditEventFragment();
-
-//             Pass arguments to the fragment
-            Bundle args = new Bundle();
-            args.putString("EID", String.valueOf(event.getEid()));
-            fragment.setArguments(args);
-            Toast.makeText(context, "Edit Event", Toast.LENGTH_SHORT).show();
-            Toast.makeText(context, "Eid outside: " + event.getEid(), Toast.LENGTH_SHORT).show();
-
-
-            // Get the FragmentManager from the context
-            FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
-
-            // Begin the transaction to replace the current fragment
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
-            transaction.replace(R.id.fragment_container, fragment); // R.id.fragment_container is the layout where fragments are hosted
-            transaction.addToBackStack(null); // Optional: allows user to navigate back
-            transaction.commit();
+            Intent intent = new Intent(context, EventDetailActivity.class);
+            intent.putExtra("EID", event.getEid());
+            context.startActivity(intent);
         });
+
+//        holder.itemView.setOnClickListener(v -> {
+//            // Create the fragment instance
+//            Fragment fragment = new EditEventFragment();
+//
+////             Pass arguments to the fragment
+//            Bundle args = new Bundle();
+//            args.putString("EID", String.valueOf(event.getEid()));
+//            fragment.setArguments(args);
+//            Toast.makeText(context, "Edit Event", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(context, "Eid outside: " + event.getEid(), Toast.LENGTH_SHORT).show();
+//
+//
+//            // Get the FragmentManager from the context
+//            FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
+//
+//            // Begin the transaction to replace the current fragment
+//            FragmentTransaction transaction = fragmentManager.beginTransaction();
+//            transaction.replace(R.id.fragment_container, fragment); // R.id.fragment_container is the layout where fragments are hosted
+//            transaction.addToBackStack(null); // Optional: allows user to navigate back
+//            transaction.commit();
+//        });
 
 
     }

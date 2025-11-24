@@ -129,7 +129,7 @@ private void showEvents(int uID, String filter) {
         serverUrl = BASE_URL + "/my-organized-events?uid=" + uID;
     } else if (filter.equals("invitations")) {
         //TODO:: Something still wrong with invitations
-        serverUrl = BASE_URL + "/event-invites/" + uID;
+        serverUrl = BASE_URL + "/my-invites/" + uID;
     }
 
 

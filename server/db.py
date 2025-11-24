@@ -108,47 +108,47 @@ def init_db():
     
     default_events = [
     ("Kotlin Meetup", "Learn Kotlin basics", 1,
-     "https://hips.hearstapps.com/hmg-prod/images/dog-puppy-on-garden-royalty-free-image-1586966191.jpg",
+     "https://img.freepik.com/premium-vector/coding-workshop-concept-illustration_114360-22489.jpg",
      "2025-11-10 18:00:00", "Main Library, Pok Fu Lam Rd, Pok Fu Lam, Hong Kong", 1, True),
 
-    ("Python Workshop", "Hands-on Python", 2,
-     "https://img.freepik.com/free-photo/pug-dog-isolated-white-background_2829-11416.jpg",
+    ("Python Workshop", "Hands-on Python", 1,
+     "https://set.jainuniversity.ac.in/uploads/blog/d9a4ffddf803ae565d0487f535a6a55e.jpg",
      "2025-11-15 14:00:00", "Chow Yei Ching Building, Pok Fu Lam Rd, Hong Kong", 2, True),
 
-    ("Music Concert", "Live local bands", 3,
-     "https://www.cdc.gov/healthy-pets/media/images/2024/04/GettyImages-598175960-cute-dog-headshot.jpg",
-     "2025-12-01 20:00:00", "Student Union Building, Pok Fu Lam Rd, Hong Kong", 3, False),
+    ("Music Concert", "Live local bands", 5,
+     "https://img.freepik.com/free-photo/excited-audience-watching-confetti-fireworks-having-fun-music-festival-night-copy-space_637285-559.jpg",
+     "2025-12-01 20:00:00", "Student Union Building, Pok Fu Lam Rd, Hong Kong", 3, True),
 
-    ("Art Jam", "Paint with friends", 4,
+    ("Art Jam", "Paint with friends", 5,
      "https://images.unsplash.com/photo-1513364776144-60967b0f800f",
      "2025-11-20 16:00:00", "Centennial Campus, HKU, Pok Fu Lam Rd, Hong Kong", 4, True),
 
-    ("Startup Pitch Night", "Watch student startups pitch ideas", 5,
-     "https://images.unsplash.com/photo-1551836022-d5d88e9218df",
+    ("Startup Pitch Night", "Watch student startups pitch ideas", 3,
+     "https://techcrunch.com/wp-content/uploads/2022/10/tc-disrupt-2022-anthill-2.jpg",
      "2025-11-22 19:00:00", "iCube, HKU, Knowles Building, Pok Fu Lam Rd, Hong Kong", 4, True),
 
-    ("Board Game Social", "Play Codenames and Dixit. Make new friends!", 1,
-     "https://images.unsplash.com/photo-1607746882042-944635dfe10e",
+    ("Board Game Social", "Play Codenames and Dixit. Make new friends!", 2,
+     "https://t4.ftcdn.net/jpg/02/45/70/11/360_F_245701100_MAEWqeKiPIYlrYR8DTH67eBZ5Ku4TPAf.jpg",
      "2025-11-25 18:30:00", "Common Room, Meng Wah Complex, Pok Fu Lam Rd, Hong Kong", 3, True),
 
     ("Photography Walk", "Explore campus with cameras", 2,
-     "https://www.computerhope.com/jargon/p/program.png",
+     "https://images.pexels.com/photos/1264210/pexels-photo-1264210.jpeg?cs=srgb&dl=pexels-andre-furtado-43594-1264210.jpg&fm=jpg",
      "2025-11-28 15:00:00", "HKU Main Quad, Pok Fu Lam Rd, Hong Kong", 3, True),
 
     ("Career Talk: UX Design", "Learn from industry designers", 3,
-     "https://static01.nyt.com/images/2024/11/06/multimedia/03BEATA-gftv/03BEATA-gftv-articleLarge.jpg",
+     "https://cdn.sanity.io/images/anl9abaw/production/87086e974f9348d2bc10527086ce85e1ad09c83a-1920x1280.png?w=3840&q=75&fit=clip&auto=format",
      "2025-12-03 17:00:00", "Rayson Huang Theatre, HKU, Pok Fu Lam Rd, Hong Kong", 1, True),
 
-    ("Coding Challenge", "Solve problems in teams", 3,
-     "https://studio.code.org/shared/images/courses/logo_tall_dance-2022.png",
+    ("Coding Challenge", "Solve problems in teams", 1,
+     "https://bs-uploads.toptal.io/blackfish-uploads/components/open_graph_image/8959914/og_image/optimized/0211_JavaScript-Coding-Challenge_Luke-Social-a70614b9438520ac86c4a5eab56b6ece.png",
      "2025-12-05 13:00:00", "Tam Wing Fan Innovation Wing, HKU, Pok Fu Lam Rd, Hong Kong", 1, True),
 
     ("Movie Night", "Watch a surprise film", 4,
-     "https://cdn.britannica.com/70/234870-050-D4D024BB/Orange-colored-cat-yawns-displaying-teeth.jpg",
+     "https://brandsitesplatform-res.cloudinary.com/image/fetch/w_auto:100,c_scale,q_auto:eco,f_auto,fl_lossy,dpr_auto,e_sharpen:85/https://assets.brandplatform.generalmills.com%2F-%2Fmedia%2Fproject%2Fgmi%2Foldelpaso%2Foldelpaso-us%2Farticles%2Ffamily-movie-night%2Fmovie-night.jpeg%3Frev%3Dbb1dd96cf74347b9b4df99a519b7ced4",
      "2025-12-07 20:00:00", "Cheng Yu Tung Building Auditorium, HKU, Pok Fu Lam Rd, Hong Kong", 2, True),
 
     ("Christmas Fair", "Food, crafts, and music", 2,
-     "https://www.eatingwell.com/thmb/m5xUzIOmhWSoXZnY-oZcO9SdArQ=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/article_291139_the-top-10-healthiest-foods-for-kids_-02-4b745e57928c4786a61b47d8ba920058.jpg",
+     "https://media.istockphoto.com/id/1181875723/photo/christmas-decorations-at-christmas-market-stall-in-berlin-germany.jpg?s=612x612&w=0&k=20&c=4BSGEDrysL36zrayiPfheH7ZinSol0HZJZQDmVj0wrs=",
      "2025-12-15 12:00:00", "Sun Yat-sen Place, HKU, Pok Fu Lam Rd, Hong Kong", 4, True)
     ]
 

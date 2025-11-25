@@ -21,4 +21,9 @@
     <color name="brand_body">#0F1F02</color>
 
     <color name="brand_primary">#6DBC2F</color>
+
+    <color name="brand_secondary">#3F8033</color>
+
+    <color name="grey">#D8DADA</color>
+
 </resources>

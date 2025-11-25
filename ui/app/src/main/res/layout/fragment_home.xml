@@ -80,7 +80,7 @@
                 android:layout_marginEnd="8dp"
                 android:padding="5dp"
                 android:minHeight="56dp"
-                android:backgroundTint="#3F8033"
+                android:backgroundTint="@color/brand_secondary"
                 android:textColor="@color/button_text_color"
                 android:textStyle="bold"
                 android:textSize="18sp"

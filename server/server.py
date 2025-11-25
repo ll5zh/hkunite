@@ -94,6 +94,21 @@ def get_events():
     con.close()
     return jsonify([dict(r) for r in rows])
 
+@app.route("/upcoming-events", methods=["GET"])
+def get_upcoming_events():
+    con = db.get_connection()
+    cur = con.cursor()
+    rows = cur.execute("""
+        SELECT E.*,
+               C.name AS category_name,
+               U.name AS owner_name
+        FROM EVENT E
+        LEFT JOIN CATEGORY C ON E.cid = C.cid
+        LEFT JOIN USER U ON E.oid = U.uid
+        WHERE E.public = 1 AND E.date >= DATETIME('now')
+    """).fetchall()
+    con.close()
+    return jsonify([dict(r) for r in rows])
 
 # Check if user has already joined the event
 @app.route("/has-joined", methods=["GET"])
@@ -124,21 +139,29 @@ def get_my_events():
     
     return jsonify({"success": True, "data": list(my_events.values())}), 200
 
-    # UNCOMMENT when hooking up with mobile app (if we prefer to pass uid in json body)
-    # event = request.json # Pass uid
-    # return jsonify({"success": True, "data": db.get_events_for_user(event["uid"])}), 200
+@app.route("/my-upcoming-events", methods=["GET"])
+def get_my_upcoming_events():
+    uid = request.args.get("uid")
+    upcoming_organized = db.get_events_organized_by_user(uid, True)
+    upcoming_participated = db.get_events_participated_by_user(uid, True)
+    my_upcoming_events = {event["eid"]: event for event in upcoming_organized}
+    for event in upcoming_participated:
+        my_upcoming_events[event["eid"]] = event
+    return jsonify({"success": True, "data": list(my_upcoming_events.values())}), 200
 
-# Gets events by category
-
-# Gets events organized by user
-@app.route("/my-organized-events", methods=["GET"])  # GET /my-organized-events?uid=<uid>
+@app.route("/my-organized-events", methods=["GET"])
 def get_my_organized_events():
     uid = request.args.get("uid")
     organized = db.get_events_organized_by_user(uid)
     return jsonify({"success": True, "data": organized}), 200
 
-# Gets events where user is participant
-@app.route("/my-participated-events", methods=["GET"]) # GET /my-participated-events?uid=<uid>
+@app.route("/my-upcoming-organized-events", methods=["GET"])
+def get_my_upcoming_organized_events():
+    uid = request.args.get("uid")
+    upcoming_organized = db.get_events_organized_by_user(uid, True)
+    return jsonify({"success": True, "data": upcoming_organized}), 200
+
+@app.route("/my-participated-events", methods=["GET"])
 def get_my_participated_events():
     uid = request.args.get("uid")
     participated = db.get_events_participated_by_user(uid)
@@ -238,7 +261,11 @@ def get_my_invites(uid):
     my_invites = db.get_my_invites(uid)
     return jsonify({"success": True, "data": list(my_invites.values())})
 
-# Gets all invites for event
+@app.route("/my-upcoming-invites/<int:uid>", methods=["GET"])
+def get_my_upcoming_invites(uid):
+    my_upcoming_invites = db.get_my_invites(uid, True)
+    return jsonify({"success": True, "data": my_upcoming_invites})
+
 @app.route("/event-invites/<int:eid>", methods=["GET"])
 def get_invites_for_event(eid):
     event_invites = db.get_event_invites(eid)

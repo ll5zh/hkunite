@@ -298,26 +298,29 @@ def get_events_for_user(uid):
         return [dict(r) for r in rows]
 
 # Gets events organized by user
-def get_events_organized_by_user(uid):
+def get_events_organized_by_user(uid, upcoming=False):
     with get_connection() as con:
         con.row_factory = sqlite3.Row
         cur = con.cursor()
-        rows = cur.execute(
-            "SELECT * FROM EVENT WHERE oid = ?",
-            (uid,)
-        ).fetchall()
+        query = "SELECT * FROM EVENT WHERE oid = ?"
+        if upcoming:
+            query += " AND date >= DATETIME('now')"
+        rows = cur.execute(query, (uid,)).fetchall()
         return [dict(r) for r in rows]
 
 # Gets events where user is participant
-def get_events_participated_by_user(uid):
+def get_events_participated_by_user(uid, upcoming=False):
     with get_connection() as con:
         con.row_factory = sqlite3.Row
         cur = con.cursor()
-        rows = cur.execute("""
+        query = """
             SELECT E.*
             FROM EVENT E JOIN EVENT_PARTICIPANT EP ON E.eid = EP.eid
-            WHERE EP.uid = ?
-        """, (uid,)).fetchall()
+            WHERE EP.uid = ? AND E.oid != ?
+        """ # FIX: Filter out events where the participant (uid) is also the owner (E.oid)
+        if upcoming:
+            query += " AND E.date >= DATETIME('now')"
+        rows = cur.execute(query, (uid, uid)).fetchall()
         return [dict(r) for r in rows]
 
 # Gets event
@@ -441,15 +444,18 @@ def get_users_not_invited_or_participating(eid):
 
 
 # Gets user's invites - should return event name/eid/image (do a join)
-def get_my_invites(uid):
+def get_my_invites(uid, upcoming=False):
     with get_connection() as con:
         cur = con.cursor()
         con.row_factory = sqlite3.Row
-        rows = cur.execute("""
-            SELECT E.eid, E.title, E.image
+        query = """
+            SELECT E.*
             FROM EVENT E JOIN INVITATION I ON E.eid = I.eid
             WHERE I.uid = ?
-        """, (uid,))
+        """
+        if upcoming:
+            query += " AND E.date >= DATETIME('now')"
+        rows = cur.execute(query, (uid,))
         return [dict(r) for r in rows]
 
 # Gets all pending invites for event - should return emails

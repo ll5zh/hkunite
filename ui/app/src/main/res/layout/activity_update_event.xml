@@ -50,6 +50,30 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <ImageView
+                android:id="@+id/imageCover"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/image_placeholder"
+                android:layout_marginBottom="8dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonChangeImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Change Image"
+                android:layout_gravity="center"
+                app:cornerRadius="12dp"
+                app:icon="@drawable/ic_add_photo"
+                app:iconPadding="8dp"
+                app:iconTint="@android:color/white"
+                app:backgroundTint="@color/brand_text"
+                app:layout_constraintTop_toBottomOf="@id/imageCover"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_margin="16dp"/>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -137,7 +161,86 @@
                 android:background="@android:color/white"
                 android:textColor="@color/brand_body"
                 android:hint="Description..."
-                android:layout_marginBottom="16dp"/>
+                android:layout_marginBottom="24dp"/>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switchPrivate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Public / Private"
+                android:layout_marginBottom="24dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Category"
+                android:textColor="@color/brand_body"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp"/>
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/categoryGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:flexWrap="wrap"
+                app:justifyContent="flex_start"
+                app:alignItems="center">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAcademic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="Academic"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    app:backgroundTint="@color/brand_secondary"
+                    app:cornerRadius="12dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSocial"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="Social"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    app:backgroundTint="@color/brand_secondary"
+                    app:cornerRadius="12dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnInternational"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="International"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    app:backgroundTint="@color/brand_secondary"
+                    app:cornerRadius="12dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSports"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="Sports"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    app:backgroundTint="@color/brand_secondary"
+                    app:cornerRadius="12dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnArts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="Arts"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    app:backgroundTint="@color/brand_secondary"
+                    app:cornerRadius="12dp"/>
+            </com.google.android.flexbox.FlexboxLayout>
         </LinearLayout>
     </ScrollView>
 

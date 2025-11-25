@@ -30,6 +30,16 @@
           <theme>@style/Theme.Comp3330hkunite</theme>
         </config>
       </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_update_event.xml">
+        <config>
+          <theme>@style/Theme.Comp3330hkunite</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/dialog_image_item.xml">
+        <config>
+          <theme>@style/Theme.Comp3330hkunite</theme>
+        </config>
+      </layout>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_add.xml">
         <config>
           <theme>@style/Theme.Comp3330hkunite</theme>
@@ -92,15 +102,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7fd0da10-d827-4424-8233-2f351e6fcbc8" name="Changes" comment="uploading pictures from the gallery implemented">
+      <change beforePath="$PROJECT_DIR$/../server/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/../server/server.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/AddFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/AddFragment.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/ExploreFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/ExploreFragment.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/color/button_background_tint.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/color/button_background_tint.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/color/button_red_background_tint.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/color/button_red_background_tint.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/fragment_add.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/fragment_add.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/fragment_home.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/fragment_home.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/colors.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/colors.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/UpdateEventActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/comp3330_hkunite/UpdateEventActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_update_event.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_update_event.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

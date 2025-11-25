@@ -273,14 +273,13 @@ def has_invite():
 def update_event_specific(eid):
     data = request.get_json()
     updates = {}
-    if 'title' in data:
-        updates['title'] = data['title']
-    if 'description' in data:
-        updates['description'] = data['description']
-    if 'date' in data:
-        updates['date'] = data['date']
-    if 'location' in data:
-        updates['location'] = data['location']
+    if 'title' in data: updates['title'] = data['title']
+    if 'description' in data: updates['description'] = data['description']
+    if 'date' in data: updates['date'] = data['date']
+    if 'location' in data: updates['location'] = data['location']
+    if 'cid' in data: updates['cid'] = data['cid']
+    if 'public' in data: updates['public'] = data['public']
+    if 'image' in data: updates['image'] = data['image']
 
     try:
         result = db.edit_event(eid, updates)
@@ -290,6 +289,7 @@ def update_event_specific(eid):
             return jsonify({"success": False, "message": "Update failed"}), 500
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
+
 
 
 # ---------------------------------------------------------

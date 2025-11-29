@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,8 +40,6 @@ public class ProfileFragment extends Fragment {
     //server and user information:
     private static final String TAG = "ProfileFragment";
 
-    //make sure matches current IP!!!
-    //"http://10.70.208.59:5001";
     private static final String BASE_URL = Configuration.BASE_URL;
     private int currentUserID;
 
@@ -58,8 +58,9 @@ public class ProfileFragment extends Fragment {
     private ExploreAdapter eventAdapter;
     private List<Event> eventList = new ArrayList<>();
 
-    //volley logic
+    //volley logic:
     private RequestQueue queue;
+    private ScrollView headerContainer;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -85,7 +86,7 @@ public class ProfileFragment extends Fragment {
         badgesRecyclerView = root.findViewById(R.id.profile_badges_recyclerview);
         eventsRecyclerView = root.findViewById(R.id.profile_events_recyclerview);
         logoutButton = root.findViewById(R.id.profile_logout_button);
-
+        headerContainer = root.findViewById(R.id.headerContainer);
         //initializing volley:
         queue = Volley.newRequestQueue(requireContext());
 
@@ -107,7 +108,7 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        // Re-fetch events every time the fragment comes back into view
+        //fetch events again every time the fragment comes back into view
         if (currentUserID != -1) {
             fetchUserEvents(currentUserID);
         }
@@ -120,7 +121,7 @@ public class ProfileFragment extends Fragment {
         badgesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         badgesRecyclerView.setAdapter(badgeAdapter);
 
-        //events list (using ExploreAdapter and Grid):
+        //events list:
         eventAdapter = new ExploreAdapter(getContext(), eventList);
         eventsRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         eventsRecyclerView.setAdapter(eventAdapter);
@@ -140,13 +141,10 @@ public class ProfileFragment extends Fragment {
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                 response -> {
-                    // --- SAFETY CHECK START ---
-                    // If the user has left the screen, stop here. Don't try to load images.
+                    //if the user left the screen, stop here dont try to load images
                     if (!isAdded() || getActivity() == null) {
                         return;
                     }
-                    // --- SAFETY CHECK END ---
-
                     try {
                         if (response.getBoolean("success")) {
                             JSONObject user = response.getJSONObject("data");
@@ -164,9 +162,8 @@ public class ProfileFragment extends Fragment {
                             profileEmail.setText(email);
                             eventsOrganizedCount.setText(String.valueOf(orgCount));
                             eventsJoinedCount.setText(String.valueOf(joinCount));
-
+                            headerContainer.setVisibility(View.VISIBLE);
                             //load the image
-                            // Now safe because we checked isAdded() above
                             Glide.with(this)
                                     .load(imageUrl)
                                     .placeholder(R.drawable.default_profile)
@@ -179,7 +176,7 @@ public class ProfileFragment extends Fragment {
                 },
                 error -> {
                     Log.e(TAG, "Volley error fetching user info: " + error.toString());
-                    // Only show toast if still attached
+                    //only show toast if still attached
                     if (isAdded() && getContext() != null) {
                         Toast.makeText(getContext(), "Error loading profile info", Toast.LENGTH_SHORT).show();
                     }

@@ -204,7 +204,7 @@ public class EventDetailActivity extends AppCompatActivity {
         }
 
         if (uid == ownerId) {
-            // Owners should never see Join/Decline
+            // Owners should never see Join or Decline!!
             joinButton.setVisibility(View.GONE);
             joinButtonSide.setVisibility(View.GONE);
             declineButton.setVisibility(View.GONE);
@@ -212,7 +212,7 @@ public class EventDetailActivity extends AppCompatActivity {
             slideOut(invitationCard);
 
             if (eventNotPassed) {
-                // Show Edit + Invite row
+                // Show Edit and Invite row
                 findViewById(R.id.editInviteRow).setVisibility(View.VISIBLE);
 
                 Button editBtn = findViewById(R.id.buttonEditEventSide);
@@ -309,7 +309,7 @@ public class EventDetailActivity extends AppCompatActivity {
         Volley.newRequestQueue(this).add(request);
     }
 
-    // Animation helpers
+    //Animation helpers
     private void fadeOut(View view) {
         if (view.getVisibility() == View.VISIBLE) {
             view.animate()

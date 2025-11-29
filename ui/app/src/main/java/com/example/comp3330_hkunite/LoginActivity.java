@@ -29,8 +29,6 @@ public class LoginActivity extends AppCompatActivity {
     //server and login
     private static final String TAG = "LoginActivity";
     //server address from EventDetailActivity:
-
-//    private static final String BASE_URL = "http://10.70.208.59:5001";
     private static final String BASE_URL = Configuration.BASE_URL;
 
     //ui stuff:
@@ -63,7 +61,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (email.isEmpty() || password.isEmpty()) { //simple validation for now
                     Toast.makeText(LoginActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
                 } else {
-                    //this is the REAL login
+                    //this is the real login
                     performLogin(email, password);
                 }
             }
@@ -73,10 +71,6 @@ public class LoginActivity extends AppCompatActivity {
         signUpText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: You will create SignUpActivity later --> yeah, I'll see about this
-                // Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
-                // startActivity(intent);
-
                 Toast.makeText(LoginActivity.this, "Sign Up page not yet implemented", Toast.LENGTH_SHORT).show();
             }
         });

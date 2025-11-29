@@ -38,7 +38,6 @@ public class BadgeAdapter extends RecyclerView.Adapter<BadgeAdapter.BadgeViewHol
                 .placeholder(R.drawable.ic_launcher_foreground) //show while loading
                 .error(R.drawable.ic_launcher_background)       //show if link broken
                 .into(holder.badgeImage);
-        // -----------------------------------------
     }
 
     @Override

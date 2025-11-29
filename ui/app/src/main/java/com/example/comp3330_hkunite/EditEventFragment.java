@@ -93,7 +93,6 @@ public class EditEventFragment extends Fragment {
     private ActivityResultLauncher<String[]> locationPermissionRequest;
     private FusedLocationProviderClient fusedLocationClient;
     private static final String BASE_URL = Configuration.BASE_URL;
-    //"http://10.0.2.2:5000";
 
     //for the google maps implementation
     private PlacesClient placesClient;
@@ -287,12 +286,6 @@ public class EditEventFragment extends Fragment {
         // 5. Show the dialog
         dialog.show();
     }
-
-
-
-
-
-
 
 
     private void uploadImage(ImageView CoverPicture) {

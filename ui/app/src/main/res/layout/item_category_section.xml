@@ -14,21 +14,21 @@
         android:orientation="vertical"
         android:padding="12dp">
 
-        <!-- Heading row with accent bar -->
+        <!-- heading row with accent bar -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
-            <!-- Accent bar -->
+            <!-- accent bar -->
             <View
                 android:layout_width="4dp"
                 android:layout_height="match_parent"
                 android:background="#114337"
                 android:layout_marginEnd="8dp"/>
 
-            <!-- Category label -->
+            <!-- category label -->
             <TextView
                 android:id="@+id/textCategoryLabel"
                 style="@style/TextAppearance.Explore.Heading"
@@ -40,7 +40,7 @@
                 android:textColor="#114337"/>
         </LinearLayout>
 
-        <!-- Divider -->
+        <!-- divider -->
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
@@ -49,7 +49,7 @@
             android:layout_marginTop="6dp"
             android:layout_marginBottom="12dp"/>
 
-        <!-- Horizontal list of events -->
+        <!-- horizontal list of events -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewCategoryEvents"
             android:layout_width="match_parent"

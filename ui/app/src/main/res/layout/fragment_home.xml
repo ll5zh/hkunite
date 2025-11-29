@@ -2,13 +2,16 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="16dp"
     android:fillViewport="true">
 
     <LinearLayout
+        android:id="@+id/headerContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <!-- Three lines of text at the top -->
         <TextView
@@ -20,7 +23,8 @@
             android:textSize="40sp"
             android:textStyle="bold"
             android:gravity="start"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="8dp"
+            android:textColor="@color/brand_text"/>
 
         <TextView
             android:id="@+id/upcomingText"
@@ -30,7 +34,8 @@
             android:textSize="25sp"
             android:gravity="start"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="32dp" />
+            android:layout_marginBottom="32dp"
+            android:textColor="@color/brand_text"/>
 
 <!--        <TextView-->
 <!--            android:id="@+id/invitationsText"-->
@@ -56,11 +61,14 @@
                 android:layout_weight="1"
                 android:text="Upcoming"
                 android:textAllCaps="false"
-                android:backgroundTint="#2196F3"
-                android:textColor="@android:color/white"
-                android:textSize="18sp"
                 android:layout_marginEnd="8dp"
-                android:padding="5dp" />
+                android:padding="5dp"
+                android:minHeight="56dp"
+                android:backgroundTint="@color/button_background_tint"
+                android:textColor="@color/button_text_color"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                app:cornerRadius="16dp"/>
 
             <Button
                 android:id="@+id/buttonHosting"
@@ -69,11 +77,14 @@
                 android:layout_weight="1"
                 android:text="Hosting"
                 android:textAllCaps="false"
-                android:backgroundTint="#4CAF50"
-                android:textColor="@android:color/white"
-                android:textSize="18sp"
                 android:layout_marginEnd="8dp"
-                android:padding="5dp" />
+                android:padding="5dp"
+                android:minHeight="56dp"
+                android:backgroundTint="@color/brand_secondary"
+                android:textColor="@color/button_text_color"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                app:cornerRadius="16dp"/>
 
             <Button
                 android:id="@+id/buttonInvitations"
@@ -82,10 +93,13 @@
                 android:layout_weight="1"
                 android:text="Invitations"
                 android:textAllCaps="false"
-                android:backgroundTint="#FF9800"
-                android:textColor="@android:color/white"
+                android:padding="5dp"
+                android:minHeight="56dp"
+                android:backgroundTint="@color/brand_text"
+                android:textColor="@color/button_text_color"
+                android:textStyle="bold"
                 android:textSize="18sp"
-                android:padding="5dp" />
+                app:cornerRadius="16dp"/>
 
         </LinearLayout>
 

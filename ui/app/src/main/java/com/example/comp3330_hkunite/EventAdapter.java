@@ -29,7 +29,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         holder.eventTitle.setText(event.getTitle());
         holder.eventDate.setText(event.getDate());
 
-        //use Glide to load the image
+        //using Glide to load the image
         Glide.with(holder.itemView.getContext())
                 .load(event.getImageUrl())
                 .placeholder(R.drawable.default_profile) //using my placeholder

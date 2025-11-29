@@ -6,6 +6,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -38,11 +39,13 @@ import com.bumptech.glide.Glide; // Confirmed to be available from ProfileFragme
 
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,13 +55,16 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.CancellationTokenSource;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 
 public class AddFragment extends Fragment {
@@ -74,7 +80,14 @@ public class AddFragment extends Fragment {
     private SwitchMaterial switchPrivateField;
     private ImageView CoverPicture;
     private Button LocButtonField;
-
+    private MaterialButton btnAcademic;
+    private MaterialButton btnSocial;
+    private MaterialButton btnInternational;
+    private MaterialButton btnSports;
+    private MaterialButton btnArts;
+    private Map<MaterialButton, Integer> categoryMap;
+    private int selectedCategoryId;
+    private ScrollView formLayout;
     private ActivityResultLauncher<Intent> pickImageLauncher;
     private ActivityResultLauncher<String[]> locationPermissionRequest;
     private FusedLocationProviderClient fusedLocationClient;
@@ -143,6 +156,41 @@ public class AddFragment extends Fragment {
         registerPictureUpload();
         CoverPicture = view.findViewById(R.id.picture);
         CoverPicture.setImageResource(R.drawable.image_placeholder);
+        btnAcademic = view.findViewById(R.id.btnAcademic);
+        btnSocial = view.findViewById(R.id.btnSocial);
+        btnInternational = view.findViewById(R.id.btnInternational);
+        btnSports = view.findViewById(R.id.btnSports);
+        btnArts = view.findViewById(R.id.btnArts);
+        selectedCategoryId = -1;
+
+        categoryMap = new HashMap<>();
+        categoryMap.put(btnAcademic, 1);
+        categoryMap.put(btnSocial, 2);
+        categoryMap.put(btnInternational, 3);
+        categoryMap.put(btnSports, 4);
+        categoryMap.put(btnArts, 5);
+
+        // Helper to update visual state of category buttons
+        for (Map.Entry<MaterialButton, Integer> entry : categoryMap.entrySet()) {
+            MaterialButton button = entry.getKey();
+            int cid = entry.getValue();
+
+            button.setOnClickListener(v -> {
+                for (Map.Entry<MaterialButton, Integer> e : categoryMap.entrySet()) {
+                    MaterialButton b = e.getKey();
+                    if (b == v) {
+                        b.setChecked(true);
+                        b.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.brand_secondary));
+                        b.setTextColor(Color.WHITE);
+                        selectedCategoryId = e.getValue();
+                    } else {
+                        b.setChecked(false);
+                        b.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.grey));
+                        b.setTextColor(Color.parseColor("#7E8C85"));
+                    }
+                }
+            });
+        }
 
 
         //making the datepicker and timepicker pop up:
@@ -169,6 +217,7 @@ public class AddFragment extends Fragment {
         //to finally upload the whole event
         addButtonField.setOnClickListener( v -> {
             uploadEventToDatabase();
+            resetCategorySelection();
         });
 
 
@@ -332,6 +381,18 @@ public class AddFragment extends Fragment {
                 });
     }
 
+    //rest category buttons
+    private void resetCategorySelection() {
+        selectedCategoryId = -1;
+        for (Map.Entry<MaterialButton, Integer> e : categoryMap.entrySet()) {
+            MaterialButton b = e.getKey();
+            b.setChecked(false);
+            b.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.brand_secondary));
+            b.setTextColor(Color.WHITE);
+        }
+    }
+
+
     private void uploadEventToDatabase() {
         if (requestQueue == null) {
             Toast.makeText(getContext(), "Network error: Request queue not initialized", Toast.LENGTH_SHORT).show();
@@ -345,9 +406,18 @@ public class AddFragment extends Fragment {
         String time = timeField.getText().toString();
         boolean isPublic = !switchPrivateField.isChecked();
         int publicValue = isPublic ? 1 : 0; // 1 = public, 0 = private
-        String imageURLToSend = selectedImageUrl.isEmpty() ? "" : selectedImageUrl;
+        String imageURLToSend = selectedImageUrl.isEmpty() ? "https://www.gabrielliquirino.it/img/p/it-default-large_default.jpg" : selectedImageUrl;
 
-        int categoryId = 1; // Example category ID
+        int categoryId = selectedCategoryId;
+        if (categoryId == -1) {
+            Toast.makeText(getContext(), "Please select a category", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (location.isEmpty()) {
+            Toast.makeText(getContext(), "Please select a location", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         SharedPreferences prefs = requireContext().getSharedPreferences(PREF_NAME, MODE_PRIVATE);
         int organizerId = prefs.getInt("USER_ID", -1);
 
